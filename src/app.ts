@@ -7,10 +7,10 @@ import { healthRoute } from './routes/health.js'
 import { proxyRoute } from './routes/proxy.js'
 
 export async function buildApp(): Promise<FastifyInstance> {
+  const loggerConfig = config.logLevel === 'silent' ? false : { level: config.logLevel }
+
   const app = Fastify({
-    logger: {
-      level: config.logLevel,
-    },
+    logger: loggerConfig,
   })
 
   await app.register(cors)
