@@ -1,0 +1,29 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Source {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model StyleProfile {
+  id            Int      @id @default(1)
+  personaPrompt String // The generated system prompt
+  metrics       String // JSON of stats (avg sentence length, etc.)
+  updatedAt     DateTime @updatedAt
+}
+
+model Config {
+  id          Int     @id @default(1)
+  provider    String  @default("openai") // openai, anthropic, ollama
+  targetModel String  @default("gpt-4o")
+  apiKey      String?
+}
