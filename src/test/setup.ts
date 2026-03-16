@@ -1,2 +1,2 @@
 // Disable logging in test environment
-process.env.LOG_LEVEL = 'silent'
+process.env.MESAME_LOG_LEVEL = 'silent'
