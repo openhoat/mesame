@@ -1,12 +1,17 @@
 import type { FastifyPluginAsync } from 'fastify'
 import { config } from '../config.js'
+import { injectStylePrompt } from '../services/styleInjector.js'
+import { getActiveStyleProfile } from '../services/styleProfileService.js'
 import type { ChatCompletionRequest } from '../types/openai.js'
 
 export const proxyRoute: FastifyPluginAsync = async app => {
   app.post<{ Body: ChatCompletionRequest }>('/v1/chat/completions', async (request, reply) => {
     const body = request.body
 
-    // TODO: Phase 3 — inject style persona into messages
+    // Inject style persona into messages
+    const styleProfile = await getActiveStyleProfile()
+    const modifiedMessages = injectStylePrompt(body.messages, styleProfile)
+    const modifiedBody = { ...body, messages: modifiedMessages }
 
     const upstreamUrl = `${config.targetBaseUrl}/v1/chat/completions`
 
@@ -20,7 +25,7 @@ export const proxyRoute: FastifyPluginAsync = async app => {
     const upstreamResponse = await fetch(upstreamUrl, {
       method: 'POST',
       headers,
-      body: JSON.stringify(body),
+      body: JSON.stringify(modifiedBody),
     })
 
     if (!upstreamResponse.ok) {

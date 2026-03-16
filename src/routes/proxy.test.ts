@@ -2,13 +2,18 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { buildApp } from '../app.js'
 import type { ChatCompletionRequest, ChatCompletionResponse } from '../types/openai.js'
 
+// Mock the styleProfileService to return no style profile by default
+vi.mock('../services/styleProfileService.js', () => ({
+  getActiveStyleProfile: vi.fn().mockResolvedValue(null),
+}))
+
 describe('proxy route', () => {
   let app: Awaited<ReturnType<typeof buildApp>>
   const fetchSpy = vi.spyOn(globalThis, 'fetch')
 
   beforeEach(async () => {
-    app = await buildApp()
     vi.clearAllMocks()
+    app = await buildApp()
   })
 
   afterEach(async () => {
@@ -100,8 +105,8 @@ describe('proxy route', () => {
     const headers = fetchOptions.headers as Record<string, string>
     expect(headers['content-type']).toBe('application/json')
 
-    // When targetApiKey is undefined (default), no authorization header is set
-    if (process.env.TARGET_API_KEY) {
+    // When OPENAI_API_KEY is set (default provider), authorization header should be present
+    if (process.env.OPENAI_API_KEY) {
       expect(headers.authorization).toContain('Bearer')
     } else {
       expect(headers.authorization).toBeUndefined()
