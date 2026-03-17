@@ -6,8 +6,6 @@
 
 <!-- Phase 3: API Sources & Import -->
 <!-- Phase 4: NLP Style Analyzer -->
-- [ ] **[ARCHITECTURE]** Implement NLP style analyzer with TF-IDF and N-Grams (natural) (P1)
-- [ ] **[ARCHITECTURE]** Add linguistic metrics analysis (sentence length, lexical richness) with compromise (P1)
 <!-- Phase 5: Persona Prompt Generation -->
 - [ ] **[ARCHITECTURE]** Create automatic persona prompt generation from style analysis (P1)
 <!-- Phase 6: Chat Interface -->
@@ -27,3 +25,4 @@
 ## In Progress
 
 - [ ] **[FEAT]** Implement source management REST API with text and PDF import
+- [ ] **[FEAT]** Implement NLP style analyzer with TF-IDF, N-Grams and linguistic metrics
