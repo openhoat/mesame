@@ -12,26 +12,141 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "dev:electron": "npm run build:electron && electron . --ozone-platform=x11 --disable-vulkan",
-    "build": "tsc",
-    "build:electron": "tsc -p tsconfig.electron.json",
-    "build:all": "npm run build && npm run build:electron",
+    "build": "wireit",
+    "build:electron": "wireit",
+    "build:all": "wireit",
     "start": "node dist/server.js",
     "start:electron": "electron . --ozone-platform=x11 --disable-vulkan",
-    "test": "vitest run",
+    "test": "wireit",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "qa": "biome check .",
+    "test:coverage": "wireit",
+    "qa": "wireit",
     "qa:fix": "biome check --write .",
     "format": "biome format --write .",
-    "typecheck": "tsc --noEmit",
-    "validate": "npm run qa && npm run typecheck && npm run test",
+    "typecheck": "wireit",
+    "validate": "wireit",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "changelog": "bash scripts/changelog.sh",
-    "pack": "npm run build:all && electron-builder --dir",
-    "dist": "npm run build:all && electron-builder"
+    "pack": "wireit",
+    "dist": "wireit"
+  },
+  "wireit": {
+    "qa": {
+      "command": "biome check .",
+      "files": [
+        "biome.json",
+        "src/**/*.ts",
+        "electron/**/*.ts"
+      ],
+      "output": []
+    },
+    "typecheck": {
+      "command": "tsc --noEmit",
+      "dependencies": [
+        "db:generate"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "electron/**/*.ts",
+        "tsconfig.json",
+        "tsconfig.electron.json"
+      ],
+      "output": []
+    },
+    "test": {
+      "command": "vitest run",
+      "dependencies": [
+        "db:generate"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "vitest.config.ts"
+      ],
+      "output": []
+    },
+    "test:coverage": {
+      "command": "vitest run --coverage",
+      "dependencies": [
+        "db:generate"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "vitest.config.ts"
+      ],
+      "output": [
+        "coverage/**/*"
+      ]
+    },
+    "build": {
+      "command": "tsc",
+      "dependencies": [
+        "db:generate"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "dist/**/*"
+      ]
+    },
+    "build:electron": {
+      "command": "tsc -p tsconfig.electron.json",
+      "dependencies": [
+        "build"
+      ],
+      "files": [
+        "electron/**/*.ts",
+        "tsconfig.electron.json"
+      ],
+      "output": [
+        "dist-electron/**/*"
+      ]
+    },
+    "build:all": {
+      "dependencies": [
+        "build",
+        "build:electron"
+      ]
+    },
+    "validate": {
+      "dependencies": [
+        "qa",
+        "typecheck",
+        "test"
+      ]
+    },
+    "pack": {
+      "command": "electron-builder --dir",
+      "dependencies": [
+        "build:all"
+      ],
+      "files": [
+        "package.json",
+        "assets/**/*",
+        "prisma/**/*"
+      ],
+      "output": [
+        "dist-electron-app/**/*"
+      ]
+    },
+    "dist": {
+      "command": "electron-builder",
+      "dependencies": [
+        "build:all"
+      ],
+      "files": [
+        "package.json",
+        "assets/**/*",
+        "prisma/**/*"
+      ],
+      "output": [
+        "dist-electron-app/**/*"
+      ]
+    }
   },
   "dependencies": {
     "@fastify/cors": "^11.0.0",
@@ -62,7 +177,8 @@
     "prisma": "^6.5.0",
     "tsx": "^4.19.4",
     "typescript": "^5.9.3",
-    "vitest": "^3.1.3"
+    "vitest": "^3.1.3",
+    "wireit": "0.14.12"
   },
   "author": "Olivier Penhoat <openhoat@gmail.com>",
   "license": "MIT",
