@@ -11,7 +11,7 @@ Build the MeSame project using TypeScript compilation.
 ## Command
 
 ```bash
-cd /home/openhoat/work/mesame && npm run build
+npm run build
 ```
 
 This runs `tsc` to compile the TypeScript source code.
@@ -25,4 +25,4 @@ Analyze the TypeScript compiler output:
 
 ## Important
 
-- If in a feature worktree (e.g., `/home/openhoat/work/mesame-<feature>`), run from that worktree root.
+- If in a feature worktree, run from that worktree root.

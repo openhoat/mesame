@@ -4,7 +4,7 @@ Invoke the **security-auditor** agent to perform a security analysis of the proj
 
 ## Usage
 
-Delegate to the security-auditor agent defined in `/home/openhoat/work/mesame/.claude/agents/security-auditor.md`.
+Delegate to the security-auditor agent defined in `.claude/agents/security-auditor.md`.
 
 The security-auditor agent will:
 

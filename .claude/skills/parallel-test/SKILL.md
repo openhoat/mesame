@@ -19,7 +19,7 @@ MeSame test files are organized by module:
 
 1. **Discover test files**:
 ```bash
-cd /home/openhoat/work/mesame && find src -name "*.test.ts" -type f
+find src -name "*.test.ts" -type f
 ```
 
 2. **Group by module**: Split test files into groups based on their directory:
@@ -30,7 +30,7 @@ cd /home/openhoat/work/mesame && find src -name "*.test.ts" -type f
 
 3. **Run in parallel**: Use TaskCreate to spawn subagents, each running one group:
 ```bash
-cd /home/openhoat/work/mesame && npx vitest run <file1> <file2> ...
+npx vitest run <file1> <file2> ...
 ```
 
 4. **Collect results**: Gather results from all subagents and provide a unified report:
@@ -40,6 +40,6 @@ cd /home/openhoat/work/mesame && npx vitest run <file1> <file2> ...
 
 ## Important
 
-- Run from the project root: `/home/openhoat/work/mesame` (or feature worktree).
+- Run from the project root (or feature worktree root).
 - Tests use the `node` environment.
 - If any group fails, report all failures together at the end.

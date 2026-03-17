@@ -39,6 +39,6 @@ EOF
 
 ## Important
 
-- The main project is at `/home/openhoat/work/mesame`.
-- Feature worktrees are at `/home/openhoat/work/mesame-<name>`.
+- The main worktree is the project root (main branch).
+- Feature worktrees are at `../mesame-<name>` relative to main.
 - Use `gh` CLI for PR creation - ensure it is available.

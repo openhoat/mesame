@@ -11,7 +11,7 @@ Analyze the output of Vitest test runs for the MeSame project.
 ## Command
 
 ```bash
-cd /home/openhoat/work/mesame && npm run test 2>&1
+npm run test 2>&1
 ```
 
 ## Analysis

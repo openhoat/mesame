@@ -11,7 +11,7 @@ List all git worktrees for the MeSame project with formatted output.
 ## Command
 
 ```bash
-cd /home/openhoat/work/mesame && git worktree list
+git worktree list
 ```
 
 ## Output Format
@@ -20,8 +20,8 @@ Display the worktrees in a readable format:
 
 | Path | Branch | Status |
 |------|--------|--------|
-| /home/openhoat/work/mesame | main | (main worktree) |
-| /home/openhoat/work/mesame-<feature> | feature/<feature> | active |
+| <project-root> | main | (main worktree) |
+| ../mesame-<feature> | feature/<feature> | active |
 
 For each worktree, show:
 - **Path**: The filesystem path
@@ -30,5 +30,5 @@ For each worktree, show:
 
 ## Important
 
-- The main project is at `/home/openhoat/work/mesame`.
-- Feature worktrees follow the pattern `/home/openhoat/work/mesame-<name>`.
+- The main worktree is at the project root (main branch).
+- Feature worktrees follow the pattern `../mesame-<name>` relative to main.

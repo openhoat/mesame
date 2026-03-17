@@ -11,7 +11,7 @@ Run the full validation pipeline for the MeSame project.
 ## Command
 
 ```bash
-cd /home/openhoat/work/mesame && npm run validate
+npm run validate
 ```
 
 This runs the following checks in sequence:
@@ -29,5 +29,5 @@ Analyze the output carefully and identify which step failed:
 
 ## Important
 
-- Always run validation from the project root: `/home/openhoat/work/mesame` (or the current worktree path).
-- If in a feature worktree (e.g., `/home/openhoat/work/mesame-<feature>`), run from that worktree root.
+- Always run validation from the project root (or the current worktree path).
+- If in a feature worktree, run from that worktree root.

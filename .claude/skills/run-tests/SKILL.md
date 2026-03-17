@@ -12,17 +12,17 @@ Run the MeSame project unit tests using Vitest.
 
 ### Run all tests
 ```bash
-cd /home/openhoat/work/mesame && npm run test
+npm run test
 ```
 
 ### Run tests with coverage
 ```bash
-cd /home/openhoat/work/mesame && npm run test:coverage
+npm run test:coverage
 ```
 
 ### Run a specific test file
 ```bash
-cd /home/openhoat/work/mesame && npx vitest run <path-to-test-file>
+npx vitest run <path-to-test-file>
 ```
 
 ## Analysis
@@ -37,4 +37,4 @@ When tests fail:
 
 - Do NOT reference E2E tests, Playwright, or browser-based testing - this project does not use them.
 - Tests use the `node` environment by default.
-- If in a feature worktree (e.g., `/home/openhoat/work/mesame-<feature>`), run from that worktree root.
+- If in a feature worktree, run from that worktree root.
