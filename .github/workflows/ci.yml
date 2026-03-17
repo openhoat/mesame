@@ -92,15 +92,8 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
-      - name: Run tests with coverage
-        run: npm run test:coverage -- --exclude 'src/test/e2e/**'
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
-          fail_ci_if_error: false
+      - name: Run tests
+        run: npm run test -- --exclude 'src/test/e2e/**'
 
   build:
     name: Build
