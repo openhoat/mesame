@@ -9,8 +9,22 @@ const __dirname = path.dirname(__filename)
 
 let mainWindow: BrowserWindow | null = null
 let server: Awaited<ReturnType<typeof buildApp>> | null = null
+let isQuitting = false
+
+// Suppress "worker is ending" errors from pino-pretty during shutdown
+process.on('uncaughtException', (error: Error) => {
+  if (error.message?.includes('worker') || error.message?.includes('ending')) {
+    // Ignore worker thread errors during shutdown
+    return
+  }
+  // Log other uncaught exceptions to stderr
+  process.stderr.write(`[Electron] Uncaught exception: ${error.message}\n`)
+})
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
+
+// Use smaller icon for development (X11 compatibility), larger for production builds
+const iconName = isDev ? 'MeSame_icon_512.png' : 'MeSame_icon.png'
 
 async function startServer(): Promise<void> {
   server = await buildApp()
@@ -25,7 +39,7 @@ function createWindow(): void {
     minWidth: 800,
     minHeight: 600,
     title: 'MeSame',
-    icon: path.join(__dirname, '../assets/MeSame_icon.png'),
+    icon: path.join(__dirname, `../../assets/${iconName}`),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -74,9 +88,19 @@ function createWindow(): void {
 }
 
 async function cleanup(): Promise<void> {
-  if (server) {
+  if (isQuitting || !server) return
+  isQuitting = true
+
+  try {
+    // Close all existing connections first
     await server.close()
     server.log.info('[Electron] Server stopped')
+  } catch (error) {
+    // Ignore "worker is ending" errors from pino-pretty during shutdown
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    if (!errorMessage.includes('worker')) {
+      server?.log.error(`[Electron] Cleanup error: ${errorMessage}`)
+    }
   }
 }
 
@@ -101,12 +125,16 @@ app.whenReady().then(async () => {
   }
 })
 
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
+  // Gracefully close the server before quitting
+  await cleanup()
+
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
+// Handle app quit (prevents uncaught exception from pino worker)
 app.on('before-quit', async () => {
   await cleanup()
 })
