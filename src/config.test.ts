@@ -26,7 +26,7 @@ describe('config', () => {
     const cfg = loadConfig()
 
     expect(cfg.port).toBe(3000)
-    expect(cfg.host).toBe('127.0.0.1')
+    expect(cfg.host).toBe('localhost')
     expect(cfg.provider).toBe('openai')
     expect(cfg.targetBaseUrl).toBe('https://api.openai.com')
     expect(cfg.targetApiKey).toBeUndefined()

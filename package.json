@@ -5,18 +5,18 @@
   "description": "Your personal style proxy — a local meta-agent that transforms any LLM into your digital twin",
   "type": "module",
   "private": true,
-  "main": "dist-electron/main.js",
+  "main": "dist-electron/electron/main.js",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "dev:electron": "npm run build:electron && electron .",
+    "dev:electron": "npm run build:electron && electron . --ozone-platform=x11 --disable-vulkan",
     "build": "tsc",
     "build:electron": "tsc -p tsconfig.electron.json",
     "build:all": "npm run build && npm run build:electron",
     "start": "node dist/server.js",
-    "start:electron": "electron .",
+    "start:electron": "electron . --ozone-platform=x11 --disable-vulkan",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -32,9 +32,6 @@
     "changelog": "bash scripts/changelog.sh",
     "pack": "npm run build:all && electron-builder --dir",
     "dist": "npm run build:all && electron-builder"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@fastify/cors": "^11.0.0",

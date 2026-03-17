@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { buildApp } from '../app.js'
+import { resetConfig } from '../config.js'
 import type { ChatCompletionRequest, ChatCompletionResponse } from '../types/openai.js'
 
 // Mock the styleProfileService to return no style profile by default
@@ -13,6 +14,7 @@ describe('proxy route', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
+    resetConfig()
     app = await buildApp()
   })
 
@@ -86,6 +88,14 @@ describe('proxy route', () => {
   })
 
   test('should include Authorization header when API key is configured', async () => {
+    // Set API key for this test
+    const originalApiKey = process.env.OPENAI_API_KEY
+    const originalProvider = process.env.MESAME_PROVIDER
+    process.env.OPENAI_API_KEY = 'test-api-key'
+    process.env.MESAME_PROVIDER = 'openai'
+    resetConfig()
+    app = await buildApp()
+
     fetchSpy.mockResolvedValueOnce(
       new Response(JSON.stringify(upstreamResponse), {
         status: 200,
@@ -104,12 +114,18 @@ describe('proxy route', () => {
     const fetchOptions = fetchCall![1] as RequestInit
     const headers = fetchOptions.headers as Record<string, string>
     expect(headers['content-type']).toBe('application/json')
+    expect(headers.authorization).toContain('Bearer')
 
-    // When OPENAI_API_KEY is set (default provider), authorization header should be present
-    if (process.env.OPENAI_API_KEY) {
-      expect(headers.authorization).toContain('Bearer')
+    // Restore original environment
+    if (originalApiKey) {
+      process.env.OPENAI_API_KEY = originalApiKey
     } else {
-      expect(headers.authorization).toBeUndefined()
+      delete process.env.OPENAI_API_KEY
+    }
+    if (originalProvider) {
+      process.env.MESAME_PROVIDER = originalProvider
+    } else {
+      delete process.env.MESAME_PROVIDER
     }
   })
 

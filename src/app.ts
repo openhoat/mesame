@@ -5,6 +5,7 @@ import { config } from './config.js'
 import { prisma } from './db.js'
 import { healthRoute } from './routes/health.js'
 import { proxyRoute } from './routes/proxy.js'
+import { uiRoutes } from './routes/ui.js'
 
 export async function buildApp(): Promise<FastifyInstance> {
   const loggerConfig =
@@ -41,6 +42,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(cors)
   await app.register(healthRoute)
   await app.register(proxyRoute)
+  await app.register(uiRoutes)
 
   app.addHook('onClose', async () => {
     await prisma.$disconnect()
