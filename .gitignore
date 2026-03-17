@@ -10,6 +10,7 @@ lerna-debug.log*
 # Dependencies
 .npm/
 node_modules/
+.npm/
 dist/
 
 # Editor directories and files
