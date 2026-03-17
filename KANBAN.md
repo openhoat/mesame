@@ -18,5 +18,3 @@
 - [ ] **[UX]** Build web chat interface (Open WebUI-style) for user interaction (P2)
 
 ## In Progress
-
-- [ ] **[UX]** Create Electron desktop application (P2)
