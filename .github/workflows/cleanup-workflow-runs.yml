@@ -23,11 +23,19 @@ jobs:
   cleanup:
     name: Delete old workflow runs
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RETAIN_DAYS: ${{ github.event.inputs.days_old || '30' }}
+      KEEP_MINIMUM: ${{ github.event.inputs.keep_minimum || '10' }}
     steps:
       - name: Delete old workflow runs
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          retain_days: ${{ github.event.inputs.days_old || '30' }}
-          keep_minimum_runs: ${{ github.event.inputs.keep_minimum || '10' }}
+        run: |
+          CUTOFF_DATE=$(date -d "-${RETAIN_DAYS} days" -u +%Y-%m-%dT%H:%M:%SZ)
+          gh api repos/${{ github.repository }}/actions/workflows --paginate -q '.workflows[].id' | while read -r WORKFLOW_ID; do
+            RUN_IDS=$(gh api "repos/${{ github.repository }}/actions/workflows/${WORKFLOW_ID}/runs?per_page=100" \
+              -q "[.workflow_runs[] | select(.created_at < \"${CUTOFF_DATE}\")] | sort_by(.created_at) | reverse | .[${KEEP_MINIMUM}:] | .[].id")
+            for RUN_ID in $RUN_IDS; do
+              echo "Deleting run ${RUN_ID}"
+              gh api "repos/${{ github.repository }}/actions/runs/${RUN_ID}" -X DELETE || true
+            done
+          done
