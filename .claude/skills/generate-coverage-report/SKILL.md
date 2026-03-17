@@ -11,7 +11,7 @@ Run tests with coverage collection and analyze the results.
 ## Command
 
 ```bash
-cd /home/openhoat/work/mesame && npm run test:coverage
+npm run test:coverage
 ```
 
 ## Analysis

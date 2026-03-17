@@ -11,7 +11,7 @@ Add a new idea or task to the Backlog section of KANBAN.md.
 
 ## Steps
 
-1. Read the current KANBAN.md at `/home/openhoat/work/mesame/KANBAN.md`.
+1. Read the current KANBAN.md at `KANBAN.md` (in the project root).
 2. Parse the Backlog section.
 3. Add the new item with the specified description, priority, and category.
 4. Write the updated KANBAN.md.
@@ -33,5 +33,5 @@ The user provides a description of the idea. Optionally they may specify priorit
 
 ## Important
 
-- The project root is `/home/openhoat/work/mesame`.
+- The project root is the current working directory or main worktree.
 - Warn if not on the `main` branch.

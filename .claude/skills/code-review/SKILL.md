@@ -4,7 +4,7 @@ Invoke the **code-reviewer** agent to perform a thorough code review.
 
 ## Usage
 
-Delegate to the code-reviewer agent defined in `/home/openhoat/work/mesame/.claude/agents/code-reviewer.md`.
+Delegate to the code-reviewer agent defined in `.claude/agents/code-reviewer.md`.
 
 The code-reviewer agent will:
 

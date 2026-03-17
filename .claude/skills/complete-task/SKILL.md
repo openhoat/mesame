@@ -10,7 +10,7 @@ Finalize and submit the current task from a feature worktree.
 
 ## Prerequisites
 
-- Must be in a feature worktree (e.g., `/home/openhoat/work/mesame-<feature>`).
+- Must be in a feature worktree (e.g., `../mesame-<feature>` relative to main).
 - **Error if on `main` branch** - this skill is only for feature branches.
 
 ## Steps
@@ -64,7 +64,7 @@ EOF
 
 ## Important
 
-- The main project is at `/home/openhoat/work/mesame`.
-- Feature worktrees are at `/home/openhoat/work/mesame-<feature>`.
+- The main worktree is the project root (main branch).
+- Feature worktrees are at `../mesame-<feature>` relative to main.
 - Always validate before committing.
 - Never run this on the `main` branch.

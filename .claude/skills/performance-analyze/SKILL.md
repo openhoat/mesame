@@ -4,7 +4,7 @@ Invoke the **performance-analyzer** agent to analyze and optimize project perfor
 
 ## Usage
 
-Delegate to the performance-analyzer agent defined in `/home/openhoat/work/mesame/.claude/agents/performance-analyzer.md`.
+Delegate to the performance-analyzer agent defined in `.claude/agents/performance-analyzer.md`.
 
 The performance-analyzer agent will focus on:
 

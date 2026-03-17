@@ -17,7 +17,6 @@ Ask the user for the version bump type: `patch`, `minor`, or `major`. Or accept 
 ### 2. Version Bump
 
 ```bash
-cd /home/openhoat/work/mesame
 npm version <patch|minor|major> --no-git-tag-version
 ```
 
@@ -26,13 +25,12 @@ This updates the version in `package.json` without creating a git tag yet.
 ### 3. Generate Changelog
 
 ```bash
-cd /home/openhoat/work/mesame && npm run changelog
+npm run changelog
 ```
 
 ### 4. Commit and Tag
 
 ```bash
-cd /home/openhoat/work/mesame
 VERSION=$(node -p "require('./package.json').version")
 git add package.json package-lock.json CHANGELOG.md
 git commit -m "chore: release v${VERSION}"
@@ -44,7 +42,6 @@ git tag "v${VERSION}"
 If the user confirms, push the commit and tag:
 
 ```bash
-cd /home/openhoat/work/mesame
 git push
 git push --tags
 ```
@@ -54,4 +51,4 @@ git push --tags
 - Must be on the `main` branch.
 - Ensure all validation passes before releasing.
 - Uses `npm version` directly (no custom bump-version script).
-- The project root is `/home/openhoat/work/mesame`.
+- Run from the project root.

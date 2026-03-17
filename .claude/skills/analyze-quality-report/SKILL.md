@@ -11,7 +11,7 @@ Analyze the output of Biome (linting and formatting) for the MeSame project.
 ## Command
 
 ```bash
-cd /home/openhoat/work/mesame && npm run qa 2>&1
+npm run qa 2>&1
 ```
 
 ## Analysis

@@ -4,7 +4,7 @@ Invoke the **dependency-manager** agent to analyze and manage project dependenci
 
 ## Usage
 
-Delegate to the dependency-manager agent defined in `/home/openhoat/work/mesame/.claude/agents/dependency-manager.md`.
+Delegate to the dependency-manager agent defined in `.claude/agents/dependency-manager.md`.
 
 The dependency-manager agent will:
 
