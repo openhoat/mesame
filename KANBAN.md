@@ -23,6 +23,3 @@
 - [ ] **[CONFIG]** Create CLI for configuration management (P3)
 
 ## In Progress
-
-- [ ] **[FEAT]** Implement source management REST API with text and PDF import
-- [ ] **[FEAT]** Implement NLP style analyzer with TF-IDF, N-Grams and linguistic metrics
