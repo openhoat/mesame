@@ -10,6 +10,8 @@ lerna-debug.log*
 # Dependencies
 node_modules/
 dist/
+dist-electron/
+dist-electron-app/
 
 # Editor directories and files
 .vscode/*
@@ -32,6 +34,14 @@ dist/
 build/
 out/
 tsconfig.tsbuildinfo
+
+# Electron
+dist-electron/
+dist-electron-app/
+*.dmg
+*.AppImage
+*.exe
+*.nsis
 
 # Database
 *.db
