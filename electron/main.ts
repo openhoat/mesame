@@ -32,17 +32,28 @@ function createWindow(): void {
       contextIsolation: true,
     },
     show: false,
+    backgroundColor: '#1a1a2e',
   })
 
   // Load the app
   if (isDev) {
     // In development, load from the local server
     mainWindow.loadURL(`http://localhost:${config.port}`)
+    // Open DevTools in development
     mainWindow.webContents.openDevTools()
   } else {
-    // In production, load the static HTML
-    mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'))
+    // In production, load from the local server too
+    mainWindow.loadURL(`http://localhost:${config.port}`)
   }
+
+  // Handle loading errors
+  mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+    server?.log.error(`Failed to load: ${errorCode} - ${errorDescription}`)
+  })
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    server?.log.info('Page loaded successfully')
+  })
 
   // Show window when ready
   mainWindow.once('ready-to-show', () => {
@@ -83,7 +94,9 @@ app.whenReady().then(async () => {
         createWindow()
       }
     })
-  } catch {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    server?.log.error(`[Electron] Failed to start: ${errorMessage}`)
     app.quit()
   }
 })
