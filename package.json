@@ -116,7 +116,7 @@
       "dependencies": [
         "qa",
         "typecheck",
-        "test"
+        "test:coverage"
       ]
     },
     "pack": {
