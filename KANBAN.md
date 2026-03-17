@@ -23,3 +23,5 @@
 - [ ] **[CONFIG]** Create CLI for configuration management (P3)
 
 ## In Progress
+
+- [ ] **[CHORE]** Add GitHub Actions CI pipeline with lint, test, build and Dependabot
