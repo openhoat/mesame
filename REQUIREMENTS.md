@@ -9,8 +9,8 @@
 
 - **Nom :** MeSame
 - **Slogan :** Your personal style proxy.
-- **Concept :** Un proxy local qui injecte votre "ADN stylistique" dans toutes vos interactions avec les LLMs.
-- **Valeur Unique :** Confidentialité totale de l'analyse (locale) et interopérabilité universelle via un protocole API standard.
+- **Concept :** Une application desktop Electron tout-en-un qui vous permet de chatter directement avec votre double numérique. MeSame analyse localement votre empreinte linguistique et injecte votre "ADN stylistique" dans toutes vos interactions avec les LLMs. Le proxy reste également accessible pour les applications tierces (Chatbox, etc.).
+- **Valeur Unique :** Confidentialité totale de l'analyse (locale), expérience de chat intégrée et interopérabilité universelle via un protocole API standard.
 
 ---
 
@@ -34,6 +34,8 @@
 | **Backend** | Node.js + **Fastify** (Proxy & API) |
 | **IA Orchestration** | **LangChain.js** |
 | **NLP Local** | **Natural** & **Compromise.js** |
+| **Desktop App** | **Electron** (embarque le serveur Fastify) |
+| **Chat UI** | HTML / CSS / JS natif (intégrée dans l'app Electron) |
 | **Base de Données** | **SQLite** + **Prisma ORM** |
 
 ---
@@ -55,10 +57,27 @@ Serveur intermédiaire compatible OpenAI :
 3. **Route :** Transmet au LLM cible (Cloud ou Local via Ollama).
 4. **Stream :** Gère le flux de réponse en temps réel (Server-Sent Events).
 
+### C. MeSame App (Desktop)
+
+Application Electron tout-en-un :
+1. **Tout-en-un :** L'app Electron embarque le serveur Fastify (proxy) au démarrage — aucune installation séparée nécessaire.
+2. **Interface de chat :** L'utilisateur converse directement avec le LLM qui adopte son style d'écriture.
+3. **Proxy accessible :** Le serveur reste accessible sur `localhost` pour les applications tierces (Chatbox, etc.).
+
 ---
 
-## 5. Spécifications de l'Interface Admin
+## 5. Interface
 
+### A. Interface de Chat (principale)
+
+Conversation directe avec le double numérique dans l'app Electron :
+- **Chat temps réel :** Envoi de messages et réception des réponses en streaming.
+- **Personnalité adoptée :** Le LLM répond en utilisant le style d'écriture de l'utilisateur.
+- **Historique :** Consultation des conversations précédentes.
+
+### B. Dashboard Admin (secondaire)
+
+Gestion et configuration de MeSame :
 - **Gestion des Sources :** Dashboard pour importer/analyser les contenus de référence.
 - **Visualisation du Style :** Feedback visuel sur les patterns détectés (tics de langage, ton détecté).
 - **Settings Proxy :**
@@ -78,29 +97,56 @@ Serveur intermédiaire compatible OpenAI :
 
 ## 7. Roadmap de Développement
 
-### Phase 1 : Fondations (Core)
+### Phase 1 : Fondations (Core) ✅
 
-- Initialisation du Monorepo TS.
-- Configuration du serveur Fastify et schéma Prisma.
-- Setup de la route proxy de base.
+- Initialisation du Monorepo TypeScript.
+- Configuration du serveur Fastify et schéma Prisma (SQLite).
+- Route proxy de base (`POST /v1/chat/completions`) avec streaming SSE.
+- Injection de style via system prompt (service `styleInjector`).
 
-### Phase 2 : Moteur d'Analyse (NLP)
+### Phase 2 : Application Desktop (Electron) ✅
 
-- Développement du script d'extraction avec la lib `natural`.
-- Algorithme de génération de "Portrait stylistique".
-- Test d'analyse sur un set de 50 documents.
+- App Electron embarquant le serveur Fastify au démarrage.
+- Page statut serveur (dashboard minimal).
+- Configuration du packaging multi-plateforme (AppImage, DMG, NSIS).
 
-### Phase 3 : Proxy & LangChain
+### Phase 3 : API Sources & Import
 
-- Intégration de LangChain.js pour le multi-fournisseur.
-- Gestion du streaming et de l'injection de prompt.
-- Validation de la compatibilité avec un client tiers (ex: Chatbox).
+- Endpoints REST pour la gestion des sources (`POST/GET/DELETE /v1/sources`).
+- Import de fichiers texte (MD, TXT) avec stockage dans la table `Source`.
+- Support PDF (extraction de texte).
 
-### Phase 4 : Interface Utilisateur (UI)
+### Phase 4 : Moteur NLP (Style Analyzer)
 
-- Création du dashboard React.
-- Interface de gestion des sources et des clés API.
-- Monitoring des appels proxy.
+- Analyse statistique TF-IDF (fréquences de mots) avec la lib `natural`.
+- Extraction N-Grams (expressions récurrentes).
+- Métriques linguistiques (longueur de phrases, richesse lexicale) avec `compromise`.
+- Pipeline : lecture des sources → analyse → stockage des métriques dans `StyleProfile`.
+
+### Phase 5 : Génération du Persona Prompt
+
+- Algorithme de synthèse des résultats NLP en system prompt.
+- Sauvegarde automatique dans `StyleProfile.personaPrompt`.
+- Pipeline complet de bout en bout : import → analyse → génération → injection.
+
+### Phase 6 : Interface de Chat (Electron)
+
+- Remplacement du dashboard statut par une vraie interface de chat.
+- Envoi de messages vers le proxy local avec affichage streaming.
+- Historique des conversations.
+
+### Phase 7 : Intégration LangChain (Multi-Provider)
+
+- Remplacement du `fetch` brut du proxy par LangChain.js.
+- Support natif OpenAI / Anthropic / Ollama via les adapters.
+- Gestion unifiée du streaming et du switching de provider.
+
+### Phase 8 : Dashboard Admin (React)
+
+- Interface React (Vite + Tailwind + Shadcn/UI) pour la gestion.
+- Gestion des sources (import, suppression, relance d'analyse).
+- Visualisation du profil stylistique détecté.
+- Settings (provider, modèle, clés API) et live logs du proxy.
 
 ---
 
