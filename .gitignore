@@ -55,6 +55,9 @@ coverage/
 .temp/
 .tmp/
 
+# Assets (keep .gitkeep)
+!assets/.gitkeep
+
 # Claude AI
 .claude/settings.local.json
 .claude/worktrees/
