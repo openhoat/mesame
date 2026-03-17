@@ -16,12 +16,12 @@ Defines the workflow for using git native worktrees to work on multiple branches
 ## Directory Structure
 
 ```
-/home/openhoat/work/
+<project-parent>/
 ├── mesame/              # Main worktree (main branch)
 ├── mesame-<feature>/    # Feature worktrees (e.g., mesame-style-analyzer)
 ```
 
-**Important**: Worktrees are created at `/home/openhoat/work/mesame-<feature>`, NOT in `.claude/worktrees/`.
+**Important**: Worktrees are created at `../mesame-<feature>` relative to the main worktree, NOT in `.claude/worktrees/`.
 
 ## Naming Convention
 
@@ -81,4 +81,4 @@ When creating a new worktree, local files listed in `.worktree-sync` are automat
 - **Direct commits to main branch**: Always use PR workflow
 - **Modifying KANBAN.md from feature worktree**: Update from main only
 - **Using EnterWorktree tool**: NEVER use EnterWorktree - always use native `git worktree add` commands
-- **Creating worktrees in .claude/worktrees/**: Worktrees must be created at `/home/openhoat/work/mesame-<name>`
+- **Creating worktrees in .claude/worktrees/**: Worktrees must be created at `../mesame-<name>` relative to the main worktree

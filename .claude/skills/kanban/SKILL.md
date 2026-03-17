@@ -6,7 +6,7 @@ disable-model-invocation: false
 
 # Kanban Board Management
 
-Manage the MeSame project's KANBAN.md file located at `/home/openhoat/work/mesame/KANBAN.md`.
+Manage the MeSame project's KANBAN.md file located in the project root.
 
 ## Actions
 
@@ -18,7 +18,7 @@ Parse and display the KANBAN.md file sections:
 - **Done** - Completed tasks
 
 ```bash
-cat /home/openhoat/work/mesame/KANBAN.md
+cat KANBAN.md
 ```
 
 Display a summary of task counts per section and list tasks with their priorities/categories.
@@ -37,5 +37,5 @@ Typical transitions:
 ## Important
 
 - **Branch check**: Warn the user if NOT on the `main` branch. KANBAN.md should typically be modified on `main`.
-- The project root is `/home/openhoat/work/mesame`.
-- Worktrees are at `/home/openhoat/work/mesame-<feature>`.
+- The project root is the current working directory or main worktree.
+- Feature worktrees are at `../mesame-<feature>` relative to main.

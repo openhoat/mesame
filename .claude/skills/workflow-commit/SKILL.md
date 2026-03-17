@@ -10,7 +10,7 @@ Complete commit workflow: validate, commit, update changelog, and update kanban.
 
 ## Prerequisites
 
-- Must be in a feature worktree (e.g., `/home/openhoat/work/mesame-<feature>`).
+- Must be in a feature worktree (e.g., `../mesame-<feature>` relative to main).
 - Must NOT be on `main` branch.
 
 ## Steps
@@ -35,19 +35,19 @@ Use conventional commit format (feat, fix, refactor, docs, chore, etc.).
 ### 3. Update Changelog
 
 ```bash
-cd /home/openhoat/work/mesame && npm run changelog
+npm run changelog
 ```
 
 If the changelog script is available, run it from the main worktree. Otherwise skip this step.
 
 ### 4. Update KANBAN
 
-If the task status needs updating, modify `/home/openhoat/work/mesame/KANBAN.md` on the main worktree:
+If the task status needs updating, modify `KANBAN.md` on the main worktree:
 - Update task progress notes if applicable.
 
 ## Important
 
-- The main project is at `/home/openhoat/work/mesame`.
-- Feature worktrees are at `/home/openhoat/work/mesame-<feature>`.
+- The main worktree is the project root (main branch).
+- Feature worktrees are at `../mesame-<feature>` relative to main.
 - Always validate before committing.
 - Use conventional commit messages.

@@ -4,7 +4,7 @@ Invoke the **documentation-generator** agent to create or update project documen
 
 ## Usage
 
-Delegate to the documentation-generator agent defined in `/home/openhoat/work/mesame/.claude/agents/documentation-generator.md`.
+Delegate to the documentation-generator agent defined in `.claude/agents/documentation-generator.md`.
 
 The documentation-generator agent will:
 

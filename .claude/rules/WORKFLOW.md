@@ -8,7 +8,7 @@
 /start-task [number]
 # -> Updates KANBAN.md (move idea to In Progress)
 # -> Commits KANBAN.md on main
-# -> Creates branch and worktree at /home/openhoat/work/mesame-<name>
+# -> Creates branch and worktree at ../mesame-<name>
 # -> Copies local files from .worktree-sync to new worktree
 # -> Implements the complete feature automatically
 # -> Validates code (npm run validate)
@@ -40,8 +40,8 @@
 
 ## Emplacements
 
-- **Main worktree**: `/home/openhoat/work/mesame`
-- **Feature worktrees**: `/home/openhoat/work/mesame-<feature-name>`
+- **Main worktree**: Project root (where main branch is checked out)
+- **Feature worktrees**: `../mesame-<feature-name>` relative to main worktree
 - **KANBAN.md**: Edit only on main branch
 - **CHANGELOG.md**: Auto-generated (read-only, never edit manually)
 
