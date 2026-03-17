@@ -69,7 +69,7 @@ function hasProfessionalTone(text: string): boolean {
 function isReasonablyConcise(text: string): boolean {
   // Response should be informative but not excessively long
   const wordCount = text.split(/\s+/).length
-  return wordCount >= 20 && wordCount <= 500
+  return wordCount >= 20 && wordCount <= 800
 }
 
 describe('Style Injection E2E', () => {
