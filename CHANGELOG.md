@@ -39,3 +39,11 @@
 ## 18/03/2026
 
 - **[08:51:10] 🐛 [FIX]** add FORCE_JAVASCRIPT_ACTIONS_TO_NODE24 for Node.js 24 compatibility
+- **[08:58:06] 🔧 [CHORE]** update kanban and changelog post-merge
+- **[08:01:32] 📦 [DEPS]** bump @commitlint/cli from 19.8.1 to 20.5.0
+- **[08:01:21] 📦 [DEPS]** bump @fastify/static from 8.3.0 to 9.0.0
+- **[08:00:00] 📦 [DEPS]** bump @types/node from 22.19.15 to 25.5.0
+- **[07:59:21] 📦 [DEPS]** bump electron from 41.0.2 to 41.0.3 in the minor-and-patch group
+- **[07:58:29] 👷 [CI]** bump actions/upload-artifact from 6 to 7
+- **[07:58:33] 👷 [CI]** bump actions/download-artifact from 6 to 8
+- **[08:04:10] 📦 [DEPS]** bump @commitlint/config-conventional from 19.8.1 to 20.5.0
