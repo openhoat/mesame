@@ -6,6 +6,7 @@
  */
 
 import { execSync } from 'node:child_process'
+import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { ElectronApplication, Page } from '@playwright/test'
@@ -47,17 +48,13 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
 
   // Build the app first if needed
   const projectRoot = path.join(__dirname, '..', '..')
+  const distElectronPath = path.join(projectRoot, 'dist-electron')
+  const mainPath = path.join(distElectronPath, 'electron', 'main.js')
 
-  // Check if dist-electron exists, if not build it
-  try {
-    execSync('test -d dist-electron', { cwd: projectRoot, stdio: 'pipe' })
-  } catch {
-    // Build Electron app for E2E tests
+  // Check if dist-electron exists and has the main.js file
+  if (!fs.existsSync(mainPath)) {
     execSync('npm run build:electron', { cwd: projectRoot, stdio: 'inherit' })
   }
-
-  // Path to compiled Electron main
-  const mainPath = path.join(projectRoot, 'dist-electron', 'electron', 'main.js')
 
   // Build args for Electron
   const args = [mainPath]
