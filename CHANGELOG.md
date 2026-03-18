@@ -47,3 +47,4 @@
 - **[07:58:29] 👷 [CI]** bump actions/upload-artifact from 6 to 7
 - **[07:58:33] 👷 [CI]** bump actions/download-artifact from 6 to 8
 - **[08:04:10] 📦 [DEPS]** bump @commitlint/config-conventional from 19.8.1 to 20.5.0
+- **[09:06:34] 🔧 [CHORE]** update changelog post-merge
