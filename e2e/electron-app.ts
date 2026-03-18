@@ -5,7 +5,6 @@
  * in a controlled test environment.
  */
 
-import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -46,14 +45,15 @@ export interface ElectronAppOptions {
 export async function startElectronApp(options: ElectronAppOptions = {}): Promise<ElectronTestApp> {
   const { env = {}, timeout = 30000 } = options
 
-  // Build the app first if needed
+  // Path to compiled Electron main
   const projectRoot = path.join(__dirname, '..', '..')
-  const distElectronPath = path.join(projectRoot, 'dist-electron')
-  const mainPath = path.join(distElectronPath, 'electron', 'main.js')
+  const mainPath = path.join(projectRoot, 'dist-electron', 'electron', 'main.js')
 
-  // Check if dist-electron exists and has the main.js file
+  // Verify the build exists
   if (!fs.existsSync(mainPath)) {
-    execSync('npm run build:electron', { cwd: projectRoot, stdio: 'inherit' })
+    throw new Error(
+      `Electron build not found at ${mainPath}. Please run 'npm run build:all' before running E2E tests.`
+    )
   }
 
   // Build args for Electron
