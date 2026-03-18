@@ -56,7 +56,8 @@ test.describe('Proxy Endpoint Tests', () => {
       })
 
       // Should return an error for empty model
-      expect([400, 500]).toContain(response.status)
+      // 400 = bad request, 401 = unauthorized (no API key), 500 = server error
+      expect([400, 401, 500]).toContain(response.status)
     })
 
     test('should reject empty messages array', async ({ electronApp, port }) => {
@@ -72,7 +73,8 @@ test.describe('Proxy Endpoint Tests', () => {
       })
 
       // Should return an error for empty messages
-      expect([400, 500]).toContain(response.status)
+      // 400 = bad request, 401 = unauthorized (no API key), 500 = server error
+      expect([400, 401, 500]).toContain(response.status)
     })
 
     test('should handle system message injection', async ({ electronApp, port }) => {
@@ -209,7 +211,8 @@ test.describe('Proxy Endpoint Tests', () => {
         },
       })
 
-      expect([400, 500]).toContain(response.status)
+      // 400 = bad request, 401 = unauthorized (no API key), 500 = server error
+      expect([400, 401, 500]).toContain(response.status)
     })
 
     test('should handle extra fields gracefully', async ({ electronApp, port }) => {
