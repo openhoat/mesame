@@ -31,6 +31,9 @@ build/
 out/
 tsconfig.tsbuildinfo
 
+# Renderer build
+electron/renderer/dist/
+
 # Electron
 dist-electron/
 dist-electron-app/

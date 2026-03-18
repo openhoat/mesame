@@ -12,24 +12,28 @@ const __dirname = path.dirname(__filename)
 // In prod (electron): __dirname = /project/dist-electron/src/routes/
 function findProjectPaths(): { rendererPath: string; assetsPath: string } {
   // Try development paths first (from src/routes/)
-  const devRendererPath = path.join(__dirname, '../../electron/renderer')
+  const devRendererDist = path.join(__dirname, '../../electron/renderer/dist')
+  const devRendererFallback = path.join(__dirname, '../../electron/renderer')
   const devAssetsPath = path.join(__dirname, '../../assets')
 
   if (fs.existsSync(devAssetsPath)) {
-    return { rendererPath: devRendererPath, assetsPath: devAssetsPath }
+    const rendererPath = fs.existsSync(devRendererDist) ? devRendererDist : devRendererFallback
+    return { rendererPath, assetsPath: devAssetsPath }
   }
 
   // Fall back to production paths (from dist-electron/src/routes/)
-  const prodRendererPath = path.join(__dirname, '../../../electron/renderer')
+  const prodRendererDist = path.join(__dirname, '../../../electron/renderer/dist')
+  const prodRendererFallback = path.join(__dirname, '../../../electron/renderer')
   const prodAssetsPath = path.join(__dirname, '../../../assets')
 
-  return { rendererPath: prodRendererPath, assetsPath: prodAssetsPath }
+  const rendererPath = fs.existsSync(prodRendererDist) ? prodRendererDist : prodRendererFallback
+  return { rendererPath, assetsPath: prodAssetsPath }
 }
 
 const { rendererPath, assetsPath } = findProjectPaths()
 
 async function uiRoutes(fastify: FastifyInstance): Promise<void> {
-  // Serve static assets (images, etc.) only if directory exists
+  // Serve app images from /assets/ (e.g., MeSame_icon.png)
   if (fs.existsSync(assetsPath)) {
     await fastify.register(fastifyStatic, {
       root: assetsPath,
@@ -37,14 +41,25 @@ async function uiRoutes(fastify: FastifyInstance): Promise<void> {
     })
   }
 
+  // Serve Vite-built JS/CSS bundles from renderer dist
+  const rendererDistPath = path.join(rendererPath, 'assets')
+  if (fs.existsSync(rendererDistPath)) {
+    await fastify.register(fastifyStatic, {
+      root: rendererDistPath,
+      prefix: '/renderer-assets/',
+      decorateReply: false,
+    })
+  }
+
   // Serve index.html for root route
   fastify.get('/', async (_request: FastifyRequest, reply: FastifyReply) => {
     const indexPath = path.join(rendererPath, 'index.html')
     try {
-      const html = fs.readFileSync(indexPath, 'utf-8')
+      let html = fs.readFileSync(indexPath, 'utf-8')
+      // Rewrite Vite asset paths from ./assets/ to /renderer-assets/
+      html = html.replaceAll('./assets/', '/renderer-assets/')
       return reply.type('text/html').send(html)
     } catch {
-      // Fallback: serve a simple status page if index.html not found
       return reply.type('text/html').send(`
         <!DOCTYPE html>
         <html>
