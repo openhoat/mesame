@@ -251,7 +251,7 @@ describe('Style Injection E2E', () => {
     }
   })
 
-  test('should pass through unchanged when no style profile exists', async () => {
+  test('should inject default prompt when no style profile exists', async () => {
     // Mock database to return null (no style profile)
     mockedGetActiveStyleProfile.mockResolvedValueOnce(null)
 
@@ -276,7 +276,7 @@ describe('Style Injection E2E', () => {
     }
 
     if (USE_REAL_API) {
-      // Real API test: response without style injection
+      // Real API test: response with default style injection
       const response = await app.inject({
         method: 'POST',
         url: '/v1/chat/completions',
@@ -290,11 +290,11 @@ describe('Style Injection E2E', () => {
       expect(content).toBeDefined()
 
       // biome-ignore lint/suspicious/noConsole: Debug output for real API tests
-      console.log('\n=== No Style Profile Response ===')
+      console.log('\n=== Default Style Profile Response ===')
       // biome-ignore lint/suspicious/noConsole: Debug output for real API tests
       console.log(content)
       // biome-ignore lint/suspicious/noConsole: Debug output for real API tests
-      console.log('=================================\n')
+      console.log('======================================\n')
     } else {
       fetchSpy.mockResolvedValueOnce(
         new Response(JSON.stringify(mockResponse), {
@@ -309,13 +309,16 @@ describe('Style Injection E2E', () => {
         payload: requestBody,
       })
 
-      // Verify that the messages were passed through unchanged
+      // Verify that the default prompt was injected
       const callArgs = fetchSpy.mock.calls[0]
       const requestOptions = callArgs[1] as RequestInit
       const sentBody = JSON.parse(requestOptions.body as string)
-      expect(sentBody.messages).toHaveLength(1)
-      expect(sentBody.messages[0].role).toBe('user')
-      expect(sentBody.messages[0].content).toBe('Hello')
+      expect(sentBody.messages).toHaveLength(2)
+      expect(sentBody.messages[0].role).toBe('system')
+      // Default prompt should contain MeSame identity
+      expect(sentBody.messages[0].content).toContain('MeSame')
+      expect(sentBody.messages[1].role).toBe('user')
+      expect(sentBody.messages[1].content).toBe('Hello')
     }
   })
 
