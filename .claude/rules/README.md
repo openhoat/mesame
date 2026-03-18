@@ -18,3 +18,5 @@ This directory contains project rules adapted for Claude Code.
 | `worktree.md` | Native git worktrees workflow for multi-branch development |
 | `error_recovery.md` | Error recovery workflows for task failures |
 | `code_intelligence.md` | LSP tool preferences for code navigation |
+| `package_json.md` | Package.json key sorting (wireit at end) |
+| `package_json.md` | Package.json key sorting (wireit at the end) |
