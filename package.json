@@ -154,7 +154,7 @@
     "@fastify/static": "^9.0.0",
     "@langchain/anthropic": "^0.3.22",
     "@langchain/core": "^0.3.51",
-    "@langchain/ollama": "^0.2.3",
+    "@langchain/ollama": "^1.2.6",
     "@langchain/openai": "^0.5.8",
     "@prisma/client": "^6.5.0",
     "compromise": "^14.14.3",
