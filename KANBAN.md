@@ -4,6 +4,7 @@
 
 ## Backlog
 
+<!-- MVP Phase 0: Frontend foundation -->
 <!-- MVP Phase 1: End-to-end style pipeline -->
 - [ ] **[ARCHITECTURE]** Create automatic persona prompt generation from style analysis (P1)
 - [ ] **[ARCHITECTURE]** Add /v1/models endpoint for OpenAI-compatible client discovery (P1)
@@ -20,3 +21,5 @@
 - [ ] **[CONFIG]** Create CLI for configuration management (P3)
 
 ## In Progress
+
+- [ ] **[ARCHITECTURE]** Migrate chat interface to React + Vite + Tailwind + Shadcn/UI
