@@ -21,5 +21,3 @@
 - [ ] **[CONFIG]** Create CLI for configuration management (P3)
 
 ## In Progress
-
-- [ ] **[ARCHITECTURE]** Migrate chat interface to React + Vite + Tailwind + Shadcn/UI
