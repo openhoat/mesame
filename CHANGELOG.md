@@ -48,3 +48,25 @@
 - **[07:58:33] 👷 [CI]** bump actions/download-artifact from 6 to 8
 - **[08:04:10] 📦 [DEPS]** bump @commitlint/config-conventional from 19.8.1 to 20.5.0
 - **[09:06:34] 🔧 [CHORE]** update changelog post-merge
+- **[09:06:42] 🔧 [CHORE]** update kanban and changelog post-merge
+- **[09:41:34] 🔧 [CHORE]** start task - Implement E2E testing harness with Playwright
+- **[09:46:42] 🔧 [CHORE]** pin dependencies and add .idea/ to worktree-sync
+- **[09:52:34] 📦 [DEPS]** bump @langchain/core from 0.3.51 to 0.3.80
+- **[09:53:51] 🔧 [CHORE]** sort npm scripts and add .npm to worktree-sync
+- **[10:06:15] 🐛 [FIX]** update vitest to 3.2.4 to match @vitest/coverage-v8
+- **[10:17:00] ✨ [FEAT]** implement E2E testing harness with Playwright for Electron app
+- **[10:23:36] 🐛 [FIX]** correct CI workflow for E2E tests
+- **[10:40:06] 🐛 [FIX]** update package-lock.json with correct langchain dependencies
+- **[10:45:29] 🐛 [FIX]** update vitest to 3.2.4 and langchain/core to 0.3.80
+- **[10:50:09] 🐛 [FIX]** use upload-artifact@v4 instead of v8
+- **[11:17:41] 🐛 [FIX]** configure E2E tests for headless CI execution
+- **[11:24:39] 🐛 [FIX]** update biome schema version and fix playwright config formatting
+- **[11:32:48] 🐛 [FIX]** use fs.existsSync to check for dist-electron in E2E tests
+- **[11:42:14] 🐛 [FIX]** verify build exists instead of attempting to build in E2E tests
+- **[11:51:50] 🐛 [FIX]** use process.cwd() for project root in E2E tests
+- **[12:04:53] 🐛 [FIX]** correct API endpoint paths in E2E tests
+- **[12:12:04] 🐛 [FIX]** initialize database before E2E tests
+- **[12:20:18] 🐛 [FIX]** accept 401 as valid response in proxy tests
+- **[14:21:02] 🔧 [CHORE]** start task - Build chat interface in Electron app
+- **[14:27:01] ✨ [FEAT]** add chat interface with streaming display
+- **[14:43:04] ✅ [TEST]** add E2E tests for chat interface

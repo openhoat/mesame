@@ -22,7 +22,6 @@
 
 ## In Progress
 
-- [ ] **[UX]** Build chat interface in Electron app with streaming display
 - [ ] **[TEST]** Implement E2E testing harness with Playwright for Electron app
     - [ ] Set up Playwright with Electron support (playwright.config.ts, dependencies)
     - [ ] Create test infrastructure (electron-app.ts, fixtures.ts, mocks.ts, helpers/)
