@@ -20,10 +20,10 @@
     "test": "wireit",
     "test:watch": "vitest",
     "test:coverage": "wireit",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
+    "test:e2e": "wireit",
+    "test:e2e:ui": "UI_MODE=true playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
-    "test:e2e:headless": "playwright test --project=headless",
+    "test:e2e:headless": "wireit",
     "qa": "wireit",
     "qa:fix": "biome check --write .",
     "format": "biome format --write .",
@@ -102,7 +102,7 @@
       ]
     },
     "test:e2e:headless": {
-      "command": "playwright test --project=headless",
+      "command": "HEADLESS=true xvfb-run -a playwright test",
       "dependencies": [
         "build:all",
         "db:generate"

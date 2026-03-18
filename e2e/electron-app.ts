@@ -5,13 +5,12 @@
  * in a controlled test environment.
  */
 
-import { createRequire } from 'node:module'
+import { execSync } from 'node:child_process'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { ElectronApplication, Page } from '@playwright/test'
-import { _electron as electron } from 'playwright'
+import { _electron as electron } from '@playwright/test'
 
-const require = createRequire(import.meta.url)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -31,33 +30,6 @@ export interface ElectronAppOptions {
 }
 
 /**
- * Get the path to the Electron main process entry point
- */
-function getElectronMainPath(): string {
-  // Compiled Electron main (in dist-electron/electron/main.js)
-  return path.join(__dirname, '../../dist-electron/electron/main.js')
-}
-
-/**
- * Get the path to the Electron executable
- */
-function getElectronExecutablePath(): string {
-  // Resolve electron package path to find the executable
-  const electronPackagePath = require.resolve('electron/package.json')
-  const electronPackageDir = path.dirname(electronPackagePath)
-  const electronPath = path.join(electronPackageDir, 'path.txt')
-
-  try {
-    const fs = require('node:fs')
-    const executableName = fs.readFileSync(electronPath, 'utf-8').trim()
-    return path.join(electronPackageDir, executableName)
-  } catch {
-    // Fallback to default electron command
-    return 'electron'
-  }
-}
-
-/**
  * Start the Electron application for testing
  *
  * @param options - Configuration options for the Electron app
@@ -73,26 +45,63 @@ function getElectronExecutablePath(): string {
 export async function startElectronApp(options: ElectronAppOptions = {}): Promise<ElectronTestApp> {
   const { env = {}, timeout = 30000 } = options
 
-  const mainPath = getElectronMainPath()
-  const electronExecutable = getElectronExecutablePath()
+  // Build the app first if needed
+  const projectRoot = path.join(__dirname, '..', '..')
+
+  // Check if dist-electron exists, if not build it
+  try {
+    execSync('test -d dist-electron', { cwd: projectRoot, stdio: 'pipe' })
+  } catch {
+    // Build Electron app for E2E tests
+    execSync('npm run build:electron', { cwd: projectRoot, stdio: 'inherit' })
+  }
+
+  // Path to compiled Electron main
+  const mainPath = path.join(projectRoot, 'dist-electron', 'electron', 'main.js')
+
+  // Build args for Electron
+  const args = [mainPath]
+
+  // Use a unique user data directory for each test to isolate data
+  const userDataDir = path.join(
+    projectRoot,
+    'dist',
+    'test-user-data',
+    `test-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  )
+  args.push(`--user-data-dir=${userDataDir}`)
+
+  // Add X11 and headless flags when running in headless mode (via xvfb-run)
+  // This forces Electron to use X11 instead of Wayland, allowing xvfb to capture the display
+  if (process.env.HEADLESS === 'true') {
+    args.push('--no-sandbox')
+    args.push('--ozone-platform=x11')
+    args.push('--disable-gpu')
+    args.push('--disable-software-rasterizer')
+    args.push('--disable-dev-shm-usage')
+  } else {
+    // Local development flags
+    args.push('--ozone-platform=x11')
+    args.push('--disable-vulkan')
+  }
 
   // Set test environment variables
   const testEnv: Record<string, string> = {
     ...process.env,
     NODE_ENV: 'test',
     MESAME_LOG_LEVEL: 'silent',
+    MESAME_PORT: env.MESAME_PORT || '0', // Use random available port
     ...env,
   } as Record<string, string>
 
-  // Launch Electron app
+  // Launch Electron app (Playwright will find the electron executable automatically)
   const electronApp = await electron.launch({
-    executablePath: electronExecutable,
-    args: [mainPath, '--ozone-platform=x11', '--disable-vulkan'],
+    args,
     env: testEnv,
   })
 
-  // Get the main window
-  const page = await electronApp.firstWindow()
+  // Get the main window with timeout
+  const page = await electronApp.firstWindow({ timeout })
 
   // Wait for the app to be ready
   await page.waitForLoadState('domcontentloaded', { timeout })
@@ -104,6 +113,17 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
     } catch {
       // Ignore errors during cleanup
     }
+
+    // Clean up the temporary user data directory
+    try {
+      const fs = await import('node:fs/promises')
+      await fs.rm(userDataDir, { recursive: true, force: true })
+    } catch {
+      // Ignore cleanup errors
+    }
+
+    // Brief pause to let X11/system resources be released
+    await new Promise(resolve => setTimeout(resolve, 200))
   }
 
   return {
