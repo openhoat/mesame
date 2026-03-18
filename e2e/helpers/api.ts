@@ -179,7 +179,7 @@ export async function* chatCompletionStream(
  * Get the list of sources
  */
 export async function getSources(page: Page, port: number): Promise<ApiResponse> {
-  return apiRequest(page, `http://localhost:${port}/api/sources`)
+  return apiRequest(page, `http://localhost:${port}/v1/sources`)
 }
 
 /**
@@ -222,7 +222,7 @@ export async function uploadSource(
       }
     },
     {
-      url: `http://localhost:${port}/api/sources/upload`,
+      url: `http://localhost:${port}/v1/sources/import`,
       filename,
       content,
     }
