@@ -56,6 +56,17 @@ Thumbs.db
 .nyc_output/
 coverage/
 
+# E2E tests
+e2e-report/
+test-results/
+playwright-report/
+
+# E2E tests
+e2e-report/
+test-results/
+playwright-report/
+playwright/.cache/
+
 # Wireit
 .wireit/
 
