@@ -9,7 +9,6 @@
 <!-- Phase 5: Persona Prompt Generation -->
 - [ ] **[ARCHITECTURE]** Create automatic persona prompt generation from style analysis (P1)
 <!-- Phase 6: Chat Interface -->
-- [ ] **[UX]** Build chat interface in Electron app with streaming display (P1)
 - [ ] **[UX]** Add conversation history to chat interface (P2)
 <!-- Phase 7: LangChain Multi-Provider -->
 - [ ] **[ARCHITECTURE]** Replace raw fetch proxy with LangChain.js multi-provider integration (P2)
@@ -23,14 +22,7 @@
 
 ## In Progress
 
-- [ ] **[TEST]** Implement E2E testing harness with Playwright for Electron app
-    - [ ] Set up Playwright with Electron support (playwright.config.ts, dependencies)
-    - [ ] Create test infrastructure (electron-app.ts, fixtures.ts, mocks.ts, helpers/)
-    - [ ] Add smoke tests for app startup and basic UI rendering
-    - [ ] Add proxy endpoint tests (chat completions, streaming, error handling)
-    - [ ] Add admin dashboard tests (source import, style profile visualization)
-    - [ ] Configure CI workflow for headless E2E tests (xvfb-run)
-    - [ ] Add npm scripts (test:e2e, test:e2e:ui, test:e2e:debug, test:e2e:headless)
+- [ ] **[UX]** Build chat interface in Electron app with streaming display
 - [ ] **[TEST]** Implement E2E testing harness with Playwright for Electron app
     - [ ] Set up Playwright with Electron support (playwright.config.ts, dependencies)
     - [ ] Create test infrastructure (electron-app.ts, fixtures.ts, mocks.ts, helpers/)
