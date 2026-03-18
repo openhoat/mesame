@@ -70,3 +70,9 @@
 - **[14:21:02] 🔧 [CHORE]** start task - Build chat interface in Electron app
 - **[14:27:01] ✨ [FEAT]** add chat interface with streaming display
 - **[14:43:04] ✅ [TEST]** add E2E tests for chat interface
+- **[14:48:14] 🔧 [CHORE]** update kanban and changelog after chat-interface merge
+- **[15:05:49] 🔧 [CHORE]** reprioritize backlog for MVP focus
+- **[16:11:13] 🔧 [CHORE]** start task - Migrate chat interface to React + Vite + Tailwind + Shadcn/UI
+- **[16:24:09] 🔧 [CHORE]** add package.json formatting rule with wireit at end
+- **[16:33:47] ✨ [FEAT]** add fun default persona prompt for MeSame
+- **[16:27:05] ✨ [FEAT]** migrate chat interface to React + Vite + Tailwind + Shadcn/UI
