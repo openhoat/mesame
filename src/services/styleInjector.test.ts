@@ -7,7 +7,7 @@ describe('injectStylePrompt', () => {
     personaPrompt: 'Tu es un assistant IA qui répond dans un style technique et précis.',
   }
 
-  test('should return unchanged messages when no style profile is provided', () => {
+  test('should inject default prompt when no style profile is provided', () => {
     const messages: ChatMessage[] = [
       { role: 'user', content: 'Bonjour' },
       { role: 'assistant', content: 'Salut!' },
@@ -15,10 +15,15 @@ describe('injectStylePrompt', () => {
 
     const result = injectStylePrompt(messages, null)
 
-    expect(result).toEqual(messages)
+    // Should inject default system prompt at the beginning
+    expect(result).toHaveLength(3)
+    expect(result[0]?.role).toBe('system')
+    expect(result[0]?.content).toContain('MeSame')
+    expect(result[1]).toEqual(messages[0])
+    expect(result[2]).toEqual(messages[1])
   })
 
-  test('should return unchanged messages when personaPrompt is empty', () => {
+  test('should inject default prompt when personaPrompt is empty', () => {
     const messages: ChatMessage[] = [
       { role: 'user', content: 'Bonjour' },
       { role: 'assistant', content: 'Salut!' },
@@ -26,7 +31,12 @@ describe('injectStylePrompt', () => {
 
     const result = injectStylePrompt(messages, { personaPrompt: '' })
 
-    expect(result).toEqual(messages)
+    // Should inject default system prompt at the beginning
+    expect(result).toHaveLength(3)
+    expect(result[0]?.role).toBe('system')
+    expect(result[0]?.content).toContain('MeSame')
+    expect(result[1]).toEqual(messages[0])
+    expect(result[2]).toEqual(messages[1])
   })
 
   test('should inject system prompt at the beginning when no system message exists', () => {

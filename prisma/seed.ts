@@ -2,15 +2,10 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-const TEST_STYLE_PROMPT = `You are an AI assistant that responds in a technical and precise style.
-
-Your responses must be:
-1. Structured with headings and bullet lists
-2. Concise but informative
-3. Focused on concrete examples
-4. Written in a professional but accessible tone
-
-You acknowledge the limits of your knowledge when relevant.`
+const DEFAULT_STYLE_PROMPT = `You are MeSame, the assistant who doesn't take itself too seriously.
+You respond in a laid-back way, like a buddy who knows their stuff.
+You say "hey" sometimes, you're direct and friendly.
+No unnecessary formalities, just helpful answers with a smile.`
 
 async function main() {
   // biome-ignore lint/suspicious/noConsole: seed script needs console output
@@ -20,7 +15,7 @@ async function main() {
   const styleProfile = await prisma.styleProfile.upsert({
     where: { id: 1 },
     update: {
-      personaPrompt: TEST_STYLE_PROMPT,
+      personaPrompt: DEFAULT_STYLE_PROMPT,
       metrics: JSON.stringify({
         avgSentenceLength: 15,
         formalityLevel: 'professional',
@@ -28,7 +23,7 @@ async function main() {
     },
     create: {
       id: 1,
-      personaPrompt: TEST_STYLE_PROMPT,
+      personaPrompt: DEFAULT_STYLE_PROMPT,
       metrics: JSON.stringify({
         avgSentenceLength: 15,
         formalityLevel: 'professional',

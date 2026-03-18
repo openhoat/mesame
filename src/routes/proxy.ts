@@ -11,7 +11,7 @@ export const proxyRoute: FastifyPluginAsync = async app => {
     // Inject style persona into messages
     const styleProfile = await getActiveStyleProfile()
     const modifiedMessages = injectStylePrompt(body.messages, styleProfile)
-    const modifiedBody = { ...body, messages: modifiedMessages }
+    const modifiedBody = { ...body, model: config.model, messages: modifiedMessages }
 
     const upstreamUrl = `${config.targetBaseUrl}/v1/chat/completions`
 
