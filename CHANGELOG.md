@@ -26,3 +26,16 @@
 - **[17:40:15] 🔧 [CHORE]** start task - Implement NLP style analyzer with TF-IDF, N-Grams and linguistic metrics
 - **[17:45:46] ✨ [FEAT]** add NLP style analyzer with TF-IDF, N-Grams and linguistic metrics
 - **[17:39:40] ✨ [FEAT]** add source management REST API with text and PDF import
+- **[17:50:55] 🔧 [CHORE]** update kanban and changelog post-merge
+- **[17:53:31] 🔧 [CHORE]** start task - Add GitHub Actions CI pipeline
+- **[17:59:10] 📝 [DOCS]** update BRIEF with Electron app and revised roadmap
+- **[17:58:23] 🔧 [CHORE]** add GitHub Actions CI pipeline, release workflow and Dependabot
+- **[18:03:36] 🐛 [FIX]** remove coverage dependency and fix duplicate gitignore entry
+- **[18:06:33] 🐛 [FIX]** add @vitest/coverage-v8 for CI test coverage
+- **[18:10:52] ✨ [FEAT]** add wireit for parallel task orchestration and caching
+- **[18:15:51] ♻️ [REFACTOR]** merge coverage into validate to avoid running tests twice
+- **[18:23:34] 🐛 [FIX]** update actions to resolve Node.js 20 deprecation warnings
+
+## 18/03/2026
+
+- **[08:51:10] 🐛 [FIX]** add FORCE_JAVASCRIPT_ACTIONS_TO_NODE24 for Node.js 24 compatibility
