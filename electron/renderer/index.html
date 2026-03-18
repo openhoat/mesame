@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:3000">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'">
   <title>MeSame</title>
   <style>
     * {
@@ -15,91 +15,67 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      min-height: 100vh;
+      height: 100vh;
+      color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .header-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .header-title {
+      font-size: 1.1rem;
+      font-weight: 600;
       color: #fff;
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
+    .header-subtitle {
+      font-size: 0.75rem;
+      color: #8890a0;
+      margin-left: 0.5rem;
     }
 
-    header {
+    .header-spacer {
+      flex: 1;
+    }
+
+    .status-indicator {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .logo {
-      width: 64px;
-      height: 64px;
-      border-radius: 12px;
-    }
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 600;
-    }
-
-    .subtitle {
-      color: #a0a0a0;
-      font-size: 0.9rem;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .card-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.25rem 0.75rem;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: #8890a0;
+      padding: 0.25rem 0.6rem;
       border-radius: 9999px;
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-
-    .status-badge.running {
-      background: rgba(34, 197, 94, 0.2);
-      color: #22c55e;
-    }
-
-    .status-badge.stopped {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    .status-badge.running .status-dot {
-      background: #22c55e;
-    }
-
-    .status-badge.stopped .status-dot {
       background: #ef4444;
-      animation: none;
+    }
+
+    .status-dot.connected {
+      background: #22c55e;
+      animation: pulse 2s infinite;
     }
 
     @keyframes pulse {
@@ -107,177 +83,476 @@
       50% { opacity: 0.5; }
     }
 
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-
-    .info-item {
+    /* Messages area */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 1rem;
+      scroll-behavior: smooth;
     }
 
-    .info-label {
-      font-size: 0.75rem;
-      color: #a0a0a0;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+    .messages::-webkit-scrollbar {
+      width: 6px;
     }
 
-    .info-value {
-      font-size: 1rem;
-      font-weight: 500;
+    .messages::-webkit-scrollbar-track {
+      background: transparent;
     }
 
-    .api-links {
+    .messages::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+
+    .messages::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Welcome screen */
+    .welcome {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .api-link {
-      display: inline-flex;
+      flex-direction: column;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: rgba(59, 130, 246, 0.2);
-      color: #60a5fa;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: background 0.2s;
-    }
-
-    .api-link:hover {
-      background: rgba(59, 130, 246, 0.3);
-    }
-
-    .method {
-      font-weight: 600;
-      font-size: 0.75rem;
-      padding: 0.125rem 0.375rem;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-    }
-
-    .method.get { color: #22c55e; }
-    .method.post { color: #f59e0b; }
-
-    .message {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 1rem;
-      border-radius: 8px;
+      justify-content: center;
+      flex: 1;
       text-align: center;
-      color: #a0a0a0;
+      padding: 2rem;
+      color: #8890a0;
     }
 
-    .icon {
-      font-size: 1.25rem;
+    .welcome-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      margin-bottom: 1.5rem;
+      opacity: 0.8;
+    }
+
+    .welcome h2 {
+      font-size: 1.5rem;
+      color: #c0c8d8;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome p {
+      font-size: 0.9rem;
+      max-width: 400px;
+      line-height: 1.5;
+    }
+
+    /* Message bubbles */
+    .message {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 85%;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .message.assistant .message-avatar {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+    }
+
+    .message.user .message-avatar {
+      background: rgba(255, 255, 255, 0.12);
+      color: #c0c8d8;
+    }
+
+    .message-content {
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      line-height: 1.6;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .message.assistant .message-content {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-top-left-radius: 4px;
+    }
+
+    .message.user .message-content {
+      background: rgba(102, 126, 234, 0.2);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-top-right-radius: 4px;
+      color: #e8ecf4;
+    }
+
+    /* Streaming cursor */
+    .streaming-cursor::after {
+      content: '';
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #667eea;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 0.8s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Error message */
+    .message.error .message-content {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    /* Input area */
+    .input-area {
+      padding: 1rem 1.25rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .input-wrapper {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-end;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .input-textarea {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      color: #e0e0e0;
+      font-family: inherit;
+      font-size: 0.9rem;
+      resize: none;
+      outline: none;
+      line-height: 1.5;
+      max-height: 200px;
+      min-height: 44px;
+      transition: border-color 0.2s;
+    }
+
+    .input-textarea:focus {
+      border-color: rgba(102, 126, 234, 0.5);
+    }
+
+    .input-textarea::placeholder {
+      color: #5a6070;
+    }
+
+    .send-button {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .send-button:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+
+    .send-button:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .send-button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .send-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .input-hint {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #5a6070;
+      margin-top: 0.4rem;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <img src="../assets/MeSame_icon.png" alt="MeSame Logo" class="logo" onerror="this.style.display='none'">
-      <div>
-        <h1>MeSame</h1>
-        <p class="subtitle">Your personal style proxy</p>
-      </div>
-    </header>
-
-    <div class="card">
-      <div class="card-title">
-        <span class="icon">📊</span>
-        Server Status
-        <span id="status-badge" class="status-badge stopped">
-          <span class="status-dot"></span>
-          <span id="status-text">Checking...</span>
-        </span>
-      </div>
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="info-label">Port</span>
-          <span class="info-value" id="port">-</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Provider</span>
-          <span class="info-value" id="provider">-</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Model</span>
-          <span class="info-value" id="model">-</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Log Level</span>
-          <span class="info-value" id="log-level">-</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">
-        <span class="icon">🔌</span>
-        API Endpoints
-      </div>
-      <div class="api-links">
-        <a href="http://localhost:3000/health" class="api-link" target="_blank">
-          <span class="method get">GET</span>
-          /health
-        </a>
-        <a href="http://localhost:3000/v1/chat/completions" class="api-link" target="_blank">
-          <span class="method post">POST</span>
-          /v1/chat/completions
-        </a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">
-        <span class="icon">🚀</span>
-        Getting Started
-      </div>
-      <div class="message">
-        Configure your API keys in <code>.env.local</code> and restart the app to get started.
-        <br><br>
-        Set <code>MESAME_PROVIDER</code> to <code>openai</code>, <code>anthropic</code>, <code>google</code>, or <code>ollama</code>.
-      </div>
+  <div class="header">
+    <img src="../assets/MeSame_icon.png" alt="MeSame" class="header-logo" onerror="this.style.display='none'">
+    <span class="header-title">MeSame</span>
+    <span class="header-subtitle">Your personal style proxy</span>
+    <div class="header-spacer"></div>
+    <div class="status-indicator">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-label">Connecting...</span>
     </div>
   </div>
 
+  <div class="messages" id="messages">
+    <div class="welcome" id="welcome">
+      <img src="../assets/MeSame_icon.png" alt="MeSame" class="welcome-icon" onerror="this.style.display='none'">
+      <h2>MeSame Chat</h2>
+      <p>Start a conversation with your digital twin. Your writing style is automatically injected into every message.</p>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrapper">
+      <textarea
+        id="input"
+        class="input-textarea"
+        placeholder="Type a message..."
+        rows="1"
+      ></textarea>
+      <button id="send-btn" class="send-button" type="button" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Send message">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+    <div class="input-hint">Press Enter to send, Shift+Enter for new line</div>
+  </div>
+
   <script>
-    // Update status
-    async function updateStatus() {
+    const messagesEl = document.getElementById('messages');
+    const welcomeEl = document.getElementById('welcome');
+    const inputEl = document.getElementById('input');
+    const sendBtn = document.getElementById('send-btn');
+    const statusDot = document.getElementById('status-dot');
+    const statusLabel = document.getElementById('status-label');
+
+    let isStreaming = false;
+    const conversationMessages = [];
+
+    // Auto-resize textarea
+    function resizeInput() {
+      inputEl.style.height = 'auto';
+      inputEl.style.height = `${Math.min(inputEl.scrollHeight, 200)}px`;
+    }
+
+    inputEl.addEventListener('input', () => {
+      resizeInput();
+      sendBtn.disabled = !inputEl.value.trim() || isStreaming;
+    });
+
+    // Handle Enter key
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (inputEl.value.trim() && !isStreaming) {
+          sendMessage();
+        }
+      }
+    });
+
+    sendBtn.addEventListener('click', () => {
+      if (inputEl.value.trim() && !isStreaming) {
+        sendMessage();
+      }
+    });
+
+    function scrollToBottom() {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function createMessageEl(role, content) {
+      if (welcomeEl?.parentNode) {
+        welcomeEl.remove();
+      }
+
+      const messageEl = document.createElement('div');
+      messageEl.className = `message ${role}`;
+
+      const avatarEl = document.createElement('div');
+      avatarEl.className = 'message-avatar';
+      avatarEl.textContent = role === 'user' ? 'U' : 'M';
+
+      const contentEl = document.createElement('div');
+      contentEl.className = 'message-content';
+      contentEl.textContent = content;
+
+      messageEl.appendChild(avatarEl);
+      messageEl.appendChild(contentEl);
+      messagesEl.appendChild(messageEl);
+      scrollToBottom();
+
+      return { messageEl, contentEl };
+    }
+
+    function addErrorMessage(text) {
+      if (welcomeEl?.parentNode) {
+        welcomeEl.remove();
+      }
+
+      const messageEl = document.createElement('div');
+      messageEl.className = 'message error';
+
+      const avatarEl = document.createElement('div');
+      avatarEl.className = 'message-avatar';
+      avatarEl.style.background = 'rgba(239, 68, 68, 0.2)';
+      avatarEl.style.color = '#fca5a5';
+      avatarEl.textContent = '!';
+
+      const contentEl = document.createElement('div');
+      contentEl.className = 'message-content';
+      contentEl.textContent = text;
+
+      messageEl.appendChild(avatarEl);
+      messageEl.appendChild(contentEl);
+      messagesEl.appendChild(messageEl);
+      scrollToBottom();
+    }
+
+    async function sendMessage() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      // Add user message to UI and conversation
+      createMessageEl('user', text);
+      conversationMessages.push({ role: 'user', content: text });
+
+      // Clear input
+      inputEl.value = '';
+      resizeInput();
+      sendBtn.disabled = true;
+      isStreaming = true;
+
+      // Create assistant message placeholder with streaming cursor
+      const { messageEl: assistantEl, contentEl } = createMessageEl('assistant', '');
+      contentEl.classList.add('streaming-cursor');
+
+      let fullResponse = '';
+
       try {
-        const response = await fetch('http://localhost:3000/health');
-        const data = await response.json();
+        const response = await fetch('/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'gpt-4o',
+            messages: conversationMessages,
+            stream: true,
+          }),
+        });
 
-        const badge = document.getElementById('status-badge');
-        const statusText = document.getElementById('status-text');
+        if (!response.ok) {
+          const errorText = await response.text();
+          assistantEl.remove();
+          addErrorMessage(`Error ${response.status}: ${errorText || response.statusText}`);
+          conversationMessages.pop();
+          return;
+        }
 
-        badge.className = 'status-badge running';
-        statusText.textContent = 'Running';
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
-        document.getElementById('port').textContent = data.port || '3000';
-        document.getElementById('provider').textContent = data.provider || '-';
-        document.getElementById('model').textContent = data.model || '-';
-        document.getElementById('log-level').textContent = data.logLevel || '-';
-      } catch {
-        const badge = document.getElementById('status-badge');
-        const statusText = document.getElementById('status-text');
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-        badge.className = 'status-badge stopped';
-        statusText.textContent = 'Stopped';
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || !trimmed.startsWith('data: ')) continue;
+
+            const data = trimmed.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(data);
+              const delta = parsed.choices?.[0]?.delta?.content;
+              if (delta) {
+                fullResponse += delta;
+                contentEl.textContent = fullResponse;
+                scrollToBottom();
+              }
+            } catch (_e) {
+              // Skip malformed JSON chunks
+            }
+          }
+        }
+
+        // Track assistant response in conversation
+        if (fullResponse) {
+          conversationMessages.push({ role: 'assistant', content: fullResponse });
+        }
+      } catch (err) {
+        assistantEl.remove();
+        addErrorMessage(
+          err.message === 'Failed to fetch'
+            ? 'Cannot reach the server. Make sure MeSame is running.'
+            : `Error: ${err.message}`
+        );
+        conversationMessages.pop();
+      } finally {
+        contentEl.classList.remove('streaming-cursor');
+        isStreaming = false;
+        sendBtn.disabled = !inputEl.value.trim();
+        inputEl.focus();
       }
     }
 
-    // Initial update
-    updateStatus();
+    // Server health check
+    async function checkHealth() {
+      try {
+        const res = await fetch('/health');
+        if (res.ok) {
+          statusDot.classList.add('connected');
+          statusLabel.textContent = 'Connected';
+        } else {
+          statusDot.classList.remove('connected');
+          statusLabel.textContent = 'Disconnected';
+        }
+      } catch (_e) {
+        statusDot.classList.remove('connected');
+        statusLabel.textContent = 'Disconnected';
+      }
+    }
 
-    // Poll every 5 seconds
-    setInterval(updateStatus, 5000);
+    checkHealth();
+    setInterval(checkHealth, 10000);
+
+    // Focus input on load
+    inputEl.focus();
   </script>
 </body>
 </html>
