@@ -88,7 +88,7 @@ test.describe('Admin Dashboard Tests', () => {
         } catch (error) {
           return { error: String(error) }
         }
-      }, `http://localhost:${port}/api/sources/upload`)
+      }, `http://localhost:${port}/v1/sources/import`)
 
       // Should handle invalid upload gracefully
       expect([200, 201, 400, 500]).toContain(response.status)
@@ -163,7 +163,7 @@ test.describe('Admin Dashboard Tests', () => {
       const response1 = await apiRequest(page, `http://localhost:${port}/health`)
       expect(response1.status).toBe(200)
 
-      const response2 = await apiRequest(page, `http://localhost:${port}/api/sources`)
+      const response2 = await apiRequest(page, `http://localhost:${port}/v1/sources`)
       expect(response2.status).toBe(200)
 
       const response3 = await apiRequest(page, `http://localhost:${port}/health`)
