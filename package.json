@@ -168,7 +168,7 @@
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^19.8.0",
     "@types/natural": "^6.0.1",
-    "@types/node": "^22.15.3",
+    "@types/node": "^25.5.0",
     "@types/pdf-parse": "1.1.5",
     "@vitest/coverage-v8": "3.2.4",
     "electron": "41.0.2",
