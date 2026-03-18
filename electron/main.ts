@@ -21,7 +21,7 @@ process.on('uncaughtException', (error: Error) => {
   process.stderr.write(`[Electron] Uncaught exception: ${error.message}\n`)
 })
 
-const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
+const isDev = process.env.NODE_ENV === 'development' && !app.isPackaged
 
 // Use smaller icon for development (X11 compatibility), larger for production builds
 const iconName = isDev ? 'MeSame_icon_512.png' : 'MeSame_icon.png'
@@ -42,6 +42,7 @@ function createWindow(): void {
     icon: path.join(__dirname, `../../assets/${iconName}`),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      devTools: isDev,
       nodeIntegration: false,
       contextIsolation: true,
     },
@@ -49,15 +50,12 @@ function createWindow(): void {
     backgroundColor: '#1a1a2e',
   })
 
-  // Load the app
-  if (isDev) {
-    // In development, load from the local server
-    mainWindow.loadURL(`http://localhost:${config.port}`)
-    // Open DevTools in development
+  // Load the app from the local server
+  mainWindow.loadURL(`http://localhost:${config.port}`)
+
+  // Open DevTools only when explicitly requested via environment variable
+  if (isDev && process.env.MESAME_DEVTOOLS === 'true') {
     mainWindow.webContents.openDevTools()
-  } else {
-    // In production, load from the local server too
-    mainWindow.loadURL(`http://localhost:${config.port}`)
   }
 
   // Handle loading errors
