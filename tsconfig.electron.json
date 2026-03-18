@@ -18,5 +18,12 @@
     "verbatimModuleSyntax": true
   },
   "include": ["electron/**/*", "src/**/*"],
-  "exclude": ["node_modules", "dist", "dist-electron", "**/*.test.ts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-electron",
+    "electron/renderer/src/**",
+    "electron/renderer/dist/**",
+    "**/*.test.ts"
+  ]
 }
