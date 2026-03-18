@@ -7,12 +7,8 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import type { ElectronApplication, Page } from '@playwright/test'
 import { _electron as electron } from '@playwright/test'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 export interface ElectronTestApp {
   electronApp: ElectronApplication
@@ -45,8 +41,9 @@ export interface ElectronAppOptions {
 export async function startElectronApp(options: ElectronAppOptions = {}): Promise<ElectronTestApp> {
   const { env = {}, timeout = 30000 } = options
 
-  // Path to compiled Electron main
-  const projectRoot = path.join(__dirname, '..', '..')
+  // Use process.cwd() to get the project root
+  // This works reliably in both local development and CI environments
+  const projectRoot = process.cwd()
   const mainPath = path.join(projectRoot, 'dist-electron', 'electron', 'main.js')
 
   // Verify the build exists
