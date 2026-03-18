@@ -156,7 +156,7 @@
     "@langchain/core": "^0.3.51",
     "@langchain/ollama": "^0.2.3",
     "@langchain/openai": "^0.5.8",
-    "@prisma/client": "^6.5.0",
+    "@prisma/client": "^7.5.0",
     "compromise": "^14.14.3",
     "fastify": "^5.3.2",
     "langchain": "^0.3.25",
