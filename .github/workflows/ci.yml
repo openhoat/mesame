@@ -114,6 +114,9 @@ jobs:
       - name: Generate Prisma client
         run: npm run db:generate
 
+      - name: Initialize database
+        run: npm run db:push
+
       - name: Run E2E tests
         run: npm run test:e2e:headless
         env:
