@@ -146,4 +146,21 @@ describe('proxy route', () => {
     expect(response.statusCode).toBe(429)
     expect(response.body).toContain('rate_limit_exceeded')
   })
+
+  test('should return available models list', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/v1/models',
+    })
+
+    expect(response.statusCode).toBe(200)
+    const body = response.json()
+    expect(body.object).toBe('list')
+    expect(body.data).toBeInstanceOf(Array)
+    expect(body.data.length).toBeGreaterThan(0)
+    expect(body.data[0]).toHaveProperty('id')
+    expect(body.data[0]).toHaveProperty('object', 'model')
+    expect(body.data[0]).toHaveProperty('created')
+    expect(body.data[0]).toHaveProperty('owned_by', 'mesame')
+  })
 })
