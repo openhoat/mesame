@@ -21,6 +21,7 @@
     "dev:electron": "npm run build:renderer && npm run build:electron && electron . --ozone-platform=x11 --disable-vulkan",
     "build": "wireit",
     "build:electron": "wireit",
+    "build:renderer": "wireit",
     "build:all": "wireit",
     "start": "node dist/server.js",
     "start:electron": "electron . --ozone-platform=x11 --disable-vulkan",
