@@ -2,7 +2,7 @@
  * API helper utilities for E2E testing
  *
  * Provides utilities for making HTTP requests to the Fastify server
- * and validating responses.
+ * and validating responses with automatic retries and error handling.
  */
 
 import type { Page } from '@playwright/test'
@@ -21,6 +21,28 @@ export interface ApiResponse<T = unknown> {
 }
 
 /**
+ * Retry a function with exponential backoff
+ */
+export async function retry<T>(fn: () => Promise<T>, maxAttempts = 3, delayMs = 1000): Promise<T> {
+  let lastError: Error | undefined
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn()
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error))
+
+      if (attempt < maxAttempts) {
+        const delay = delayMs * 2 ** (attempt - 1)
+        await new Promise(resolve => setTimeout(resolve, delay))
+      }
+    }
+  }
+
+  throw new Error(`Failed after ${maxAttempts} attempts: ${lastError?.message || 'Unknown error'}`)
+}
+
+/**
  * Make an HTTP request through the Electron app's renderer page
  *
  * This uses the page's context to make requests, which allows us to
@@ -33,48 +55,64 @@ export async function apiRequest<T = unknown>(
 ): Promise<ApiResponse<T>> {
   const { method = 'GET', headers = {}, body, timeout = 10000 } = options
 
-  const response = await page.evaluate(
-    async ({ url, method, headers, body, timeout }) => {
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), timeout)
+  try {
+    const response = await page.evaluate(
+      async ({ url, method, headers, body, timeout }) => {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), timeout)
 
-      try {
-        const response = await fetch(url, {
-          method,
-          headers: {
-            'Content-Type': 'application/json',
-            ...headers,
-          },
-          body: body ? JSON.stringify(body) : undefined,
-          signal: controller.signal,
-        })
-
-        const responseHeaders: Record<string, string> = {}
-        response.headers.forEach((value, key) => {
-          responseHeaders[key] = value
-        })
-
-        const responseBody = await response.text()
-        let parsedBody: unknown
         try {
-          parsedBody = JSON.parse(responseBody)
-        } catch {
-          parsedBody = responseBody
-        }
+          const response = await fetch(url, {
+            method,
+            headers: {
+              'Content-Type': 'application/json',
+              ...headers,
+            },
+            body: body ? JSON.stringify(body) : undefined,
+            signal: controller.signal,
+          })
 
-        return {
-          status: response.status,
-          headers: responseHeaders,
-          body: parsedBody,
-        }
-      } finally {
-        clearTimeout(timeoutId)
-      }
-    },
-    { url, method, headers, body, timeout }
-  )
+          const responseHeaders: Record<string, string> = {}
+          response.headers.forEach((value, key) => {
+            responseHeaders[key] = value
+          })
 
-  return response as ApiResponse<T>
+          const responseBody = await response.text()
+          let parsedBody: unknown
+          try {
+            parsedBody = JSON.parse(responseBody)
+          } catch {
+            parsedBody = responseBody
+          }
+
+          return {
+            status: response.status,
+            headers: responseHeaders,
+            body: parsedBody,
+          }
+        } catch (error) {
+          // Handle fetch errors (network, timeout, etc.)
+          return {
+            status: 0,
+            headers: {},
+            body: {
+              error: error instanceof Error ? error.message : 'Request failed',
+              name: error instanceof Error ? error.name : 'UnknownError',
+            },
+          }
+        } finally {
+          clearTimeout(timeoutId)
+        }
+      },
+      { url, method, headers, body, timeout }
+    )
+
+    return response as ApiResponse<T>
+  } catch (error) {
+    throw new Error(
+      `API request to ${url} failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
+  }
 }
 
 /**
