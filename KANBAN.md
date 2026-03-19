@@ -6,7 +6,6 @@
 
 <!-- MVP Phase 0: Frontend foundation -->
 <!-- MVP Phase 1: End-to-end style pipeline -->
-- [ ] **[ARCHITECTURE]** Create automatic persona prompt generation from style analysis (P1)
 - [ ] **[ARCHITECTURE]** Add /v1/models endpoint for OpenAI-compatible client discovery (P1)
 - [ ] **[ARCHITECTURE]** Create end-to-end pipeline: source import → style analysis → persona prompt → style profile (P1)
 <!-- MVP Phase 2: Usability -->
@@ -21,3 +20,5 @@
 - [ ] **[CONFIG]** Create CLI for configuration management (P3)
 
 ## In Progress
+
+- [ ] **[FEAT]** Create automatic persona prompt generation from style analysis
