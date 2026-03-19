@@ -1,16 +1,33 @@
+import { AIMessage } from '@langchain/core/messages'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { buildApp } from '../app.js'
 import { resetConfig } from '../config.js'
-import type { ChatCompletionRequest, ChatCompletionResponse } from '../types/openai.js'
+import type { ChatCompletionRequest } from '../types/openai.js'
 
 // Mock the styleProfileService to return no style profile by default
 vi.mock('../services/styleProfileService.js', () => ({
   getActiveStyleProfile: vi.fn().mockResolvedValue(null),
 }))
 
+// Mock the LLM provider
+const mockInvoke = vi.fn()
+const mockStream = vi.fn()
+
+vi.mock('../services/llmProvider.js', () => ({
+  getLLMProvider: vi.fn(() => ({
+    invoke: mockInvoke,
+    stream: mockStream,
+  })),
+  convertToLangChainMessages: vi.fn(messages =>
+    messages.map((msg: { role: string; content: string }) => ({
+      content: msg.content,
+      role: msg.role,
+    }))
+  ),
+}))
+
 describe('proxy route', () => {
   let app: Awaited<ReturnType<typeof buildApp>>
-  const fetchSpy = vi.spyOn(globalThis, 'fetch')
 
   beforeEach(async () => {
     vi.clearAllMocks()
@@ -27,28 +44,8 @@ describe('proxy route', () => {
     messages: [{ role: 'user', content: 'Hello' }],
   }
 
-  const upstreamResponse: ChatCompletionResponse = {
-    id: 'chatcmpl-123',
-    object: 'chat.completion',
-    created: 1700000000,
-    model: 'gpt-4o',
-    choices: [
-      {
-        index: 0,
-        message: { role: 'assistant', content: 'Hi there!' },
-        finish_reason: 'stop',
-      },
-    ],
-    usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
-  }
-
-  test('should forward non-streaming request to upstream', async () => {
-    fetchSpy.mockResolvedValueOnce(
-      new Response(JSON.stringify(upstreamResponse), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-    )
+  test('should forward non-streaming request to LangChain', async () => {
+    mockInvoke.mockResolvedValueOnce(new AIMessage('Hi there!'))
 
     const response = await app.inject({
       method: 'POST',
@@ -57,25 +54,19 @@ describe('proxy route', () => {
     })
 
     expect(response.statusCode).toBe(200)
-    expect(response.json()).toEqual(upstreamResponse)
-    expect(fetchSpy).toHaveBeenCalledOnce()
+    const body = response.json()
+    expect(body.choices[0].message.content).toBe('Hi there!')
+    expect(body.choices[0].message.role).toBe('assistant')
+    expect(mockInvoke).toHaveBeenCalledOnce()
   })
 
   test('should forward streaming request with SSE headers', async () => {
-    const sseData = 'data: {"id":"chatcmpl-123"}\n\ndata: [DONE]\n\n'
-    const stream = new ReadableStream({
-      start(controller) {
-        controller.enqueue(new TextEncoder().encode(sseData))
-        controller.close()
-      },
-    })
+    async function* mockGenerator() {
+      yield new AIMessage({ content: 'Hello', id: '1' })
+      yield new AIMessage({ content: ' world', id: '2' })
+    }
 
-    fetchSpy.mockResolvedValueOnce(
-      new Response(stream, {
-        status: 200,
-        headers: { 'content-type': 'text/event-stream' },
-      })
-    )
+    mockStream.mockResolvedValueOnce(mockGenerator())
 
     const response = await app.inject({
       method: 'POST',
@@ -84,58 +75,14 @@ describe('proxy route', () => {
     })
 
     expect(response.statusCode).toBe(200)
-    expect(response.body).toContain('data: {"id":"chatcmpl-123"}')
+    expect(response.headers['content-type']).toBe('text/event-stream')
+    expect(response.body).toContain('data:')
+    expect(response.body).toContain('[DONE]')
+    expect(mockStream).toHaveBeenCalledOnce()
   })
 
-  test('should include Authorization header when API key is configured', async () => {
-    // Set API key for this test
-    const originalApiKey = process.env.OPENAI_API_KEY
-    const originalProvider = process.env.MESAME_PROVIDER
-    process.env.OPENAI_API_KEY = 'test-api-key'
-    process.env.MESAME_PROVIDER = 'openai'
-    resetConfig()
-    app = await buildApp()
-
-    fetchSpy.mockResolvedValueOnce(
-      new Response(JSON.stringify(upstreamResponse), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-    )
-
-    await app.inject({
-      method: 'POST',
-      url: '/v1/chat/completions',
-      payload: requestBody,
-    })
-
-    const fetchCall = fetchSpy.mock.calls[0]
-    expect(fetchCall).toBeDefined()
-    const fetchOptions = fetchCall![1] as RequestInit
-    const headers = fetchOptions.headers as Record<string, string>
-    expect(headers['content-type']).toBe('application/json')
-    expect(headers.authorization).toContain('Bearer')
-
-    // Restore original environment
-    if (originalApiKey) {
-      process.env.OPENAI_API_KEY = originalApiKey
-    } else {
-      delete process.env.OPENAI_API_KEY
-    }
-    if (originalProvider) {
-      process.env.MESAME_PROVIDER = originalProvider
-    } else {
-      delete process.env.MESAME_PROVIDER
-    }
-  })
-
-  test('should forward upstream error status', async () => {
-    fetchSpy.mockResolvedValueOnce(
-      new Response('{"error": "rate_limit_exceeded"}', {
-        status: 429,
-        headers: { 'content-type': 'application/json' },
-      })
-    )
+  test('should handle LangChain errors', async () => {
+    mockInvoke.mockRejectedValueOnce(new Error('LangChain error'))
 
     const response = await app.inject({
       method: 'POST',
@@ -143,8 +90,10 @@ describe('proxy route', () => {
       payload: requestBody,
     })
 
-    expect(response.statusCode).toBe(429)
-    expect(response.body).toContain('rate_limit_exceeded')
+    expect(response.statusCode).toBe(500)
+    const body = response.json()
+    expect(body.error.message).toBe('LangChain error')
+    expect(body.error.type).toBe('langchain_error')
   })
 
   test('should return available models list', async () => {
