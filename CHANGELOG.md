@@ -103,3 +103,4 @@
 - **[20:49:59] 🐛 [FIX]** adapt E2E tests for LangChain integration
 - **[20:57:20] 🐛 [FIX]** increase timeout for streaming E2E tests
 - **[21:13:42] ✨ [FEAT]** implement complete admin dashboard with Electron integration
+- **[21:28:11] 🔧 [CHORE]** update kanban and changelog after admin-dashboard merge
