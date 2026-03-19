@@ -94,3 +94,13 @@
 - **[13:38:23] 🐛 [FIX]** update renderer path resolution for consolidated build structure
 - **[14:11:06] 🐛 [FIX]** improve renderer path detection with comprehensive fallback logic
 - **[14:36:41] 🐛 [FIX]** resolve renderer path detection and optimize E2E test timeouts
+- **[14:45:14] 🔧 [CHORE]** update changelog after consolidate-build-outputs merge
+- **[14:48:53] 🔧 [CHORE]** add test output directories to gitignore
+- **[14:52:33] ⚡ [PERF]** optimize CI pipeline with shared artifacts
+- **[15:01:27] 🐛 [FIX]** remove wireit cache from setup and fix artifact handling
+- **[15:15:24] 🐛 [FIX]** simplify artifact handling - remove separate prisma artifact
+- **[15:20:06] 🐛 [FIX]** use npm cache instead of artifact sharing for node_modules
+- **[16:43:16] ♻️ [REFACTOR]** make rules and skills reusable for any project
+- **[18:38:47] 📝 [DOCS]** strengthen quality check rules to enforce zero warnings policy
+- **[18:28:37] ✨ [FEAT]** add /v1/models endpoint for OpenAI-compatible client discovery
+- **[18:38:07] 🐛 [FIX]** resolve linting warnings and formatting issues
