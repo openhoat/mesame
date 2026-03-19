@@ -157,37 +157,50 @@ export async function* chatCompletionStream(
 ): AsyncGenerator<string, void, unknown> {
   const response = await page.evaluate(
     async ({ url, model, messages }) => {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model,
-          messages,
-          stream: true,
-        }),
-      })
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 50000) // 50s timeout
 
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`)
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model,
+            messages,
+            stream: true,
+          }),
+          signal: controller.signal,
+        })
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`)
+        }
+
+        const reader = response.body?.getReader()
+        if (!reader) {
+          throw new Error('No reader available')
+        }
+
+        const decoder = new TextDecoder()
+        const chunks: string[] = []
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value)
+          chunks.push(chunk)
+        }
+
+        return chunks.join('')
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          throw new Error('Stream timeout after 50s')
+        }
+        throw error
+      } finally {
+        clearTimeout(timeoutId)
       }
-
-      const reader = response.body?.getReader()
-      if (!reader) {
-        throw new Error('No reader available')
-      }
-
-      const decoder = new TextDecoder()
-      const chunks: string[] = []
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = decoder.decode(value)
-        chunks.push(chunk)
-      }
-
-      return chunks.join('')
     },
     {
       url: `http://localhost:${port}/v1/chat/completions`,
