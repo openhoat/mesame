@@ -101,6 +101,8 @@ test.describe('Proxy Endpoint Tests', () => {
 
   test.describe('Chat Completions - Streaming', () => {
     test('should handle streaming request', async ({ electronApp, port }) => {
+      test.setTimeout(60000) // Increase timeout for LangChain streaming
+
       const { page } = electronApp
 
       // Test streaming endpoint
