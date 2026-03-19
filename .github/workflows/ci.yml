@@ -1,4 +1,5 @@
 # Continuous Integration Pipeline
+# Optimized: single setup job, cached dependencies, build artifacts, composite actions
 name: CI
 
 on:
@@ -14,28 +15,59 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  # Job 1: Setup - Install dependencies once and cache for all other jobs
+  setup:
+    name: Setup Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js Environment
+        uses: ./.github/actions/node-setup
+
+      - name: Cache Wireit
+        uses: actions/cache@v5
+        with:
+          path: .wireit
+          key: ${{ runner.os }}-wireit-${{ hashFiles('package-lock.json', 'src/**/*.ts', 'electron/**/*.ts') }}
+          restore-keys: |
+            ${{ runner.os }}-wireit-
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-deps
+        with:
+          generate-prisma: 'true'
+
+      - name: Upload node_modules
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-modules
+          path: node_modules
+          retention-days: 1
+
+      - name: Upload .wireit cache
+        uses: actions/upload-artifact@v4
+        with:
+          name: wireit-cache
+          path: .wireit
+          retention-days: 1
+
+      - name: Upload Prisma client
+        uses: actions/upload-artifact@v4
+        with:
+          name: prisma-client
+          path: node_modules/.prisma
+          retention-days: 1
+
+  # Job 2: Validate - Lint, typecheck, test with coverage
   validate:
     name: Validate
     runs-on: ubuntu-latest
+    needs: setup
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup with Artifacts
+        uses: ./.github/actions/setup-with-artifacts
         with:
-          node-version: '22.x'
-
-      - name: Cache node modules
-        uses: actions/cache@v5
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        run: npm ci
+          download-wireit: 'false'
+          download-prisma: 'true'
 
       - name: Validate (lint + typecheck + test with coverage)
         run: npm run validate
@@ -47,55 +79,42 @@ jobs:
           files: ./coverage/lcov.info
           fail_ci_if_error: false
 
+  # Job 3: Build - Compile TypeScript and Vite builds
   build:
     name: Build
     runs-on: ubuntu-latest
+    needs: setup
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup with Artifacts
+        uses: ./.github/actions/setup-with-artifacts
         with:
-          node-version: '22.x'
-
-      - name: Cache node modules
-        uses: actions/cache@v5
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        run: npm ci
+          download-wireit: 'true'
+          download-prisma: 'true'
 
       - name: Build all
         run: npm run build:all
 
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-artifacts
+          path: |
+            dist
+            dist-electron
+            electron/renderer/dist
+          retention-days: 1
+
+  # Job 4: E2E Tests - Run Playwright tests with pre-built artifacts
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
     needs: [validate, build]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup with Artifacts
+        uses: ./.github/actions/setup-with-artifacts
         with:
-          node-version: '22.x'
-
-      - name: Cache node modules
-        uses: actions/cache@v5
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        run: npm ci
+          download-prisma: 'true'
+          download-dist: 'true'
 
       - name: Cache Playwright browsers
         uses: actions/cache@v5
@@ -107,12 +126,6 @@ jobs:
 
       - name: Install Playwright system dependencies
         run: npx playwright install-deps
-
-      - name: Build all
-        run: npm run build:all
-
-      - name: Generate Prisma client
-        run: npm run db:generate
 
       - name: Initialize database
         run: npm run db:push

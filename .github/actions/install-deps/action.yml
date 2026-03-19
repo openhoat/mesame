@@ -1,0 +1,22 @@
+# Composite Action: Install Dependencies
+# Reusable action to install npm dependencies and optionally generate Prisma client
+name: 'Install Dependencies'
+description: 'Install npm dependencies with caching support'
+
+inputs:
+  generate-prisma:
+    description: 'Whether to generate Prisma client'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Generate Prisma client
+      if: inputs.generate-prisma == 'true'
+      shell: bash
+      run: npm run db:generate

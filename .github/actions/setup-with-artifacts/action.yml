@@ -1,0 +1,65 @@
+# Composite Action: Setup with Artifacts
+# Optimized setup that downloads cached dependencies instead of installing
+name: 'Setup with Artifacts'
+description: 'Setup Node.js and download cached dependencies from artifacts'
+
+inputs:
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '22.x'
+  download-modules:
+    description: 'Download node_modules artifact'
+    required: false
+    default: 'true'
+  download-wireit:
+    description: 'Download wireit cache artifact'
+    required: false
+    default: 'false'
+  download-prisma:
+    description: 'Download Prisma client artifact'
+    required: false
+    default: 'false'
+  download-dist:
+    description: 'Download dist artifacts'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v6
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Download node_modules
+      if: inputs.download-modules == 'true'
+      uses: actions/download-artifact@v4
+      with:
+        name: node-modules
+        path: node_modules
+
+    - name: Download Wireit cache
+      if: inputs.download-wireit == 'true'
+      uses: actions/download-artifact@v4
+      with:
+        name: wireit-cache
+        path: .wireit
+
+    - name: Download Prisma client
+      if: inputs.download-prisma == 'true'
+      uses: actions/download-artifact@v4
+      with:
+        name: prisma-client
+        path: node_modules/.prisma
+
+    - name: Download dist artifacts
+      if: inputs.download-dist == 'true'
+      uses: actions/download-artifact@v4
+      with:
+        name: dist-artifacts
+        path: .

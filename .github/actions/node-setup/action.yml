@@ -1,0 +1,29 @@
+# Composite Action: Setup Node.js Environment
+# Reusable setup for checkout, Node.js, and dependency caching
+name: 'Setup Node.js Environment'
+description: 'Checkout code, setup Node.js, and cache dependencies'
+
+inputs:
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '22.x'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v6
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Cache node modules
+      uses: actions/cache@v5
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-

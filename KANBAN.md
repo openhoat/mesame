@@ -22,3 +22,5 @@
 <!-- Workflow & Skills Optimization - Priorité P2 -->
 
 ## In Progress
+
+- [ ] **[DEVOPS]** Refactor CI workflows with composite actions for better maintainability
