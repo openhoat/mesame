@@ -2,9 +2,25 @@ import type { FastifyPluginAsync } from 'fastify'
 import { config } from '../config.js'
 import { injectStylePrompt } from '../services/styleInjector.js'
 import { getActiveStyleProfile } from '../services/styleProfileService.js'
-import type { ChatCompletionRequest } from '../types/openai.js'
+import type { ChatCompletionRequest, ModelsListResponse } from '../types/openai.js'
 
 export const proxyRoute: FastifyPluginAsync = async app => {
+  // GET /v1/models - OpenAI-compatible model discovery endpoint
+  app.get('/v1/models', async () => {
+    const response: ModelsListResponse = {
+      object: 'list',
+      data: [
+        {
+          id: config.model,
+          object: 'model',
+          created: Math.floor(Date.now() / 1000),
+          owned_by: 'mesame',
+        },
+      ],
+    }
+    return response
+  })
+
   app.post<{ Body: ChatCompletionRequest }>('/v1/chat/completions', async (request, reply) => {
     const body = request.body
 

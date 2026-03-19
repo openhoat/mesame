@@ -127,6 +127,28 @@ test.describe('Proxy Endpoint Tests', () => {
     })
   })
 
+  test.describe('Models Endpoint', () => {
+    test('should return available models list', async ({ electronApp, port }) => {
+      const { page } = electronApp
+
+      const response = await apiRequest(page, `http://localhost:${port}/v1/models`)
+
+      expect(response.status).toBe(200)
+
+      const body = response.body as { object?: string; data?: Array<{ id?: string; object?: string; created?: number; owned_by?: string }> }
+      expect(body.object).toBe('list')
+      expect(body.data).toBeDefined()
+      expect(Array.isArray(body.data)).toBe(true)
+      expect(body.data?.length).toBeGreaterThan(0)
+
+      const model = body.data?.[0]
+      expect(model).toHaveProperty('id')
+      expect(model).toHaveProperty('object', 'model')
+      expect(model).toHaveProperty('created')
+      expect(model).toHaveProperty('owned_by', 'mesame')
+    })
+  })
+
   test.describe('Error Handling', () => {
     test('should return 404 for unknown endpoints', async ({ electronApp, port }) => {
       const { page } = electronApp
