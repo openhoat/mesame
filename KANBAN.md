@@ -22,3 +22,5 @@
 <!-- Workflow & Skills Optimization - Priorité P2 -->
 
 ## In Progress
+
+- [ ] **[PERF]** Optimize CI pipeline - reduce redundant dependency installs and builds
