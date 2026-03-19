@@ -2,22 +2,30 @@
 
 ## Workflow Complet
 
-### Phase 1: Start & Implement (main worktree)
+### Phase 1: Start (main worktree)
 
 ```bash
 /start-task [number]
-# -> Updates KANBAN.md (move idea to In Progress)
-# -> Commits KANBAN.md on main
+# -> Updates KANBAN.md locally (move idea to In Progress, not committed)
 # -> Creates branch and worktree at ../mesame-<name>
 # -> Copies local files from .worktree-sync to new worktree
-# -> Implements the complete feature automatically
+# -> User manually navigates: cd ../mesame-<name>
+```
+
+### Phase 2: Implementation (feature worktree)
+
+```bash
+# Work on the feature
+# ...
+
+/complete-task [--draft]
 # -> Validates code (npm run validate)
 # -> Commits changes
 # -> Pushes branch to origin
 # -> Creates Pull Request
 ```
 
-### Phase 2: Cleanup (main worktree, after PR merge)
+### Phase 3: Cleanup (main worktree, after PR merge)
 
 ```bash
 /cleanup-worktree <name>
@@ -32,9 +40,9 @@
 
 | Command | Location | Purpose |
 |---------|----------|---------|
-| `/start-task [number]` | Main worktree | **Complete automation**: Start task, implement, validate, commit, push, create PR |
-| `/complete-task [--draft]` | Feature worktree | *(Optional)* Validate, commit, push, PR if implementing manually |
-| `/push-and-pr` | Feature worktree | *(Optional)* Push and create PR only |
+| `/start-task [number]` | Main worktree | Start task from backlog and create worktree |
+| `/complete-task [--draft]` | Feature worktree | Validate, commit, push, and create PR |
+| `/push-and-pr` | Feature worktree | Push and create PR only (if already committed) |
 | `/cleanup-worktree <name>` | Main worktree | Post-merge cleanup |
 | `/list-worktrees` | Any | List all worktrees |
 
@@ -63,6 +71,6 @@
 
 1. **1 worktree = 1 branch = 1 PR**: One feature per worktree
 2. **Never commit directly to main**: Always use PR workflow
-3. **KANBAN updated on main only**: Never modify KANBAN.md in feature worktree
+3. **KANBAN updated locally at start**: Update KANBAN.md locally during `/start-task`, commit during cleanup after PR merge
 4. **CHANGELOG auto-generated**: Use `npm run changelog`, never edit manually
-5. **Full automation**: `/start-task` implements the complete feature from backlog to PR
+5. **Manual navigation**: After `/start-task`, navigate to worktree with `cd ../mesame-<name>` before implementing
