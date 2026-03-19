@@ -105,3 +105,5 @@
 - **[18:28:37] ✨ [FEAT]** add /v1/models endpoint for OpenAI-compatible client discovery
 - **[18:38:07] 🐛 [FIX]** resolve linting warnings and formatting issues
 - **[18:52:55] 🔧 [CHORE]** update kanban and changelog after end-to-end-pipeline merge
+- **[18:55:00] 🐛 [FIX]** correct cleanup - models-endpoint was merged, not end-to-end-pipeline
+- **[18:55:17] ✨ [FEAT]** implement end-to-end style profile generation pipeline

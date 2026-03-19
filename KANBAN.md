@@ -19,5 +19,3 @@
 <!-- Workflow & Skills Optimization - Priorité P2 -->
 
 ## In Progress
-
-- [ ] **[FEAT]** Create end-to-end pipeline: source import → style analysis → persona prompt → style profile
