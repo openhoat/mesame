@@ -1,9 +1,11 @@
 /**
  * Mock utilities for E2E testing
  *
- * Provides mock implementations for external services
- * and test data generators.
+ * Provides mock implementations for external services,
+ * test data generators, and Playwright route mocking helpers.
  */
+
+import type { Page, Route } from '@playwright/test'
 
 /**
  * Mock responses for OpenAI API
@@ -239,4 +241,90 @@ export async function waitFor(
  */
 export function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+/**
+ * Mock OpenAI API responses in Playwright
+ */
+export async function mockOpenAIAPI(page: Page): Promise<void> {
+  await page.route('https://api.openai.com/**', (route: Route) => {
+    const url = route.request().url()
+
+    if (url.includes('/chat/completions')) {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockOpenAIResponses.chatCompletion),
+      })
+    } else if (url.includes('/models')) {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: [
+            { id: 'gpt-4o', object: 'model', created: Date.now(), owned_by: 'openai' },
+            { id: 'gpt-4', object: 'model', created: Date.now(), owned_by: 'openai' },
+          ],
+        }),
+      })
+    } else {
+      route.continue()
+    }
+  })
+}
+
+/**
+ * Mock Anthropic API responses in Playwright
+ */
+export async function mockAnthropicAPI(page: Page): Promise<void> {
+  await page.route('https://api.anthropic.com/**', (route: Route) => {
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: 'msg-test-mock',
+        type: 'message',
+        role: 'assistant',
+        content: [{ type: 'text', text: 'This is a mocked Anthropic response.' }],
+        model: 'claude-3-sonnet-20240229',
+        stop_reason: 'end_turn',
+      }),
+    })
+  })
+}
+
+/**
+ * Mock all external AI APIs
+ */
+export async function mockAllAIAPIs(page: Page): Promise<void> {
+  await mockOpenAIAPI(page)
+  await mockAnthropicAPI(page)
+}
+
+/**
+ * Create a custom route handler with retry logic
+ */
+export async function mockWithRetry(
+  page: Page,
+  pattern: string,
+  handler: (route: Route) => Promise<void>,
+  maxRetries = 3
+): Promise<void> {
+  let retryCount = 0
+
+  await page.route(pattern, async (route: Route) => {
+    try {
+      await handler(route)
+    } catch {
+      retryCount++
+      if (retryCount < maxRetries) {
+        // Retry with delay
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        await handler(route)
+      } else {
+        // Max retries reached, abort the route
+        route.abort('failed')
+      }
+    }
+  })
 }
