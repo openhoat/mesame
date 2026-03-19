@@ -1,5 +1,7 @@
+import type { AIMessageChunk } from '@langchain/core/messages'
 import type { FastifyPluginAsync } from 'fastify'
 import { config } from '../config.js'
+import { convertToLangChainMessages, getLLMProvider } from '../services/llmProvider.js'
 import { injectStylePrompt } from '../services/styleInjector.js'
 import { getActiveStyleProfile } from '../services/styleProfileService.js'
 import type { ChatCompletionRequest, ModelsListResponse } from '../types/openai.js'
@@ -27,57 +29,86 @@ export const proxyRoute: FastifyPluginAsync = async app => {
     // Inject style persona into messages
     const styleProfile = await getActiveStyleProfile()
     const modifiedMessages = injectStylePrompt(body.messages, styleProfile)
-    const modifiedBody = { ...body, model: config.model, messages: modifiedMessages }
 
-    const upstreamUrl = `${config.targetBaseUrl}/v1/chat/completions`
+    // Convert OpenAI format to LangChain messages
+    const langchainMessages = convertToLangChainMessages(modifiedMessages)
 
-    const headers: Record<string, string> = {
-      'content-type': 'application/json',
-    }
-    if (config.targetApiKey) {
-      headers.authorization = `Bearer ${config.targetApiKey}`
-    }
+    // Get LangChain chat model
+    const chatModel = getLLMProvider(body.stream)
 
-    const upstreamResponse = await fetch(upstreamUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(modifiedBody),
-    })
+    try {
+      if (body.stream) {
+        // Streaming response
+        reply.raw.writeHead(200, {
+          'content-type': 'text/event-stream',
+          'cache-control': 'no-cache',
+          connection: 'keep-alive',
+        })
 
-    if (!upstreamResponse.ok) {
-      reply.status(upstreamResponse.status)
-      const errorBody = await upstreamResponse.text()
-      return reply.send(errorBody)
-    }
+        const stream = await chatModel.stream(langchainMessages)
 
-    if (body.stream) {
-      reply.raw.writeHead(200, {
-        'content-type': 'text/event-stream',
-        'cache-control': 'no-cache',
-        connection: 'keep-alive',
-      })
+        for await (const chunk of stream) {
+          const aiChunk = chunk as AIMessageChunk
+          if (aiChunk.content) {
+            // Format as OpenAI-compatible SSE
+            const sseData = {
+              id: `chatcmpl-${Date.now()}`,
+              object: 'chat.completion.chunk',
+              created: Math.floor(Date.now() / 1000),
+              model: config.model,
+              choices: [
+                {
+                  index: 0,
+                  delta: {
+                    content: aiChunk.content,
+                  },
+                  finish_reason: null,
+                },
+              ],
+            }
+            reply.raw.write(`data: ${JSON.stringify(sseData)}\n\n`)
+          }
+        }
 
-      const reader = upstreamResponse.body?.getReader()
-      if (!reader) {
+        // Send final chunk
+        reply.raw.write('data: [DONE]\n\n')
         reply.raw.end()
         return reply
       }
 
-      const pump = async (): Promise<void> => {
-        const { done, value } = await reader.read()
-        if (done) {
-          reply.raw.end()
-          return
-        }
-        reply.raw.write(value)
-        return pump()
+      // Non-streaming response
+      const response = await chatModel.invoke(langchainMessages)
+      const openaiResponse = {
+        id: `chatcmpl-${Date.now()}`,
+        object: 'chat.completion',
+        created: Math.floor(Date.now() / 1000),
+        model: config.model,
+        choices: [
+          {
+            index: 0,
+            message: {
+              role: 'assistant',
+              content: response.content,
+            },
+            finish_reason: 'stop',
+          },
+        ],
+        usage: {
+          prompt_tokens: 0,
+          completion_tokens: 0,
+          total_tokens: 0,
+        },
       }
-
-      await pump()
-      return reply
+      return openaiResponse
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      reply.status(500)
+      return reply.send({
+        error: {
+          message: errorMessage,
+          type: 'langchain_error',
+        },
+      })
     }
-
-    const data = await upstreamResponse.json()
-    return data
   })
 }
