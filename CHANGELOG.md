@@ -89,3 +89,8 @@
 - **[10:25:29] 🔧 [CHORE]** start tasks - workflow optimization (KANBAN + rules sync)
 - **[11:06:36] 🔧 [CHORE]** simplify KANBAN workflow and synchronize rules documentation
 - **[13:37:26] ✨ [FEAT]** add E2E skills and improve test stability
+- **[13:51:37] 🔧 [CHORE]** update kanban and changelog after workflow optimization merge
+- **[11:21:16] 🔧 [CHORE]** consolidate build outputs under dist/ directory
+- **[13:38:23] 🐛 [FIX]** update renderer path resolution for consolidated build structure
+- **[14:11:06] 🐛 [FIX]** improve renderer path detection with comprehensive fallback logic
+- **[14:36:41] 🐛 [FIX]** resolve renderer path detection and optimize E2E test timeouts
