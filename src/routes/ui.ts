@@ -53,8 +53,10 @@ function findProjectPaths(): { rendererPath: string; assetsPath: string } {
   }
 
   // If nothing found, return the first config as fallback (will show error message in UI)
-  // Using non-null assertion since we know pathConfigurations always has at least one element
-  const fallback = pathConfigurations[0]!
+  const fallback = pathConfigurations[0]
+  if (!fallback) {
+    throw new Error('No valid renderer path configuration found')
+  }
   return {
     rendererPath: fallback.renderer,
     assetsPath: fallback.assets,
