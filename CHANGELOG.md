@@ -85,3 +85,7 @@
 - **[09:49:31] 🐛 [FIX]** add e2e test selectors to React chat components
 - **[09:58:28] 🐛 [FIX]** make assistant response test CI-friendly
 - **[09:19:44] ✨ [FEAT]** add automatic persona prompt generation from style analysis
+- **[10:12:54] 🔧 [CHORE]** update kanban and changelog after persona-prompt-generator merge
+- **[10:25:29] 🔧 [CHORE]** start tasks - workflow optimization (KANBAN + rules sync)
+- **[11:06:36] 🔧 [CHORE]** simplify KANBAN workflow and synchronize rules documentation
+- **[13:37:26] ✨ [FEAT]** add E2E skills and improve test stability
