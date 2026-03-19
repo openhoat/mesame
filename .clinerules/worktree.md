@@ -22,7 +22,7 @@ Use worktrees when:
 ├── mesame-<feature>/    # Feature worktrees (e.g., mesame-style-proxy)
 ```
 
-**Important**: Worktrees are created at `/home/openhoat/work/mesame-<name>`, NOT in `.claude/worktrees/`.
+**Important**: Worktrees are created at `/home/openhoat/work/mesame-<name>`.
 
 ## Worktree Naming Convention
 

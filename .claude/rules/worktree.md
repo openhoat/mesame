@@ -21,7 +21,7 @@ Defines the workflow for using git native worktrees to work on multiple branches
 ├── mesame-<feature>/    # Feature worktrees (e.g., mesame-style-analyzer)
 ```
 
-**Important**: Worktrees are created at `../mesame-<feature>` relative to the main worktree, NOT in `.claude/worktrees/`.
+**Important**: Worktrees are created at `../mesame-<feature>` relative to the main worktree.
 
 ## Naming Convention
 
