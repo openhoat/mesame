@@ -11,14 +11,14 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   const lastMessage = messages[messages.length - 1]
-  const scrollTrigger = lastMessage ? `${lastMessage.id}-${lastMessage.content.length}` : ''
+  const _scrollTrigger = lastMessage ? `${lastMessage.id}-${lastMessage.content.length}` : ''
 
   useEffect(() => {
     const el = containerRef.current
     if (el) {
       el.scrollTop = el.scrollHeight
     }
-  }, [scrollTrigger])
+  }, [])
 
   if (messages.length === 0) {
     return (
