@@ -76,3 +76,12 @@
 - **[16:24:09] 🔧 [CHORE]** add package.json formatting rule with wireit at end
 - **[16:33:47] ✨ [FEAT]** add fun default persona prompt for MeSame
 - **[16:27:05] ✨ [FEAT]** migrate chat interface to React + Vite + Tailwind + Shadcn/UI
+- **[16:53:14] 🔧 [CHORE]** update kanban and changelog after chat-interface merge
+
+## 19/03/2026
+
+- **[09:03:00] 🔧 [CHORE]** clean up worktree documentation and gitignore
+- **[09:10:47] 🔧 [CHORE]** start task - persona prompt generation from style analysis
+- **[09:49:31] 🐛 [FIX]** add e2e test selectors to React chat components
+- **[09:58:28] 🐛 [FIX]** make assistant response test CI-friendly
+- **[09:19:44] ✨ [FEAT]** add automatic persona prompt generation from style analysis
