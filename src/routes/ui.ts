@@ -17,17 +17,22 @@ function findProjectPaths(): { rendererPath: string; assetsPath: string } {
       renderer: path.join(__dirname, '../../dist/renderer'),
       assets: path.join(__dirname, '../../assets'),
     },
-    // Priority 2: New consolidated structure from dist/server/routes/ (prod/CI compiled)
+    // Priority 2: New consolidated structure from dist-electron/src/routes/ (Electron build)
+    {
+      renderer: path.join(__dirname, '../../../dist/renderer'),
+      assets: path.join(__dirname, '../../../assets'),
+    },
+    // Priority 3: New consolidated structure from dist/server/routes/ (server-only build)
     {
       renderer: path.join(__dirname, '../../renderer'),
       assets: path.join(__dirname, '../../../assets'),
     },
-    // Priority 3: Old structure from src/routes/ (dev with tsx, backward compat)
+    // Priority 4: Old structure from src/routes/ (dev with tsx, backward compat)
     {
       renderer: path.join(__dirname, '../../electron/renderer/dist'),
       assets: path.join(__dirname, '../../assets'),
     },
-    // Priority 4: Old structure from dist/server/routes/ (prod compiled, backward compat)
+    // Priority 5: Old structure from dist-electron/src/routes/ (Electron build, backward compat)
     {
       renderer: path.join(__dirname, '../../../electron/renderer/dist'),
       assets: path.join(__dirname, '../../../assets'),
