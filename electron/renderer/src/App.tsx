@@ -1,5 +1,46 @@
+import { useState } from 'react'
 import { ChatLayout } from '@/components/chat/ChatLayout'
+import { DashboardHome } from '@/components/dashboard/DashboardHome'
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
+import { RequestLogs } from '@/components/dashboard/RequestLogs'
+import { ServerConfig } from '@/components/dashboard/ServerConfig'
+import { StyleProfiles } from '@/components/dashboard/StyleProfiles'
 
 export function App() {
-  return <ChatLayout />
+  const [currentPage, setCurrentPage] = useState('chat')
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'chat':
+        return <ChatLayout />
+      case 'dashboard':
+        return (
+          <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
+            <DashboardHome />
+          </DashboardLayout>
+        )
+      case 'profiles':
+        return (
+          <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
+            <StyleProfiles />
+          </DashboardLayout>
+        )
+      case 'logs':
+        return (
+          <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
+            <RequestLogs />
+          </DashboardLayout>
+        )
+      case 'config':
+        return (
+          <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
+            <ServerConfig />
+          </DashboardLayout>
+        )
+      default:
+        return <ChatLayout />
+    }
+  }
+
+  return renderPage()
 }
