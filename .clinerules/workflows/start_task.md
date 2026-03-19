@@ -56,16 +56,9 @@ Move idea from Backlog to In Progress:
 - Add task to In Progress with appropriate tag (FEAT/FIX/etc.)
 - Format: `- [ ] **[TAG]** Description`
 
-Use `replace_in_file` to update.
+Use `replace_in_file` to update. **Do not commit** - KANBAN.md will be committed during cleanup after PR merge.
 
-### 6. Commit KANBAN.md on main
-
-```bash
-git add KANBAN.md
-git commit -m "chore(kanban): start task - <description>"
-```
-
-### 7. Create branch and worktree
+### 6. Create branch and worktree
 
 ```bash
 git checkout -b <branch-name>
@@ -73,7 +66,7 @@ git worktree add ../mesame-<worktree-name> <branch-name>
 git checkout main
 ```
 
-### 8. Copy local files to new worktree
+### 7. Copy local files to new worktree
 
 Copy files listed in `.worktree-sync` from main worktree to the new worktree:
 
@@ -94,7 +87,7 @@ if [ -f ".worktree-sync" ]; then
 fi
 ```
 
-### 9. Inform user to navigate
+### 8. Inform user to navigate
 
 Display success message and instruct user to manually navigate:
 ```
@@ -103,7 +96,7 @@ cd ../mesame-<worktree-name>
 
 ## Important Rules
 
-- **KANBAN.md on main only**: Always commit before creating worktree
+- **KANBAN.md local updates**: Update KANBAN.md locally but do not commit - it will be committed during cleanup after PR merge
 - **Git native worktrees**: Use `git worktree add ../mesame-<name>`
 - **Manual navigation**: User must `cd` to worktree directory
 - **One task per worktree**: Each worktree = one branch = one PR

@@ -6,8 +6,7 @@
 
 ```bash
 /start-task [number]
-# -> Updates KANBAN.md (move idea to In Progress)
-# -> Commits KANBAN.md on main
+# -> Updates KANBAN.md locally (move idea to In Progress, not committed)
 # -> Creates branch and worktree at /home/openhoat/work/mesame-<name>
 # -> Copies local files from .worktree-sync to new worktree
 # -> User manually navigates: cd ../mesame-<name>

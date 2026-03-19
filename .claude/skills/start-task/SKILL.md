@@ -14,8 +14,7 @@ Full task lifecycle: select a task from the backlog, set up a feature worktree, 
 
 - Read `./KANBAN.md`.
 - Display the Backlog section and let the user select a task (or accept a task name as argument).
-- Move the selected task from **Backlog** to **In Progress** in KANBAN.md.
-- Commit and push the KANBAN update on `main`.
+- Move the selected task from **Backlog** to **In Progress** in KANBAN.md (local change only, not committed).
 
 ### 2. Create Feature Branch and Worktree
 
@@ -60,5 +59,5 @@ gh pr create --title "feat: task title" --body "Description of changes"
 
 - Always use `../mesame` as the main project path.
 - Feature worktrees go to `../mesame-<task-slug>`.
-- KANBAN updates happen on `main` before branching.
+- KANBAN.md is updated locally but NOT committed at task start - it will be committed during cleanup after PR merge.
 - Run `npm install` in the new worktree if needed.
