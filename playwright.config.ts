@@ -16,7 +16,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1, // Electron apps require single worker
-  reporter: [['list'], ['html', { outputFolder: 'e2e-report', open: 'never' }]],
+  reporter: [['list'], ['html', { outputFolder: 'dist/e2e-report', open: 'never' }]],
   timeout: 45000,
   use: {
     trace: 'on-first-retry',

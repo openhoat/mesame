@@ -194,7 +194,7 @@
         "vitest.config.ts"
       ],
       "output": [
-        "coverage/**/*"
+        "dist/coverage/**/*"
       ]
     },
     "test:e2e": {
@@ -210,8 +210,8 @@
         "electron/**/*.ts"
       ],
       "output": [
-        "e2e-report/**/*",
-        "test-results/**/*"
+        "dist/e2e-report/**/*",
+        "dist/test-results/**/*"
       ]
     },
     "test:e2e:headless": {
@@ -225,8 +225,8 @@
         "playwright.config.ts"
       ],
       "output": [
-        "e2e-report/**/*",
-        "test-results/**/*"
+        "dist/e2e-report/**/*",
+        "dist/test-results/**/*"
       ]
     },
     "build": {
@@ -239,7 +239,7 @@
         "tsconfig.json"
       ],
       "output": [
-        "dist/**/*"
+        "dist/server/**/*"
       ]
     },
     "build:all": {
@@ -271,7 +271,7 @@
         "electron/renderer/tsconfig.json"
       ],
       "output": [
-        "electron/renderer/dist/**/*"
+        "dist/renderer/**/*"
       ]
     },
     "validate": {
