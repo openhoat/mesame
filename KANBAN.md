@@ -20,5 +20,3 @@
 - [ ] **[CONFIG]** Create CLI for configuration management (P3)
 
 ## In Progress
-
-- [ ] **[FEAT]** Create automatic persona prompt generation from style analysis
