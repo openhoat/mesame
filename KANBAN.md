@@ -20,4 +20,4 @@
 
 ## In Progress
 
-- [ ] **[FEAT]** Add /v1/models endpoint for OpenAI-compatible client discovery
+- [ ] **[FEAT]** Create end-to-end pipeline: source import → style analysis → persona prompt → style profile
