@@ -23,18 +23,18 @@ git checkout main
 git pull
 BRANCH_NAME="feature/<task-slug>"
 git branch "$BRANCH_NAME"
-git worktree add ../mesame-<task-slug> "$BRANCH_NAME"
+git worktree add ../<project-name>-<task-slug> "$BRANCH_NAME"
 ```
 
 ### 3. Implement
 
-- Switch to the worktree: `../mesame-<task-slug>`
+- Switch to the worktree: `../<project-name>-<task-slug>`
 - Implement the task changes.
 
 ### 4. Validate
 
 ```bash
-cd ../mesame-<task-slug> && npm run validate
+cd ../<project-name>-<task-slug> && npm run validate
 ```
 
 Fix any issues found during validation.
@@ -42,7 +42,7 @@ Fix any issues found during validation.
 ### 5. Commit and Push
 
 ```bash
-cd ../mesame-<task-slug>
+cd ../<project-name>-<task-slug>
 git add <relevant-files>
 git commit -m "feat: description of the task"
 git push -u origin "$BRANCH_NAME"
@@ -51,13 +51,13 @@ git push -u origin "$BRANCH_NAME"
 ### 6. Create Pull Request
 
 ```bash
-cd ../mesame-<task-slug>
+cd ../<project-name>-<task-slug>
 gh pr create --title "feat: task title" --body "Description of changes"
 ```
 
 ## Important
 
-- Always use `../mesame` as the main project path.
-- Feature worktrees go to `../mesame-<task-slug>`.
+- The main worktree is the project root (main branch).
+- Feature worktrees go to `../<project-name>-<task-slug>` relative to main.
 - KANBAN.md is updated locally but NOT committed at task start - it will be committed during cleanup after PR merge.
 - Run `npm install` in the new worktree if needed.

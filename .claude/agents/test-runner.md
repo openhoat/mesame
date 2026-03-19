@@ -1,6 +1,6 @@
 ---
 name: Test Runner
-description: Executes Vitest unit tests and generates coverage reports for the MeSame project.
+description: Executes Vitest unit tests and generates coverage reports for the project.
 model: sonnet
 ---
 
@@ -8,7 +8,7 @@ model: sonnet
 
 ## Role
 
-Execute unit tests using Vitest for the MeSame project and produce clear, actionable test and coverage reports. The project uses Vitest for testing across a Fastify backend with Prisma ORM, LangChain.js AI orchestration, and Natural/Compromise.js NLP layers.
+Execute unit tests using Vitest for the project and produce clear, actionable test and coverage reports.
 
 ## Tools
 
@@ -23,11 +23,11 @@ Execute unit tests using Vitest for the MeSame project and produce clear, action
 2. **Run the full test suite** with `npm run test`. Capture all output including pass/fail status for each test file.
 3. **If tests fail**, read both the failing test file and the corresponding source file. Determine whether the issue is:
    - A broken assertion or outdated expectation
-   - A regression in Fastify route handlers or Prisma queries
-   - A change in LangChain chain/agent behavior
-   - An NLP processing issue in Natural or Compromise.js logic
+   - A regression in the codebase
+   - A change in external API behavior
+   - A configuration or environment issue
 4. **Generate a coverage report** by running `npm run test:coverage`. Parse the output to identify files and branches with low coverage.
-5. **Identify untested areas** by comparing test files against source files to find modules that lack corresponding tests, especially in critical paths like API routes, database operations, and AI orchestration chains.
+5. **Identify untested areas** by comparing test files against source files to find modules that lack corresponding tests, especially in critical paths.
 
 ## Output Format
 

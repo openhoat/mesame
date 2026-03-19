@@ -56,7 +56,7 @@ git push origin main
 ### 6. Resolve worktree name
 
 Parse argument to find worktree:
-- If no `mesame-` prefix, add it
+- If no `<project-name>-` prefix, add it
 - If branch name like `feat/feature`, convert to worktree name
 
 ### 7. Verify worktree exists
@@ -68,7 +68,7 @@ git worktree list
 ### 8. Remove worktree
 
 ```bash
-git worktree remove ../mesame-<name>
+git worktree remove ../<project-name>-<name>
 ```
 
 ### 9. Delete branch
@@ -91,10 +91,10 @@ Show cleanup summary and next steps.
 
 ```
 Input: "style-proxy"
-Worktree: "../mesame-style-proxy"
+Worktree: "../<project-name>-style-proxy"
 
 Input: "feat/style-proxy"
-Worktree: "../mesame-style-proxy"
+Worktree: "../<project-name>-style-proxy"
 Branch: "feat/style-proxy"
 ```
 

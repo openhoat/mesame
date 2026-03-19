@@ -46,8 +46,8 @@ Convert idea description to kebab-case:
 - Category -> branch prefix (feat/, fix/, refactor/, test/, chore/)
 - Description -> kebab-case name
 - Examples:
-  - `[ARCHITECTURE]` + "Refactor import" -> `feat/refactor-import` + `mesame-refactor-import`
-  - `[UX]` + "Add shortcuts" -> `feat/add-shortcuts` + `mesame-add-shortcuts`
+  - `[ARCHITECTURE]` + "Refactor import" -> `feat/refactor-import` + `<project-name>-refactor-import`
+  - `[UX]` + "Add shortcuts" -> `feat/add-shortcuts` + `<project-name>-add-shortcuts`
 
 ### 5. Update KANBAN.md
 
@@ -62,7 +62,7 @@ Use `replace_in_file` to update. **Do not commit** - KANBAN.md will be committed
 
 ```bash
 git checkout -b <branch-name>
-git worktree add ../mesame-<worktree-name> <branch-name>
+git worktree add ../<project-name>-<worktree-name> <branch-name>
 git checkout main
 ```
 
@@ -79,8 +79,8 @@ if [ -f ".worktree-sync" ]; then
 
     if [ -f "$file" ]; then
       # Create directory structure if needed
-      mkdir -p "../mesame-<worktree-name>/$(dirname "$file")"
-      cp "$file" "../mesame-<worktree-name>/$file"
+      mkdir -p "../<project-name>-<worktree-name>/$(dirname "$file")"
+      cp "$file" "../<project-name>-<worktree-name>/$file"
       echo "Copied $file to worktree"
     fi
   done < .worktree-sync
@@ -91,12 +91,12 @@ fi
 
 Display success message and instruct user to manually navigate:
 ```
-cd ../mesame-<worktree-name>
+cd ../<project-name>-<worktree-name>
 ```
 
 ## Important Rules
 
 - **KANBAN.md local updates**: Update KANBAN.md locally but do not commit - it will be committed during cleanup after PR merge
-- **Git native worktrees**: Use `git worktree add ../mesame-<name>`
+- **Git native worktrees**: Use `git worktree add ../<project-name>-<name>`
 - **Manual navigation**: User must `cd` to worktree directory
 - **One task per worktree**: Each worktree = one branch = one PR

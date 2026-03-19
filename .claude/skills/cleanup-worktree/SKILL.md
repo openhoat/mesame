@@ -7,7 +7,7 @@ argument-hint: "<name>"
 
 # Cleanup Worktree
 
-Clean up a feature worktree after the PR has been merged. The argument is the worktree name **without** the `mesame-` prefix.
+Clean up a feature worktree after the PR has been merged. The argument is the worktree name **without** the project prefix.
 
 ## Steps
 
@@ -39,7 +39,7 @@ git push
 ### 5. Remove Worktree and Branch
 
 ```bash
-git worktree remove ../mesame-<name>
+git worktree remove ../<project-name>-<name>
 git branch -d feature/<name>
 ```
 
@@ -48,6 +48,6 @@ If the branch was not fully merged, warn the user before force-deleting.
 ## Important
 
 - Must be run from the main worktree (main branch).
-- The argument `<name>` is the feature name without the `mesame-` prefix.
-- Worktree path: `../mesame-<name>` relative to main worktree.
+- The argument `<name>` is the feature name without the `<project-name>-` prefix.
+- Worktree path: `../<project-name>-<name>` relative to main worktree.
 - Branch name: typically `feature/<name>`.

@@ -16,22 +16,31 @@ Use worktrees when:
 
 ## Worktree Directory Structure
 
+Worktrees follow a predictable pattern based on the project name:
+
 ```
-/home/openhoat/work/
-├── mesame/              # Main worktree (main branch)
-├── mesame-<feature>/    # Feature worktrees (e.g., mesame-style-proxy)
+<parent-directory>/
+├── <project-name>/              # Main worktree (main branch)
+├── <project-name>-<feature>/    # Feature worktrees
 ```
 
-**Important**: Worktrees are created at `/home/openhoat/work/mesame-<name>`.
+**Automatic detection**:
+- Project name: Derived from the directory name (`basename $(pwd)`)
+- Parent directory: One level above the project root
+- Example: If project is `/home/user/myapp`, worktrees go to `/home/user/myapp-<feature>`
+
+**Important**: Worktrees are created at `../<project-name>-<name>` relative to the main worktree.
 
 ## Worktree Naming Convention
 
-- Format: `mesame-<branch-name>` (kebab-case)
+- Format: `<project-name>-<branch-name>` (kebab-case)
 - Branch prefix: `feat/` for features, `fix/` for bugfixes
 - Examples:
-  - `feat/dependabot-config` -> `mesame-dependabot`
-  - `feat/add-dark-mode` -> `mesame-add-dark-mode`
-  - `fix/login-bug` -> `mesame-login-bug`
+  - `feat/dependabot-config` -> `<project-name>-dependabot`
+  - `feat/add-dark-mode` -> `<project-name>-add-dark-mode`
+  - `fix/login-bug` -> `<project-name>-login-bug`
+
+**Note**: Replace `<project-name>` with your actual project name (derived from the directory name).
 
 ## MANDATORY Workflow Steps
 
@@ -44,8 +53,8 @@ The entire task lifecycle is handled in a single continuous session whenever pos
 1. Select idea from backlog.
 2. Update `KANBAN.md` (move to "In Progress").
 3. **Commit `KANBAN.md` on `main`** (`chore(kanban): start task - ...`).
-4. Create branch and worktree with `git worktree add ../mesame-<name> <branch>`.
-5. **Manual switch**: User navigates to worktree with `cd ../mesame-<name>`.
+4. Create branch and worktree with `git worktree add ../<project-name>-<name> <branch>`.
+5. **Manual switch**: User navigates to worktree with `cd ../<project-name>-<name>`.
 
 #### Phase 2: Implementation (in worktree)
 1. Implement the requested feature or fix.
@@ -70,10 +79,10 @@ The entire task lifecycle is handled in a single continuous session whenever pos
 git worktree list
 
 # Create a new worktree
-git worktree add ../mesame-<name> <branch-name>
+git worktree add ../<project-name>-<name> <branch-name>
 
 # Remove a worktree (preserves branch)
-git worktree remove ../mesame-<name>
+git worktree remove ../<project-name>-<name>
 
 # Prune stale worktree references
 git worktree prune
@@ -134,7 +143,7 @@ The KANBAN.md file must always be modified on the `main` branch before creating 
 │  PHASE 1: START (on main)                                │
 │  - /start-task: Select idea, Update & Commit Kanban      │
 │  - Create worktree & branch                              │
-│  - MANUAL switch: User runs cd ../mesame-<name>          │
+│  - MANUAL switch: User runs cd ../<project>-<name>       │
 └──────────────┬───────────────────────────────────────────┘
                │
                v
@@ -173,7 +182,7 @@ The KANBAN.md file must always be modified on the `main` branch before creating 
 # Use the skill (RECOMMENDED)
 /start-task
 # Stays on main - manually switch to worktree
-cd ../mesame-<name>
+cd ../<project-name>-<name>
 ```
 
 #### Complete work (from feature worktree)
@@ -201,19 +210,19 @@ cd ../mesame-<name>
 
 ## Example Workflow
 
-User asks: "Add LLM style proxy pipeline"
+User asks: "Add LLM style proxy pipeline" (assuming project name is "myapp")
 
 1. From main worktree:
    ```bash
    /start-task
    # Select the idea from backlog
    # Creates worktree, returns to main
-   cd ../mesame-style-proxy  # Manual switch
+   cd ../myapp-style-proxy  # Manual switch
    ```
 
 2. Work in the worktree:
    ```bash
-   # Already in mesame-style-proxy worktree
+   # Already in myapp-style-proxy worktree
    # Make changes...
    ```
 
@@ -224,7 +233,7 @@ User asks: "Add LLM style proxy pipeline"
 
 4. After merge, from main worktree:
    ```bash
-   cd ../mesame
+   cd ../myapp
    git pull origin main
    /cleanup-worktree style-proxy
    ```
@@ -238,23 +247,23 @@ If you need to create a worktree manually (without `/start-task`):
 git checkout -b feat/<feature-name>
 
 # 2. Create the worktree
-git worktree add ../mesame-<feature-name> feat/<feature-name>
+git worktree add ../<project-name>-<feature-name> feat/<feature-name>
 
 # 3. Return to main
 git checkout main
 
 # 4. Switch to worktree
-cd ../mesame-<feature-name>
+cd ../<project-name>-<feature-name>
 ```
 
 ## Removing Worktrees Manually
 
 ```bash
 # 1. Switch to main worktree
-cd /home/openhoat/work/mesame
+cd <project-root>
 
 # 2. Remove the worktree
-git worktree remove ../mesame-<name>
+git worktree remove ../<project-name>-<name>
 
 # 3. Delete the branch (optional, if merged)
 git branch -d <branch-name>
