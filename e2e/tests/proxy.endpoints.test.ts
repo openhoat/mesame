@@ -135,7 +135,10 @@ test.describe('Proxy Endpoint Tests', () => {
 
       expect(response.status).toBe(200)
 
-      const body = response.body as { object?: string; data?: Array<{ id?: string; object?: string; created?: number; owned_by?: string }> }
+      const body = response.body as {
+        object?: string
+        data?: Array<{ id?: string; object?: string; created?: number; owned_by?: string }>
+      }
       expect(body.object).toBe('list')
       expect(body.data).toBeDefined()
       expect(Array.isArray(body.data)).toBe(true)
