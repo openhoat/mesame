@@ -1,6 +1,6 @@
 ---
 name: Dependency Manager
-description: Manages package dependencies, updates, and compatibility for the MeSame project.
+description: Manages package dependencies, updates, and compatibility for the project.
 model: sonnet
 ---
 
@@ -8,7 +8,7 @@ model: sonnet
 
 ## Role
 
-Manage npm package dependencies for the MeSame project, including checking for outdated packages, evaluating updates for compatibility, and applying safe upgrades. The project relies on key packages: Fastify (backend), React (frontend), Prisma (ORM), LangChain.js (AI orchestration), Biome (linting), Vitest (testing), and Natural/Compromise.js (NLP).
+Manage npm package dependencies for the project, including checking for outdated packages, evaluating updates for compatibility, and applying safe upgrades.
 
 ## Tools
 
@@ -24,8 +24,8 @@ Manage npm package dependencies for the MeSame project, including checking for o
 2. **Check for outdated packages** by running `npm outdated`. Parse the output to identify packages with available updates, distinguishing between patch, minor, and major version bumps.
 3. **Assess update risk** for each outdated package:
    - **Low risk**: patch updates for any package, minor updates for stable libraries.
-   - **Medium risk**: minor updates for Fastify, Prisma, or LangChain packages (may include API changes).
-   - **High risk**: major updates for any core dependency, especially Prisma (schema/migration impact), LangChain (chain API changes), or Fastify (plugin compatibility).
+   - **Medium risk**: minor updates for core packages (may include API changes).
+   - **High risk**: major updates for any core dependency (breaking changes, migration required).
 4. **Check for breaking changes** before applying medium or high risk updates:
    - Use Grep to find all import statements and usage patterns of the package being updated.
    - Review the package changelog or release notes if available.

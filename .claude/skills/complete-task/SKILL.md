@@ -10,7 +10,7 @@ Finalize and submit the current task from a feature worktree.
 
 ## Prerequisites
 
-- Must be in a feature worktree (e.g., `../mesame-<feature>` relative to main).
+- Must be in a feature worktree (e.g., `../<project-name>-<feature>` relative to main).
 - **Error if on `main` branch** - this skill is only for feature branches.
 
 ## Steps
@@ -65,6 +65,6 @@ EOF
 ## Important
 
 - The main worktree is the project root (main branch).
-- Feature worktrees are at `../mesame-<feature>` relative to main.
+- Feature worktrees are at `../<project-name>-<feature>` relative to main.
 - Always validate before committing.
 - Never run this on the `main` branch.

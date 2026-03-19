@@ -7,9 +7,9 @@
 ```bash
 /start-task [number]
 # -> Updates KANBAN.md locally (move idea to In Progress, not committed)
-# -> Creates branch and worktree at /home/openhoat/work/mesame-<name>
+# -> Creates branch and worktree at ../<project-name>-<name>
 # -> Copies local files from .worktree-sync to new worktree
-# -> User manually navigates: cd ../mesame-<name>
+# -> User manually navigates: cd ../<project-name>-<name>
 ```
 
 ### Phase 2: Implementation (feature worktree)
@@ -48,8 +48,8 @@
 
 ## Locations
 
-- **Main worktree**: `/home/openhoat/work/mesame`
-- **Feature worktrees**: `/home/openhoat/work/mesame-<feature-name>`
+- **Main worktree**: `<project-root>` (main branch)
+- **Feature worktrees**: `../<project-name>-<feature-name>` relative to main
 - **KANBAN.md**: Edit only on main branch
 - **CHANGELOG.md**: Auto-generated (read-only, never edit manually)
 
@@ -81,7 +81,7 @@ Examples:
 2. **Never commit directly to main**: Always use PR workflow
 3. **KANBAN updated on main only**: Never modify KANBAN.md in feature worktree
 4. **CHANGELOG auto-generated**: Use `npm run changelog`, never edit manually
-5. **Manual navigation**: After `/start-task`, user must run `cd ../mesame-<name>`
+5. **Manual navigation**: After `/start-task`, user must run `cd ../<project-name>-<name>`
 
 ## Git Native Worktree Commands
 
@@ -90,10 +90,10 @@ Examples:
 git worktree list
 
 # Create worktree manually (if needed)
-git worktree add ../mesame-<name> <branch>
+git worktree add ../<project-name>-<name> <branch>
 
 # Remove worktree
-git worktree remove ../mesame-<name>
+git worktree remove ../<project-name>-<name>
 
 # Clean stale references
 git worktree prune

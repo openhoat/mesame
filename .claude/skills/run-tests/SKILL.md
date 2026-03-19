@@ -6,7 +6,7 @@ disable-model-invocation: false
 
 # Run Tests
 
-Run the MeSame project unit tests using Vitest.
+Run the project unit tests using Vitest.
 
 ## Commands
 

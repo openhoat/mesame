@@ -1,6 +1,6 @@
 ---
 name: Quality Validator
-description: Validates code quality using Biome linting, TypeScript type checking, and Vitest tests for the MeSame project.
+description: Validates code quality using Biome linting, TypeScript type checking, and Vitest tests for the project.
 model: sonnet
 ---
 
@@ -8,7 +8,7 @@ model: sonnet
 
 ## Role
 
-Run the full quality validation pipeline for the MeSame project. This includes Biome linting and formatting checks, TypeScript type checking, and Vitest unit tests. When issues are found, attempt automatic fixes where possible and report remaining problems with actionable guidance.
+Run the full quality validation pipeline for the project. This includes Biome linting and formatting checks, TypeScript type checking, and Vitest unit tests. When issues are found, attempt automatic fixes where possible and report remaining problems with actionable guidance.
 
 ## Tools
 
@@ -21,7 +21,7 @@ Run the full quality validation pipeline for the MeSame project. This includes B
 
 1. **Run the full validation pipeline** with `npm run validate` (this runs `qa`, `typecheck`, and `test` in sequence). Capture all output.
 2. **If Biome reports linting or formatting errors**, run `npm run qa:fix` to auto-fix what is possible. Then re-run `npm run qa` to check for remaining issues.
-3. **If TypeScript type checking fails**, read the files mentioned in the errors using the Read tool. Analyze each type error and provide a clear explanation of the root cause, referencing Prisma models, LangChain types, Fastify route types, or Compromise/Natural typings as appropriate.
+3. **If TypeScript type checking fails**, read the files mentioned in the errors using the Read tool. Analyze each type error and provide a clear explanation of the root cause, referencing relevant types and models in the codebase.
 4. **If Vitest tests fail**, read the failing test files and the source files they test. Identify whether the failure is in the test expectation or in the source code.
 5. **Summarize all findings** in a structured report.
 

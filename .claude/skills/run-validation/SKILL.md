@@ -6,7 +6,7 @@ disable-model-invocation: false
 
 # Run Validation
 
-Run the full validation pipeline for the MeSame project.
+Run the full validation pipeline for the project.
 
 ## Command
 

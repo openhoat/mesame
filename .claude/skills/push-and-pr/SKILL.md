@@ -40,5 +40,5 @@ EOF
 ## Important
 
 - The main worktree is the project root (main branch).
-- Feature worktrees are at `../mesame-<name>` relative to main.
+- Feature worktrees are at `../<project-name>-<name>` relative to main.
 - Use `gh` CLI for PR creation - ensure it is available.
