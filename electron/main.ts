@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, screen, shell } from 'electron'
 import { buildApp } from '../src/app.js'
 import { config } from '../src/config.js'
 
@@ -33,9 +33,22 @@ async function startServer(): Promise<void> {
 }
 
 function createWindow(): void {
+  const windowWidth = 1200
+  const windowHeight = 800
+
+  // Get primary display dimensions
+  const primaryDisplay = screen.getPrimaryDisplay()
+  const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize
+
+  // Calculate centered position (add bounds offset for multi-screen support)
+  const x = Math.round((screenWidth - windowWidth) / 2 + primaryDisplay.bounds.x)
+  const y = Math.round((screenHeight - windowHeight) / 2 + primaryDisplay.bounds.y)
+
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: windowWidth,
+    height: windowHeight,
+    x,
+    y,
     minWidth: 800,
     minHeight: 600,
     title: 'MeSame',
@@ -69,6 +82,7 @@ function createWindow(): void {
 
   // Show window when ready
   mainWindow.once('ready-to-show', () => {
+    mainWindow?.center()
     mainWindow?.show()
   })
 

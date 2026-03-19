@@ -1,10 +1,13 @@
+import { Settings } from 'lucide-react'
 import { StatusIndicator } from '@/components/StatusIndicator'
+import { Button } from '@/components/ui/button'
 
 interface ChatHeaderProps {
   isConnected: boolean
+  onNavigate: (page: string) => void
 }
 
-export function ChatHeader({ isConnected }: ChatHeaderProps) {
+export function ChatHeader({ isConnected, onNavigate }: ChatHeaderProps) {
   return (
     <header className="flex items-center gap-3 px-5 py-3 bg-black/30 border-b border-white/[0.08] shrink-0">
       <img
@@ -20,6 +23,15 @@ export function ChatHeader({ isConnected }: ChatHeaderProps) {
         Your personal style proxy
       </span>
       <div className="flex-1" />
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => onNavigate('dashboard')}
+        className="text-muted-foreground hover:text-foreground"
+        title="Open Dashboard"
+      >
+        <Settings className="h-5 w-5" />
+      </Button>
       <StatusIndicator isConnected={isConnected} />
     </header>
   )

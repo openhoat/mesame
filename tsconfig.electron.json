@@ -4,7 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "lib": ["ESNext"],
-    "outDir": "./dist-electron",
+    "outDir": "./dist/electron",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -21,7 +21,6 @@
   "exclude": [
     "node_modules",
     "dist",
-    "dist-electron",
     "electron/renderer/src/**",
     "electron/renderer/dist/**",
     "**/*.test.ts"

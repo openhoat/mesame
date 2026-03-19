@@ -17,10 +17,10 @@ function findProjectPaths(): { rendererPath: string; assetsPath: string } {
       renderer: path.join(__dirname, '../../dist/renderer'),
       assets: path.join(__dirname, '../../assets'),
     },
-    // Priority 2: New consolidated structure from dist-electron/src/routes/ (Electron build)
+    // Priority 2: New consolidated structure from dist/electron/src/routes/ (Electron build)
     {
-      renderer: path.join(__dirname, '../../../dist/renderer'),
-      assets: path.join(__dirname, '../../../assets'),
+      renderer: path.join(__dirname, '../../../renderer'),
+      assets: path.join(__dirname, '../../../../assets'),
     },
     // Priority 3: New consolidated structure from dist/server/routes/ (server-only build)
     {
@@ -32,10 +32,10 @@ function findProjectPaths(): { rendererPath: string; assetsPath: string } {
       renderer: path.join(__dirname, '../../electron/renderer/dist'),
       assets: path.join(__dirname, '../../assets'),
     },
-    // Priority 5: Old structure from dist-electron/src/routes/ (Electron build, backward compat)
+    // Priority 5: Old structure from dist/electron/src/routes/ (Electron build, backward compat)
     {
-      renderer: path.join(__dirname, '../../../electron/renderer/dist'),
-      assets: path.join(__dirname, '../../../assets'),
+      renderer: path.join(__dirname, '../../../../electron/renderer/dist'),
+      assets: path.join(__dirname, '../../../../assets'),
     },
     // Fallback: Old structure source directory
     {

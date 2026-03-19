@@ -44,7 +44,7 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
   // Use process.cwd() to get the project root
   // This works reliably in both local development and CI environments
   const projectRoot = process.cwd()
-  const mainPath = path.join(projectRoot, 'dist-electron', 'electron', 'main.js')
+  const mainPath = path.join(projectRoot, 'dist', 'electron', 'electron', 'main.js')
 
   // Verify the build exists
   if (!fs.existsSync(mainPath)) {

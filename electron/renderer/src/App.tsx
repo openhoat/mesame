@@ -7,12 +7,12 @@ import { ServerConfig } from '@/components/dashboard/ServerConfig'
 import { StyleProfiles } from '@/components/dashboard/StyleProfiles'
 
 export function App() {
-  const [currentPage, setCurrentPage] = useState('chat')
+  const [currentPage, setCurrentPage] = useState('dashboard')
 
   const renderPage = () => {
     switch (currentPage) {
       case 'chat':
-        return <ChatLayout />
+        return <ChatLayout onNavigate={setCurrentPage} />
       case 'dashboard':
         return (
           <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
@@ -38,7 +38,7 @@ export function App() {
           </DashboardLayout>
         )
       default:
-        return <ChatLayout />
+        return <ChatLayout onNavigate={setCurrentPage} />
     }
   }
 

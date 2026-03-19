@@ -32,7 +32,6 @@ out/
 tsconfig.tsbuildinfo
 
 # Electron
-dist-electron/
 dist-electron-app/
 *.dmg
 *.AppImage

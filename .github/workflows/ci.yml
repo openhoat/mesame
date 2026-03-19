@@ -82,7 +82,6 @@ jobs:
           name: dist-artifacts
           path: |
             dist
-            dist-electron
             electron/renderer/dist
           retention-days: 1
           if-no-files-found: error
