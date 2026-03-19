@@ -98,3 +98,8 @@
 - **[18:55:00] 🐛 [FIX]** correct cleanup - models-endpoint was merged, not end-to-end-pipeline
 - **[18:55:17] ✨ [FEAT]** implement end-to-end style profile generation pipeline
 - **[19:07:57] 🔧 [CHORE]** update kanban and changelog after end-to-end-pipeline merge
+- **[20:30:55] 🔧 [CHORE]** regenerate changelog after removing start task commits
+- **[20:40:55] ♻️ [REFACTOR]** replace raw fetch proxy with LangChain multi-provider integration
+- **[20:49:59] 🐛 [FIX]** adapt E2E tests for LangChain integration
+- **[20:57:20] 🐛 [FIX]** increase timeout for streaming E2E tests
+- **[21:13:42] ✨ [FEAT]** implement complete admin dashboard with Electron integration
