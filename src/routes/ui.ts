@@ -9,24 +9,36 @@ const __dirname = path.dirname(__filename)
 
 // Try to find the correct paths by checking if directories exist
 // In dev (tsx): __dirname = /project/src/routes/
-// In prod (electron): __dirname = /project/dist-electron/src/routes/
+// In prod (electron): __dirname = /project/dist/server/routes/
 function findProjectPaths(): { rendererPath: string; assetsPath: string } {
   // Try development paths first (from src/routes/)
-  const devRendererDist = path.join(__dirname, '../../electron/renderer/dist')
-  const devRendererFallback = path.join(__dirname, '../../electron/renderer')
+  const devNewRendererPath = path.join(__dirname, '../../dist/renderer')
+  const devOldRendererDist = path.join(__dirname, '../../electron/renderer/dist')
+  const devOldRendererFallback = path.join(__dirname, '../../electron/renderer')
   const devAssetsPath = path.join(__dirname, '../../assets')
 
   if (fs.existsSync(devAssetsPath)) {
-    const rendererPath = fs.existsSync(devRendererDist) ? devRendererDist : devRendererFallback
+    // Try new path first, then old paths for backward compatibility
+    let rendererPath = devNewRendererPath
+    if (!fs.existsSync(rendererPath)) {
+      rendererPath = fs.existsSync(devOldRendererDist) ? devOldRendererDist : devOldRendererFallback
+    }
     return { rendererPath, assetsPath: devAssetsPath }
   }
 
-  // Fall back to production paths (from dist-electron/src/routes/)
-  const prodRendererDist = path.join(__dirname, '../../../electron/renderer/dist')
-  const prodRendererFallback = path.join(__dirname, '../../../electron/renderer')
+  // Fall back to production paths (from dist/server/routes/)
+  const prodNewRendererPath = path.join(__dirname, '../../renderer')
+  const prodOldRendererDist = path.join(__dirname, '../../../electron/renderer/dist')
+  const prodOldRendererFallback = path.join(__dirname, '../../../electron/renderer')
   const prodAssetsPath = path.join(__dirname, '../../../assets')
 
-  const rendererPath = fs.existsSync(prodRendererDist) ? prodRendererDist : prodRendererFallback
+  // Try new path first, then old paths for backward compatibility
+  let rendererPath = prodNewRendererPath
+  if (!fs.existsSync(rendererPath)) {
+    rendererPath = fs.existsSync(prodOldRendererDist)
+      ? prodOldRendererDist
+      : prodOldRendererFallback
+  }
   return { rendererPath, assetsPath: prodAssetsPath }
 }
 
