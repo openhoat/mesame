@@ -104,3 +104,4 @@
 - **[18:38:47] 📝 [DOCS]** strengthen quality check rules to enforce zero warnings policy
 - **[18:28:37] ✨ [FEAT]** add /v1/models endpoint for OpenAI-compatible client discovery
 - **[18:38:07] 🐛 [FIX]** resolve linting warnings and formatting issues
+- **[18:52:55] 🔧 [CHORE]** update kanban and changelog after end-to-end-pipeline merge
