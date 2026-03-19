@@ -15,8 +15,10 @@ export function ChatHeader({ isConnected }: ChatHeaderProps) {
           e.currentTarget.style.display = 'none'
         }}
       />
-      <span className="text-lg font-semibold text-white">MeSame</span>
-      <span className="text-xs text-muted-foreground ml-2">Your personal style proxy</span>
+      <span className="header-title text-lg font-semibold text-white">MeSame</span>
+      <span className="header-subtitle text-xs text-muted-foreground ml-2">
+        Your personal style proxy
+      </span>
       <div className="flex-1" />
       <StatusIndicator isConnected={isConnected} />
     </header>

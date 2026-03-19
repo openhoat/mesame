@@ -13,8 +13,10 @@ export function ChatMessage({ message }: ChatMessageProps) {
   return (
     <div
       className={cn(
-        'flex gap-3 max-w-[85%] animate-fade-in',
-        isUser && 'self-end flex-row-reverse'
+        'message flex gap-3 max-w-[85%] animate-fade-in',
+        isUser && 'user self-end flex-row-reverse',
+        message.role === 'assistant' && 'assistant',
+        isError && 'error'
       )}
     >
       <div
@@ -30,7 +32,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
       </div>
       <div
         className={cn(
-          'px-4 py-3 rounded-xl leading-relaxed text-sm whitespace-pre-wrap break-words',
+          'message-content px-4 py-3 rounded-xl leading-relaxed text-sm whitespace-pre-wrap break-words',
           isUser && 'bg-accent/20 border border-accent/30 rounded-tr-sm text-slate-200',
           message.role === 'assistant' &&
             'bg-white/[0.06] border border-white/[0.08] rounded-tl-sm',

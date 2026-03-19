@@ -1,6 +1,9 @@
 export function WelcomeScreen() {
   return (
-    <div className="flex flex-col items-center justify-center flex-1 text-center p-8 text-muted-foreground">
+    <div
+      id="welcome"
+      className="flex flex-col items-center justify-center flex-1 text-center p-8 text-muted-foreground"
+    >
       <img
         src="./assets/MeSame_icon.png"
         alt="MeSame"
