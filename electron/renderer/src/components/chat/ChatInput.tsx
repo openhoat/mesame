@@ -33,6 +33,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
     <div className="px-5 py-4 bg-black/20 border-t border-white/[0.08] shrink-0">
       <div className="flex gap-3 items-end max-w-[900px] mx-auto">
         <textarea
+          id="input"
           ref={textareaRef}
           value={value}
           onChange={e => {
@@ -45,6 +46,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           className="flex-1 bg-white/[0.06] border border-white/[0.12] rounded-xl px-4 py-3 text-slate-200 text-sm resize-none outline-none leading-relaxed max-h-[200px] min-h-[44px] transition-colors focus:border-accent/50 placeholder:text-slate-600 font-[inherit]"
         />
         <button
+          id="send-btn"
           type="button"
           onClick={handleSend}
           disabled={!canSend}

@@ -8,12 +8,13 @@ export function StatusIndicator({ isConnected }: StatusIndicatorProps) {
   return (
     <div className="flex items-center gap-1.5 text-xs text-muted-foreground px-2.5 py-1 rounded-full bg-white/5">
       <span
+        id="status-dot"
         className={cn(
           'w-1.5 h-1.5 rounded-full',
-          isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'
+          isConnected ? 'bg-green-500 animate-pulse connected' : 'bg-red-500 disconnected'
         )}
       />
-      <span>{isConnected ? 'Connected' : 'Disconnected'}</span>
+      <span id="status-label">{isConnected ? 'Connected' : 'Disconnected'}</span>
     </div>
   )
 }
