@@ -8,38 +8,52 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // Try to find the correct paths by checking if directories exist
-// In dev (tsx): __dirname = /project/src/routes/
-// In prod (electron): __dirname = /project/dist/server/routes/
+// Tests all possible path combinations and uses the first valid one
 function findProjectPaths(): { rendererPath: string; assetsPath: string } {
-  // Try development paths first (from src/routes/)
-  const devNewRendererPath = path.join(__dirname, '../../dist/renderer')
-  const devOldRendererDist = path.join(__dirname, '../../electron/renderer/dist')
-  const devOldRendererFallback = path.join(__dirname, '../../electron/renderer')
-  const devAssetsPath = path.join(__dirname, '../../assets')
+  // Define all possible path combinations to try, in priority order
+  const pathConfigurations = [
+    // Priority 1: New consolidated structure from src/routes/ (dev with tsx)
+    {
+      renderer: path.join(__dirname, '../../dist/renderer'),
+      assets: path.join(__dirname, '../../assets'),
+    },
+    // Priority 2: New consolidated structure from dist/server/routes/ (prod/CI compiled)
+    {
+      renderer: path.join(__dirname, '../../renderer'),
+      assets: path.join(__dirname, '../../../assets'),
+    },
+    // Priority 3: Old structure from src/routes/ (dev with tsx, backward compat)
+    {
+      renderer: path.join(__dirname, '../../electron/renderer/dist'),
+      assets: path.join(__dirname, '../../assets'),
+    },
+    // Priority 4: Old structure from dist/server/routes/ (prod compiled, backward compat)
+    {
+      renderer: path.join(__dirname, '../../../electron/renderer/dist'),
+      assets: path.join(__dirname, '../../../assets'),
+    },
+    // Fallback: Old structure source directory
+    {
+      renderer: path.join(__dirname, '../../electron/renderer'),
+      assets: path.join(__dirname, '../../assets'),
+    },
+  ]
 
-  if (fs.existsSync(devAssetsPath)) {
-    // Try new path first, then old paths for backward compatibility
-    let rendererPath = devNewRendererPath
-    if (!fs.existsSync(rendererPath)) {
-      rendererPath = fs.existsSync(devOldRendererDist) ? devOldRendererDist : devOldRendererFallback
+  // Try each configuration and return the first one where renderer has index.html
+  for (const config of pathConfigurations) {
+    const indexPath = path.join(config.renderer, 'index.html')
+    if (fs.existsSync(indexPath)) {
+      return { rendererPath: config.renderer, assetsPath: config.assets }
     }
-    return { rendererPath, assetsPath: devAssetsPath }
   }
 
-  // Fall back to production paths (from dist/server/routes/)
-  const prodNewRendererPath = path.join(__dirname, '../../renderer')
-  const prodOldRendererDist = path.join(__dirname, '../../../electron/renderer/dist')
-  const prodOldRendererFallback = path.join(__dirname, '../../../electron/renderer')
-  const prodAssetsPath = path.join(__dirname, '../../../assets')
-
-  // Try new path first, then old paths for backward compatibility
-  let rendererPath = prodNewRendererPath
-  if (!fs.existsSync(rendererPath)) {
-    rendererPath = fs.existsSync(prodOldRendererDist)
-      ? prodOldRendererDist
-      : prodOldRendererFallback
+  // If nothing found, return the first config as fallback (will show error message in UI)
+  // Using non-null assertion since we know pathConfigurations always has at least one element
+  const fallback = pathConfigurations[0]!
+  return {
+    rendererPath: fallback.renderer,
+    assetsPath: fallback.assets,
   }
-  return { rendererPath, assetsPath: prodAssetsPath }
 }
 
 const { rendererPath, assetsPath } = findProjectPaths()
