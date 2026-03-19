@@ -36,14 +36,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Cache Wireit
-        uses: actions/cache@v5
-        with:
-          path: .wireit
-          key: ${{ runner.os }}-wireit-${{ hashFiles('package-lock.json', 'src/**/*.ts', 'electron/**/*.ts') }}
-          restore-keys: |
-            ${{ runner.os }}-wireit-
-
       - name: Install dependencies
         run: npm ci
 
@@ -56,13 +48,7 @@ jobs:
           name: node-modules
           path: node_modules
           retention-days: 1
-
-      - name: Upload .wireit cache
-        uses: actions/upload-artifact@v4
-        with:
-          name: wireit-cache
-          path: .wireit
-          retention-days: 1
+          if-no-files-found: error
 
       - name: Upload Prisma client
         uses: actions/upload-artifact@v4
@@ -70,6 +56,7 @@ jobs:
           name: prisma-client
           path: node_modules/.prisma
           retention-days: 1
+          if-no-files-found: warn
 
   # Job 2: Validate - Lint, typecheck, test with coverage
   validate:
@@ -96,6 +83,7 @@ jobs:
         with:
           name: prisma-client
           path: node_modules/.prisma
+          continue-on-error: true
 
       - name: Validate (lint + typecheck + test with coverage)
         run: npm run validate
@@ -121,23 +109,26 @@ jobs:
         with:
           node-version: '22.x'
 
+      - name: Cache Wireit
+        uses: actions/cache@v5
+        with:
+          path: .wireit
+          key: ${{ runner.os }}-wireit-${{ hashFiles('package-lock.json', 'src/**/*.ts', 'electron/**/*.ts') }}
+          restore-keys: |
+            ${{ runner.os }}-wireit-
+
       - name: Download node_modules
         uses: actions/download-artifact@v4
         with:
           name: node-modules
           path: node_modules
 
-      - name: Download Wireit cache
-        uses: actions/download-artifact@v4
-        with:
-          name: wireit-cache
-          path: .wireit
-
       - name: Download Prisma client
         uses: actions/download-artifact@v4
         with:
           name: prisma-client
           path: node_modules/.prisma
+          continue-on-error: true
 
       - name: Build all
         run: npm run build:all
@@ -151,6 +142,7 @@ jobs:
             dist-electron
             electron/renderer/dist
           retention-days: 1
+          if-no-files-found: error
 
   # Job 4: E2E Tests - Run Playwright tests with pre-built artifacts
   e2e-tests:
@@ -177,6 +169,7 @@ jobs:
         with:
           name: prisma-client
           path: node_modules/.prisma
+          continue-on-error: true
 
       - name: Download dist artifacts
         uses: actions/download-artifact@v4
