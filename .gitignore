@@ -58,6 +58,11 @@ playwright/.cache/
 # Wireit
 .wireit/
 
+# Test outputs
+coverage/
+e2e-report/
+test-results/
+
 # Misc
 .cache/
 .temp/
