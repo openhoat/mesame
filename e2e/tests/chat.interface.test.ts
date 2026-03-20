@@ -8,9 +8,21 @@
 import { expect, test } from '../fixtures.js'
 
 test.describe('Chat Interface', () => {
-  test('should display the welcome screen on load', async ({ electronApp }) => {
+  // Navigate to chat page before each test (since dashboard is now the default page)
+  test.beforeEach(async ({ electronApp }) => {
     const { page } = electronApp
     await page.waitForLoadState('networkidle')
+
+    // Click on the Chat button in the sidebar to navigate to chat
+    const chatButton = page.getByRole('button', { name: 'Chat' })
+    await chatButton.click()
+
+    // Wait for chat to load by checking for the chat input
+    await expect(page.locator('#input')).toBeVisible({ timeout: 5000 })
+  })
+
+  test('should display the welcome screen on load', async ({ electronApp }) => {
+    const { page } = electronApp
 
     // Welcome section is visible
     const welcome = page.locator('#welcome')
@@ -28,7 +40,6 @@ test.describe('Chat Interface', () => {
 
   test('should show connection status indicator', async ({ electronApp }) => {
     const { page } = electronApp
-    await page.waitForLoadState('networkidle')
 
     // Wait for health check to complete
     await expect(page.locator('#status-dot')).toHaveClass(/connected/, { timeout: 15000 })
@@ -37,7 +48,6 @@ test.describe('Chat Interface', () => {
 
   test('should enable send button when typing a message', async ({ electronApp }) => {
     const { page } = electronApp
-    await page.waitForLoadState('networkidle')
 
     const input = page.locator('#input')
     const sendBtn = page.locator('#send-btn')
@@ -56,7 +66,6 @@ test.describe('Chat Interface', () => {
 
   test('should send a message and display user bubble', async ({ electronApp }) => {
     const { page } = electronApp
-    await page.waitForLoadState('networkidle')
 
     const input = page.locator('#input')
 
@@ -78,7 +87,6 @@ test.describe('Chat Interface', () => {
 
   test('should display assistant response or error after sending', async ({ electronApp }) => {
     const { page } = electronApp
-    await page.waitForLoadState('networkidle')
 
     const input = page.locator('#input')
 
@@ -98,7 +106,6 @@ test.describe('Chat Interface', () => {
 
   test('should support Shift+Enter for newline without sending', async ({ electronApp }) => {
     const { page } = electronApp
-    await page.waitForLoadState('networkidle')
 
     const input = page.locator('#input')
 
@@ -119,7 +126,6 @@ test.describe('Chat Interface', () => {
 
   test('should display header with branding', async ({ electronApp }) => {
     const { page } = electronApp
-    await page.waitForLoadState('domcontentloaded')
 
     await expect(page.locator('.header-title')).toHaveText('MeSame')
     await expect(page.locator('.header-subtitle')).toHaveText('Your personal style proxy')
