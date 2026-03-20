@@ -104,3 +104,13 @@
 - **[20:57:20] 🐛 [FIX]** increase timeout for streaming E2E tests
 - **[21:13:42] ✨ [FEAT]** implement complete admin dashboard with Electron integration
 - **[21:28:11] 🔧 [CHORE]** update kanban and changelog after admin-dashboard merge
+- **[21:31:04] 🔧 [CHORE]** update changelog after langchain-integration merge
+- **[21:57:24] 🐛 [FIX]** add missing build:renderer script declaration
+- **[22:19:48] ✨ [FEAT]** improve Electron UI navigation and project structure
+
+## 20/03/2026
+
+- **[09:54:27] 🐛 [FIX]** navigate to chat page in chat interface tests
+- **[10:03:58] 🔧 [CHORE]** upgrade GitHub Actions to v5 for Node.js 24 support
+- **[10:07:52] 🔧 [CHORE]** upgrade to upload-artifact@v7 and download-artifact@v8
+- **[11:05:37] ✨ [FEAT]** add explicit LLM provider selector in admin panel
