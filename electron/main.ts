@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { app, BrowserWindow, screen, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, screen, shell } from 'electron'
 import { buildApp } from '../src/app.js'
 import { config } from '../src/config.js'
 
@@ -99,6 +99,35 @@ function createWindow(): void {
   })
 }
 
+// IPC Handlers
+function setupIpcHandlers(): void {
+  // Get app version
+  ipcMain.handle('get-app-version', () => {
+    return app.getVersion()
+  })
+
+  // Get server status
+  ipcMain.handle('get-server-status', () => {
+    return server ? 'running' : 'stopped'
+  })
+
+  // Get configuration
+  ipcMain.handle('get-config', () => {
+    const configData = {
+      port: config.port,
+      host: config.host,
+      provider: config.provider,
+      targetBaseUrl: config.targetBaseUrl,
+      model: config.model,
+      logLevel: config.logLevel,
+      // Don't expose API keys to renderer
+      hasApiKey: !!config.targetApiKey,
+    }
+    console.log('[IPC] get-config called, returning:', configData)
+    return configData
+  })
+}
+
 async function cleanup(): Promise<void> {
   if (isQuitting || !server) return
   isQuitting = true
@@ -119,6 +148,9 @@ async function cleanup(): Promise<void> {
 // App lifecycle
 app.whenReady().then(async () => {
   try {
+    // Setup IPC handlers
+    setupIpcHandlers()
+
     // Start the backend server
     await startServer()
 

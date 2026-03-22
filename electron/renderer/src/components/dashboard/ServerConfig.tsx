@@ -57,8 +57,47 @@ export function ServerConfig() {
   }, [config.targetBaseUrl])
 
   useEffect(() => {
-    // Load current config
-    // TODO: Implement config fetch endpoint
+    // Load current config from server (works in both Electron and web mode)
+    const loadConfig = async () => {
+      try {
+        console.log('[ServerConfig] Loading config from server...')
+
+        // Try IPC first (Electron mode)
+        let serverConfig
+        if (window.electronAPI) {
+          console.log('[ServerConfig] Using Electron IPC')
+          serverConfig = await window.electronAPI.getConfig()
+        } else {
+          // Fallback to HTTP API (web mode)
+          console.log('[ServerConfig] Using HTTP API')
+          const response = await fetch('http://localhost:3000/api/config')
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+          }
+          serverConfig = await response.json()
+        }
+
+        console.log('[ServerConfig] Received config:', serverConfig)
+
+        setConfig(prev => {
+          const newConfig = {
+            ...prev,
+            port: serverConfig.port as number,
+            model: serverConfig.model as string,
+            targetBaseUrl: serverConfig.targetBaseUrl as string,
+            logLevel: serverConfig.logLevel as string,
+            // Don't load API key from server (security)
+            targetApiKey: serverConfig.hasApiKey ? '••••••••' : '',
+          }
+          console.log('[ServerConfig] Updated config:', newConfig)
+          return newConfig
+        })
+      } catch (error) {
+        console.error('[ServerConfig] Failed to load config:', error)
+      }
+    }
+
+    loadConfig()
   }, [])
 
   const handleChange = (key: keyof ServerConfig, value: string | number | boolean) => {

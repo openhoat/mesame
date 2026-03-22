@@ -3,6 +3,7 @@ import type { FastifyError, FastifyInstance } from 'fastify'
 import Fastify from 'fastify'
 import { config } from './config.js'
 import { prisma } from './db.js'
+import { configRoute } from './routes/config.js'
 import { healthRoute } from './routes/health.js'
 import { proxyRoute } from './routes/proxy.js'
 import { sourcesRoute } from './routes/sources.js'
@@ -42,6 +43,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   })
 
   await app.register(cors)
+  await app.register(configRoute)
   await app.register(healthRoute)
   await app.register(proxyRoute)
   await app.register(sourcesRoute)
