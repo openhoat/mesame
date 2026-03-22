@@ -10,34 +10,37 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "dev:renderer": "vite --config electron/renderer/vite.config.ts",
-    "dev:electron": "npm run build:renderer && npm run build:electron && electron . --ozone-platform=x11 --disable-vulkan",
     "build": "wireit",
+    "build:all": "wireit",
     "build:electron": "wireit",
     "build:renderer": "wireit",
-    "build:all": "wireit",
-    "start": "node dist/server.js",
-    "start:electron": "electron . --ozone-platform=x11 --disable-vulkan",
-    "test": "wireit",
-    "test:watch": "vitest",
-    "test:coverage": "wireit",
-    "test:e2e": "wireit",
-    "test:e2e:ui": "UI_MODE=true playwright test --ui",
-    "test:e2e:debug": "playwright test --debug",
-    "test:e2e:headless": "wireit",
-    "qa": "wireit",
-    "qa:fix": "biome check --write .",
-    "format": "biome format --write .",
-    "typecheck": "wireit",
-    "validate": "wireit",
+    "changelog": "bash scripts/changelog.sh",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "changelog": "bash scripts/changelog.sh",
+    "dev": "tsx watch src/server.ts",
+    "dev:electron": "npm run build:renderer && npm run build:electron && electron . --ozone-platform=x11 --disable-vulkan",
+    "dev:renderer": "vite --config electron/renderer/vite.config.ts",
+    "dist": "wireit",
+    "docs:build": "vitepress build docs",
+    "docs:dev": "vitepress dev docs",
+    "docs:preview": "vitepress preview docs",
+    "format": "biome format --write .",
     "pack": "wireit",
-    "dist": "wireit"
+    "qa": "wireit",
+    "qa:fix": "biome check --write .",
+    "start": "node dist/server.js",
+    "start:electron": "electron . --ozone-platform=x11 --disable-vulkan",
+    "test": "wireit",
+    "test:coverage": "wireit",
+    "test:e2e": "wireit",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:headless": "wireit",
+    "test:e2e:ui": "UI_MODE=true playwright test --ui",
+    "test:watch": "vitest",
+    "typecheck": "wireit",
+    "validate": "wireit"
   },
   "dependencies": {
     "@fastify/cors": "11.0.0",
@@ -83,6 +86,7 @@
     "tailwindcss": "4.2.1",
     "tsx": "4.19.4",
     "typescript": "5.9.3",
+    "vitepress": "1.6.4",
     "vitest": "3.2.4",
     "wireit": "0.14.12"
   },
@@ -154,6 +158,79 @@
   "private": true,
   "productName": "MeSame",
   "wireit": {
+    "build": {
+      "command": "tsc",
+      "dependencies": [
+        "db:generate"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "dist/server/**/*"
+      ]
+    },
+    "build:all": {
+      "dependencies": [
+        "build",
+        "build:electron",
+        "build:renderer"
+      ]
+    },
+    "build:electron": {
+      "command": "tsc -p tsconfig.electron.json",
+      "dependencies": [
+        "build"
+      ],
+      "files": [
+        "electron/**/*.ts",
+        "tsconfig.electron.json"
+      ],
+      "output": [
+        "dist/electron/**/*"
+      ]
+    },
+    "build:renderer": {
+      "command": "vite build --config electron/renderer/vite.config.ts",
+      "files": [
+        "electron/renderer/src/**/*",
+        "electron/renderer/vite.config.ts",
+        "electron/renderer/index.html",
+        "electron/renderer/tsconfig.json"
+      ],
+      "output": [
+        "dist/renderer/**/*"
+      ]
+    },
+    "dist": {
+      "command": "electron-builder",
+      "dependencies": [
+        "build:all"
+      ],
+      "files": [
+        "package.json",
+        "assets/**/*",
+        "prisma/**/*"
+      ],
+      "output": [
+        "dist/electron-app/**/*"
+      ]
+    },
+    "pack": {
+      "command": "electron-builder --dir",
+      "dependencies": [
+        "build:all"
+      ],
+      "files": [
+        "package.json",
+        "assets/**/*",
+        "prisma/**/*"
+      ],
+      "output": [
+        "dist/electron-app/**/*"
+      ]
+    },
     "qa": {
       "command": "biome check .",
       "files": [
@@ -161,21 +238,6 @@
         "src/**/*.ts",
         "electron/**/*.ts",
         "electron/renderer/src/**/*.{ts,tsx}"
-      ],
-      "output": []
-    },
-    "typecheck": {
-      "command": "tsc --noEmit",
-      "dependencies": [
-        "db:generate"
-      ],
-      "files": [
-        "src/**/*.ts",
-        "electron/**/*.ts",
-        "electron/renderer/src/**/*.{ts,tsx}",
-        "tsconfig.json",
-        "tsconfig.electron.json",
-        "electron/renderer/tsconfig.json"
       ],
       "output": []
     },
@@ -239,84 +301,26 @@
         "dist/test-results/**/*"
       ]
     },
-    "build": {
-      "command": "tsc",
+    "typecheck": {
+      "command": "tsc --noEmit",
       "dependencies": [
         "db:generate"
       ],
       "files": [
         "src/**/*.ts",
-        "tsconfig.json"
-      ],
-      "output": [
-        "dist/server/**/*"
-      ]
-    },
-    "build:all": {
-      "dependencies": [
-        "build",
-        "build:electron",
-        "build:renderer"
-      ]
-    },
-    "build:electron": {
-      "command": "tsc -p tsconfig.electron.json",
-      "dependencies": [
-        "build"
-      ],
-      "files": [
         "electron/**/*.ts",
-        "tsconfig.electron.json"
-      ],
-      "output": [
-        "dist/electron/**/*"
-      ]
-    },
-    "build:renderer": {
-      "command": "vite build --config electron/renderer/vite.config.ts",
-      "files": [
-        "electron/renderer/src/**/*",
-        "electron/renderer/vite.config.ts",
-        "electron/renderer/index.html",
+        "electron/renderer/src/**/*.{ts,tsx}",
+        "tsconfig.json",
+        "tsconfig.electron.json",
         "electron/renderer/tsconfig.json"
       ],
-      "output": [
-        "dist/renderer/**/*"
-      ]
+      "output": []
     },
     "validate": {
       "dependencies": [
         "qa",
         "typecheck",
         "test:coverage"
-      ]
-    },
-    "pack": {
-      "command": "electron-builder --dir",
-      "dependencies": [
-        "build:all"
-      ],
-      "files": [
-        "package.json",
-        "assets/**/*",
-        "prisma/**/*"
-      ],
-      "output": [
-        "dist/electron-app/**/*"
-      ]
-    },
-    "dist": {
-      "command": "electron-builder",
-      "dependencies": [
-        "build:all"
-      ],
-      "files": [
-        "package.json",
-        "assets/**/*",
-        "prisma/**/*"
-      ],
-      "output": [
-        "dist/electron-app/**/*"
       ]
     }
   }
