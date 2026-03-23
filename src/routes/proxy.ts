@@ -36,14 +36,17 @@ export const proxyRoute: FastifyPluginAsync = async app => {
     // Get LangChain chat model
     const chatModel = getLLMProvider(body.stream)
 
-    try {
-      if (body.stream) {
-        // Streaming response
+    if (body.stream) {
+      // Streaming response
+      let headersSent = false
+
+      try {
         reply.raw.writeHead(200, {
           'content-type': 'text/event-stream',
           'cache-control': 'no-cache',
           connection: 'keep-alive',
         })
+        headersSent = true
 
         const stream = await chatModel.stream(langchainMessages)
 
@@ -73,10 +76,39 @@ export const proxyRoute: FastifyPluginAsync = async app => {
         // Send final chunk
         reply.raw.write('data: [DONE]\n\n')
         reply.raw.end()
-        return reply
-      }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
 
-      // Non-streaming response
+        if (headersSent) {
+          // Headers already sent, send error as SSE event
+          const errorData = {
+            id: `chatcmpl-${Date.now()}`,
+            object: 'chat.completion.chunk',
+            created: Math.floor(Date.now() / 1000),
+            model: config.model,
+            error: {
+              message: errorMessage,
+              type: 'langchain_error',
+            },
+          }
+          reply.raw.write(`data: ${JSON.stringify(errorData)}\n\n`)
+          reply.raw.end()
+        } else {
+          // Headers not sent yet, send normal error response
+          reply.status(500)
+          return reply.send({
+            error: {
+              message: errorMessage,
+              type: 'langchain_error',
+            },
+          })
+        }
+      }
+      return
+    }
+
+    // Non-streaming response
+    try {
       const response = await chatModel.invoke(langchainMessages)
       const openaiResponse = {
         id: `chatcmpl-${Date.now()}`,

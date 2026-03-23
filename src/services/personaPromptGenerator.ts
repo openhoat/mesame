@@ -1,4 +1,21 @@
+import { config } from '../config.js'
 import type { StyleAnalysis } from './styleAnalyzer.js'
+
+/**
+ * Language-specific instructions for the assistant
+ */
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: 'English',
+  fr: 'French',
+  es: 'Spanish',
+  de: 'German',
+  it: 'Italian',
+  pt: 'Portuguese',
+  ru: 'Russian',
+  ja: 'Japanese',
+  zh: 'Chinese',
+  ko: 'Korean',
+}
 
 export function generatePersonaPrompt(analysis: StyleAnalysis): string {
   const sections = [
@@ -8,9 +25,15 @@ export function generatePersonaPrompt(analysis: StyleAnalysis): string {
     buildToneProfile(analysis.metrics),
     buildKeyVocabulary(analysis.tfidf.map(t => t.term)),
     buildSignaturePhrases(analysis.bigrams.map(b => b.gram)),
+    buildLanguageInstruction(),
   ]
 
   return sections.filter(Boolean).join('\n')
+}
+
+function buildLanguageInstruction(): string {
+  const languageName = LANGUAGE_NAMES[config.language] || config.language
+  return `IMPORTANT: Always respond in ${languageName}.`
 }
 
 function buildIntroduction(): string {

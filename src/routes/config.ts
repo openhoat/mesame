@@ -10,6 +10,7 @@ export async function configRoute(app: FastifyInstance): Promise<void> {
       targetBaseUrl: config.targetBaseUrl,
       model: config.model,
       logLevel: config.logLevel,
+      language: config.language,
       // Don't expose API keys
       hasApiKey: !!config.targetApiKey,
     })
