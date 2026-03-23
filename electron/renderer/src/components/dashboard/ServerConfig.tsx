@@ -1,9 +1,18 @@
+import {
+  Button,
+  Grid,
+  Group,
+  NumberInput,
+  Paper,
+  Select,
+  Stack,
+  Switch,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core'
 import { AlertCircle, RotateCcw, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 
 type LLMProvider = 'openai' | 'anthropic' | 'ollama'
 
@@ -13,6 +22,7 @@ interface ServerConfig {
   targetBaseUrl: string
   targetApiKey: string
   logLevel: string
+  language: string
   cacheEnabled: boolean
   maxTokens: number
 }
@@ -43,6 +53,7 @@ export function ServerConfig() {
     targetBaseUrl: 'https://api.openai.com',
     targetApiKey: '',
     logLevel: 'info',
+    language: 'en',
     cacheEnabled: true,
     maxTokens: 4096,
   })
@@ -60,24 +71,18 @@ export function ServerConfig() {
     // Load current config from server (works in both Electron and web mode)
     const loadConfig = async () => {
       try {
-        console.log('[ServerConfig] Loading config from server...')
-
         // Try IPC first (Electron mode)
-        let serverConfig
+        // biome-ignore lint/suspicious/noExplicitAny: Config structure is dynamic
+        let serverConfig: any
         if (window.electronAPI) {
-          console.log('[ServerConfig] Using Electron IPC')
           serverConfig = await window.electronAPI.getConfig()
         } else {
-          // Fallback to HTTP API (web mode)
-          console.log('[ServerConfig] Using HTTP API')
           const response = await fetch('http://localhost:3000/api/config')
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`)
           }
           serverConfig = await response.json()
         }
-
-        console.log('[ServerConfig] Received config:', serverConfig)
 
         setConfig(prev => {
           const newConfig = {
@@ -86,14 +91,15 @@ export function ServerConfig() {
             model: serverConfig.model as string,
             targetBaseUrl: serverConfig.targetBaseUrl as string,
             logLevel: serverConfig.logLevel as string,
+            language: serverConfig.language as string,
             // Don't load API key from server (security)
             targetApiKey: serverConfig.hasApiKey ? '••••••••' : '',
           }
-          console.log('[ServerConfig] Updated config:', newConfig)
+
           return newConfig
         })
-      } catch (error) {
-        console.error('[ServerConfig] Failed to load config:', error)
+      } catch (_error) {
+        // Silently fail - config will use defaults
       }
     }
 
@@ -105,15 +111,17 @@ export function ServerConfig() {
     setHasChanges(true)
   }
 
-  const handleProviderChange = (newProvider: LLMProvider) => {
-    setProvider(newProvider)
-    const defaults = PROVIDER_DEFAULTS[newProvider]
+  const handleProviderChange = (newProvider: string | null) => {
+    if (!newProvider) return
+    const provider = newProvider as LLMProvider
+    setProvider(provider)
+    const defaults = PROVIDER_DEFAULTS[provider]
     setConfig(prev => ({
       ...prev,
       targetBaseUrl: defaults.url,
       model: defaults.model,
       // Clear API key when switching to Ollama (not required)
-      targetApiKey: newProvider === 'ollama' ? '' : prev.targetApiKey,
+      targetApiKey: provider === 'ollama' ? '' : prev.targetApiKey,
     }))
     setHasChanges(true)
   }
@@ -139,6 +147,7 @@ export function ServerConfig() {
       targetBaseUrl: 'https://api.openai.com',
       targetApiKey: '',
       logLevel: 'info',
+      language: 'en',
       cacheEnabled: true,
       maxTokens: 4096,
     })
@@ -146,216 +155,195 @@ export function ServerConfig() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <Stack gap="lg">
+      <Group justify="space-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Server Configuration</h1>
-          <p className="text-muted-foreground">Manage proxy server settings</p>
+          <Title order={1}>Server Configuration</Title>
+          <Text c="dimmed">Manage proxy server settings</Text>
         </div>
         {hasChanges && (
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="gap-1">
-              <AlertCircle className="h-3 w-3" />
-              Unsaved changes
-            </Badge>
-            <Button onClick={handleSave} disabled={isSaving}>
-              <Save className="mr-2 h-4 w-4" />
-              {isSaving ? 'Saving...' : 'Save Changes'}
+          <Group gap="xs">
+            <Group
+              gap={4}
+              style={{
+                padding: '4px 12px',
+                border: '1px solid var(--mantine-color-default-border)',
+                borderRadius: 'var(--mantine-radius-default)',
+              }}
+            >
+              <AlertCircle size={14} />
+              <Text size="sm">Unsaved changes</Text>
+            </Group>
+            <Button onClick={handleSave} loading={isSaving} leftSection={<Save size={16} />}>
+              Save Changes
             </Button>
-          </div>
+          </Group>
         )}
-      </div>
+      </Group>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <Grid>
         {/* Server Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Server Settings</CardTitle>
-            <CardDescription>Basic server configuration</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label htmlFor="port" className="text-sm font-medium">
-                Port
-              </label>
-              <Input
-                id="port"
-                type="number"
-                value={config.port}
-                onChange={e => handleChange('port', Number.parseInt(e.target.value, 10))}
-                className="mt-1"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">The port the server listens on</p>
-            </div>
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <Paper shadow="sm" p="md" withBorder>
+            <Stack gap="md">
+              <div>
+                <Title order={3}>Server Settings</Title>
+                <Text size="sm" c="dimmed">
+                  Basic server configuration
+                </Text>
+              </div>
 
-            <div>
-              <label htmlFor="logLevel" className="text-sm font-medium">
-                Log Level
-              </label>
-              <select
-                id="logLevel"
+              <NumberInput
+                label="Port"
+                description="The port the server listens on"
+                value={config.port}
+                onChange={value => handleChange('port', Number(value))}
+              />
+
+              <Select
+                label="Log Level"
+                description="Verbosity of server logs"
                 value={config.logLevel}
-                onChange={e => handleChange('logLevel', e.target.value)}
-                className="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              >
-                <option value="error">Error</option>
-                <option value="warn">Warning</option>
-                <option value="info">Info</option>
-                <option value="debug">Debug</option>
-              </select>
-              <p className="mt-1 text-xs text-muted-foreground">Verbosity of server logs</p>
-            </div>
-          </CardContent>
-        </Card>
+                onChange={value => value && handleChange('logLevel', value)}
+                data={[
+                  { value: 'error', label: 'Error' },
+                  { value: 'warn', label: 'Warning' },
+                  { value: 'info', label: 'Info' },
+                  { value: 'debug', label: 'Debug' },
+                ]}
+              />
+
+              <Select
+                label="Response Language"
+                description="Language for assistant responses"
+                value={config.language}
+                onChange={value => value && handleChange('language', value)}
+                data={[
+                  { value: 'en', label: 'English' },
+                  { value: 'fr', label: 'Français (French)' },
+                  { value: 'es', label: 'Español (Spanish)' },
+                  { value: 'de', label: 'Deutsch (German)' },
+                  { value: 'it', label: 'Italiano (Italian)' },
+                  { value: 'pt', label: 'Português (Portuguese)' },
+                  { value: 'ru', label: 'Русский (Russian)' },
+                  { value: 'ja', label: '日本語 (Japanese)' },
+                  { value: 'zh', label: '中文 (Chinese)' },
+                  { value: 'ko', label: '한국어 (Korean)' },
+                ]}
+              />
+            </Stack>
+          </Paper>
+        </Grid.Col>
 
         {/* LLM Provider Settings */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>LLM Provider</CardTitle>
-                <CardDescription>Configure the upstream LLM service</CardDescription>
-              </div>
-              <Badge variant="secondary">{provider.toUpperCase()}</Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label htmlFor="provider" className="text-sm font-medium">
-                Provider
-              </label>
-              <select
-                id="provider"
-                value={provider}
-                onChange={e => handleProviderChange(e.target.value as LLMProvider)}
-                className="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              >
-                <option value="openai">OpenAI</option>
-                <option value="anthropic">Anthropic</option>
-                <option value="ollama">Ollama (Local)</option>
-              </select>
-              <p className="mt-1 text-xs text-muted-foreground">
-                The LLM provider to use for chat completions
-              </p>
-            </div>
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <Paper shadow="sm" p="md" withBorder>
+            <Stack gap="md">
+              <Text size="sm" c="dimmed">
+                Configure the upstream LLM service
+              </Text>
 
-            <div>
-              <label htmlFor="model" className="text-sm font-medium">
-                Default Model
-              </label>
-              <Input
-                id="model"
+              <Select
+                label="Provider"
+                description="The LLM provider to use for chat completions"
+                value={provider}
+                onChange={handleProviderChange}
+                data={[
+                  { value: 'openai', label: 'OpenAI' },
+                  { value: 'anthropic', label: 'Anthropic' },
+                  { value: 'ollama', label: 'Ollama' },
+                ]}
+              />
+
+              <TextInput
+                label="Default Model"
+                description={
+                  provider === 'openai'
+                    ? 'e.g., gpt-4o-mini, gpt-4o'
+                    : provider === 'anthropic'
+                      ? 'e.g., claude-3-5-sonnet-20241022, claude-3-5-haiku-20241022'
+                      : 'e.g., llama2, mistral, codellama'
+                }
                 value={config.model}
                 onChange={e => handleChange('model', e.target.value)}
                 placeholder={PROVIDER_DEFAULTS[provider].model}
-                className="mt-1"
               />
-              <p className="mt-1 text-xs text-muted-foreground">
-                {provider === 'openai' && 'e.g., gpt-4o-mini, gpt-4o'}
-                {provider === 'anthropic' &&
-                  'e.g., claude-3-5-sonnet-20241022, claude-3-5-haiku-20241022'}
-                {provider === 'ollama' && 'e.g., llama2, mistral, codellama'}
-              </p>
-            </div>
 
-            <div>
-              <label htmlFor="targetBaseUrl" className="text-sm font-medium">
-                API Base URL
-              </label>
-              <Input
-                id="targetBaseUrl"
+              <TextInput
+                label="API Base URL"
+                description={`The base URL for the ${provider} API`}
                 value={config.targetBaseUrl}
                 onChange={e => handleChange('targetBaseUrl', e.target.value)}
                 placeholder={PROVIDER_DEFAULTS[provider].url}
-                className="mt-1"
               />
-              <p className="mt-1 text-xs text-muted-foreground">
-                The base URL for the {provider} API
-              </p>
-            </div>
 
-            {provider !== 'ollama' && (
-              <div>
-                <label htmlFor="targetApiKey" className="text-sm font-medium">
-                  API Key
-                </label>
-                <Input
-                  id="targetApiKey"
+              {provider !== 'ollama' && (
+                <TextInput
+                  label="API Key"
+                  description="Your API key is stored securely"
                   type="password"
                   value={config.targetApiKey}
                   onChange={e => handleChange('targetApiKey', e.target.value)}
                   placeholder="sk-..."
-                  className="mt-1"
                 />
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Your API key is stored securely
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              )}
+            </Stack>
+          </Paper>
+        </Grid.Col>
 
         {/* Performance Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Performance</CardTitle>
-            <CardDescription>Optimize server performance</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label htmlFor="maxTokens" className="text-sm font-medium">
-                Max Tokens
-              </label>
-              <Input
-                id="maxTokens"
-                type="number"
-                value={config.maxTokens}
-                onChange={e => handleChange('maxTokens', Number.parseInt(e.target.value, 10))}
-                className="mt-1"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">Maximum tokens per request</p>
-            </div>
-
-            <div className="flex items-center justify-between">
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <Paper shadow="sm" p="md" withBorder>
+            <Stack gap="md">
               <div>
-                <label htmlFor="cacheEnabled" className="text-sm font-medium">
-                  Enable Caching
-                </label>
-                <p className="text-xs text-muted-foreground">
-                  Cache responses for better performance
-                </p>
+                <Title order={3}>Performance</Title>
+                <Text size="sm" c="dimmed">
+                  Optimize server performance
+                </Text>
               </div>
-              <button
-                type="button"
-                onClick={() => handleChange('cacheEnabled', !config.cacheEnabled)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  config.cacheEnabled ? 'bg-primary' : 'bg-gray-200'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    config.cacheEnabled ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-          </CardContent>
-        </Card>
+
+              <NumberInput
+                label="Max Tokens"
+                description="Maximum tokens per request"
+                value={config.maxTokens}
+                onChange={value => handleChange('maxTokens', Number(value))}
+              />
+
+              <Switch
+                label="Enable Caching"
+                description="Cache responses for better performance"
+                checked={config.cacheEnabled}
+                onChange={e => handleChange('cacheEnabled', e.currentTarget.checked)}
+              />
+            </Stack>
+          </Paper>
+        </Grid.Col>
 
         {/* Danger Zone */}
-        <Card className="border-destructive">
-          <CardHeader>
-            <CardTitle className="text-destructive">Danger Zone</CardTitle>
-            <CardDescription>Irreversible actions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="destructive" onClick={handleReset}>
-              <RotateCcw className="mr-2 h-4 w-4" />
-              Reset to Defaults
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <Paper
+            shadow="sm"
+            p="md"
+            withBorder
+            style={{ borderColor: 'var(--mantine-color-red-6)' }}
+          >
+            <Stack gap="md">
+              <div>
+                <Title order={3} c="red">
+                  Danger Zone
+                </Title>
+                <Text size="sm" c="dimmed">
+                  Irreversible actions
+                </Text>
+              </div>
+
+              <Button color="red" leftSection={<RotateCcw size={16} />} onClick={handleReset}>
+                Reset to Defaults
+              </Button>
+            </Stack>
+          </Paper>
+        </Grid.Col>
+      </Grid>
+    </Stack>
   )
 }

@@ -12,6 +12,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
 
   return (
     <div
+      data-role={message.role}
       className={cn(
         'message flex gap-3 max-w-[85%] animate-fade-in',
         isUser && 'user self-end flex-row-reverse',

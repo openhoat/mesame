@@ -1,7 +1,6 @@
+import { Badge, Divider, Grid, Group, Paper, Stack, Text, Title } from '@mantine/core'
 import { Activity, FileText, TrendingUp, Zap } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface Stats {
   totalRequests: number
@@ -41,69 +40,94 @@ export function DashboardHome() {
   }, [])
 
   return (
-    <div className="space-y-6">
+    <Stack gap="lg">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Monitor your MeSame proxy server performance and usage
-        </p>
+        <Title order={1}>Dashboard</Title>
+        <Text c="dimmed">Monitor your MeSame proxy server performance and usage</Text>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalRequests.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">+12% from last hour</p>
-          </CardContent>
-        </Card>
+      <Grid>
+        <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
+          <Paper shadow="sm" p="md" withBorder>
+            <Group justify="space-between" mb="xs">
+              <Text size="sm" fw={500}>
+                Total Requests
+              </Text>
+              <Activity size={16} opacity={0.6} />
+            </Group>
+            <Text size="xl" fw={700}>
+              {stats.totalRequests.toLocaleString()}
+            </Text>
+            <Text size="xs" c="dimmed">
+              +12% from last hour
+            </Text>
+          </Paper>
+        </Grid.Col>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Profiles</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.activeProfiles}</div>
-            <p className="text-xs text-muted-foreground">Style profiles configured</p>
-          </CardContent>
-        </Card>
+        <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
+          <Paper shadow="sm" p="md" withBorder>
+            <Group justify="space-between" mb="xs">
+              <Text size="sm" fw={500}>
+                Active Profiles
+              </Text>
+              <FileText size={16} opacity={0.6} />
+            </Group>
+            <Text size="xl" fw={700}>
+              {stats.activeProfiles}
+            </Text>
+            <Text size="xs" c="dimmed">
+              Style profiles configured
+            </Text>
+          </Paper>
+        </Grid.Col>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Response Time</CardTitle>
-            <Zap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.avgResponseTime}ms</div>
-            <p className="text-xs text-muted-foreground">-23ms from yesterday</p>
-          </CardContent>
-        </Card>
+        <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
+          <Paper shadow="sm" p="md" withBorder>
+            <Group justify="space-between" mb="xs">
+              <Text size="sm" fw={500}>
+                Avg Response Time
+              </Text>
+              <Zap size={16} opacity={0.6} />
+            </Group>
+            <Text size="xl" fw={700}>
+              {stats.avgResponseTime}ms
+            </Text>
+            <Text size="xs" c="dimmed">
+              -23ms from yesterday
+            </Text>
+          </Paper>
+        </Grid.Col>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Server Uptime</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.uptime}</div>
-            <p className="text-xs text-muted-foreground">System running normally</p>
-          </CardContent>
-        </Card>
-      </div>
+        <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
+          <Paper shadow="sm" p="md" withBorder>
+            <Group justify="space-between" mb="xs">
+              <Text size="sm" fw={500}>
+                Server Uptime
+              </Text>
+              <TrendingUp size={16} opacity={0.6} />
+            </Group>
+            <Text size="xl" fw={700}>
+              {stats.uptime}
+            </Text>
+            <Text size="xs" c="dimmed">
+              System running normally
+            </Text>
+          </Paper>
+        </Grid.Col>
+      </Grid>
 
       {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>Latest requests and system events</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+      <Paper shadow="sm" p="md" withBorder>
+        <Stack gap="md">
+          <div>
+            <Title order={3}>Recent Activity</Title>
+            <Text size="sm" c="dimmed">
+              Latest requests and system events
+            </Text>
+          </div>
+
+          <Stack gap="md">
             {[
               {
                 time: '2 min ago',
@@ -123,26 +147,32 @@ export function DashboardHome() {
                 model: 'gpt-4o',
                 status: 'success',
               },
-            ].map(activity => (
-              <div
-                key={`${activity.time}-${activity.event}`}
-                className="flex items-center justify-between border-b pb-3 last:border-0"
-              >
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">{activity.event}</p>
-                  <p className="text-xs text-muted-foreground">{activity.model}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">{activity.time}</span>
-                  <Badge variant={activity.status === 'success' ? 'default' : 'destructive'}>
-                    {activity.status}
-                  </Badge>
-                </div>
+            ].map((activity, index, arr) => (
+              <div key={`${activity.time}-${activity.event}`}>
+                <Group justify="space-between">
+                  <div>
+                    <Text size="sm" fw={500}>
+                      {activity.event}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {activity.model}
+                    </Text>
+                  </div>
+                  <Group gap="xs">
+                    <Text size="xs" c="dimmed">
+                      {activity.time}
+                    </Text>
+                    <Badge color={activity.status === 'success' ? 'green' : 'red'}>
+                      {activity.status}
+                    </Badge>
+                  </Group>
+                </Group>
+                {index < arr.length - 1 && <Divider my="sm" />}
               </div>
             ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </Stack>
+        </Stack>
+      </Paper>
+    </Stack>
   )
 }

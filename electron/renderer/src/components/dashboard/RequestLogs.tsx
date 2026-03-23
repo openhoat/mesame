@@ -1,9 +1,17 @@
+import {
+  Badge,
+  Button,
+  Code,
+  Divider,
+  Group,
+  Paper,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core'
 import { Activity, Download, RefreshCw, Search } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 
 interface RequestLog {
   id: string
@@ -82,10 +90,10 @@ export function RequestLogs() {
   )
 
   const getStatusBadge = (code: number) => {
-    if (code >= 200 && code < 300) return <Badge variant="default">Success</Badge>
-    if (code >= 400 && code < 500) return <Badge variant="destructive">Client Error</Badge>
-    if (code >= 500) return <Badge variant="destructive">Server Error</Badge>
-    return <Badge variant="secondary">{code}</Badge>
+    if (code >= 200 && code < 300) return <Badge color="green">Success</Badge>
+    if (code >= 400 && code < 500) return <Badge color="orange">Client Error</Badge>
+    if (code >= 500) return <Badge color="red">Server Error</Badge>
+    return <Badge color="gray">{code}</Badge>
   }
 
   const formatDuration = (ms: number) => {
@@ -103,88 +111,98 @@ export function RequestLogs() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <Stack gap="lg">
+      <Group justify="space-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Request Logs</h1>
-          <p className="text-muted-foreground">Monitor API requests and responses</p>
+          <Title order={1}>Request Logs</Title>
+          <Text c="dimmed">Monitor API requests and responses</Text>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setAutoRefresh(!autoRefresh)}>
-            <RefreshCw className={`mr-2 h-4 w-4 ${autoRefresh ? 'animate-spin' : ''}`} />
+        <Group gap="xs">
+          <Button
+            variant="default"
+            leftSection={<RefreshCw size={16} className={autoRefresh ? 'animate-spin' : ''} />}
+            onClick={() => setAutoRefresh(!autoRefresh)}
+          >
             {autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
           </Button>
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
+          <Button variant="default" leftSection={<Download size={16} />}>
             Export
           </Button>
-        </div>
-      </div>
+        </Group>
+      </Group>
 
       {/* Search & Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Filters</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by endpoint, method, or model..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="pl-8"
-                />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <Paper shadow="sm" p="md" withBorder>
+        <Stack gap="md">
+          <Title order={3} size="h4">
+            Filters
+          </Title>
+          <TextInput
+            placeholder="Search by endpoint, method, or model..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            leftSection={<Search size={16} />}
+          />
+        </Stack>
+      </Paper>
 
       {/* Logs Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Requests</CardTitle>
-          <CardDescription>
-            {filteredLogs.length} request{filteredLogs.length !== 1 ? 's' : ''} found
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <Paper shadow="sm" p="md" withBorder>
+        <Stack gap="md">
+          <div>
+            <Title order={3}>Recent Requests</Title>
+            <Text size="sm" c="dimmed">
+              {filteredLogs.length} request{filteredLogs.length !== 1 ? 's' : ''} found
+            </Text>
+          </div>
+
           {filteredLogs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Activity className="h-12 w-12 text-muted-foreground" />
-              <p className="mt-4 text-sm text-muted-foreground">No requests found</p>
-            </div>
+            <Stack align="center" gap="md" py="xl">
+              <Activity size={48} opacity={0.5} />
+              <Text size="sm" c="dimmed">
+                No requests found
+              </Text>
+            </Stack>
           ) : (
-            <div className="space-y-3">
-              {filteredLogs.map(log => (
-                <div
-                  key={log.id}
-                  className="flex items-center justify-between border-b pb-3 last:border-0"
-                >
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="font-mono">
-                        {log.method}
-                      </Badge>
-                      <code className="text-sm">{log.endpoint}</code>
-                    </div>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span>{formatTimestamp(log.timestamp)}</span>
-                      <span>{formatDuration(log.duration)}</span>
-                      {log.model && <span>Model: {log.model}</span>}
-                      {log.tokens && <span>{log.tokens.toLocaleString()} tokens</span>}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">{getStatusBadge(log.statusCode)}</div>
+            <Stack gap="md">
+              {filteredLogs.map((log, index, arr) => (
+                <div key={log.id}>
+                  <Group justify="space-between" align="flex-start">
+                    <Stack gap={4} style={{ flex: 1 }}>
+                      <Group gap="xs">
+                        <Badge variant="outline" tt="uppercase" ff="monospace">
+                          {log.method}
+                        </Badge>
+                        <Code>{log.endpoint}</Code>
+                      </Group>
+                      <Group gap="md">
+                        <Text size="xs" c="dimmed">
+                          {formatTimestamp(log.timestamp)}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          {formatDuration(log.duration)}
+                        </Text>
+                        {log.model && (
+                          <Text size="xs" c="dimmed">
+                            Model: {log.model}
+                          </Text>
+                        )}
+                        {log.tokens && (
+                          <Text size="xs" c="dimmed">
+                            {log.tokens.toLocaleString()} tokens
+                          </Text>
+                        )}
+                      </Group>
+                    </Stack>
+                    {getStatusBadge(log.statusCode)}
+                  </Group>
+                  {index < arr.length - 1 && <Divider my="sm" />}
                 </div>
               ))}
-            </div>
+            </Stack>
           )}
-        </CardContent>
-      </Card>
-    </div>
+        </Stack>
+      </Paper>
+    </Stack>
   )
 }

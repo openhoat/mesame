@@ -7,7 +7,7 @@ import { ServerConfig } from '@/components/dashboard/ServerConfig'
 import { StyleProfiles } from '@/components/dashboard/StyleProfiles'
 
 export function App() {
-  const [currentPage, setCurrentPage] = useState('dashboard')
+  const [currentPage, setCurrentPage] = useState('chat')
 
   const renderPage = () => {
     switch (currentPage) {

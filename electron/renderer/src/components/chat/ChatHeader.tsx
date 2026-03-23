@@ -1,6 +1,6 @@
+import { ActionIcon, Text } from '@mantine/core'
 import { Settings } from 'lucide-react'
 import { StatusIndicator } from '@/components/StatusIndicator'
-import { Button } from '@/components/ui/button'
 
 interface ChatHeaderProps {
   isConnected: boolean
@@ -9,29 +9,40 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ isConnected, onNavigate }: ChatHeaderProps) {
   return (
-    <header className="flex items-center gap-3 px-5 py-3 bg-black/30 border-b border-white/[0.08] shrink-0">
+    <header
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '12px 20px',
+        background: 'rgba(0, 0, 0, 0.3)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        flexShrink: 0,
+      }}
+    >
       <img
         src="./assets/MeSame_icon.png"
         alt="MeSame"
-        className="w-8 h-8 rounded-lg"
+        style={{ width: '32px', height: '32px', borderRadius: '8px' }}
         onError={e => {
           e.currentTarget.style.display = 'none'
         }}
       />
-      <span className="header-title text-lg font-semibold text-white">MeSame</span>
-      <span className="header-subtitle text-xs text-muted-foreground ml-2">
+      <Text size="lg" fw={600} c="white">
+        MeSame
+      </Text>
+      <Text size="xs" c="dimmed" ml={8}>
         Your personal style proxy
-      </span>
-      <div className="flex-1" />
-      <Button
-        variant="ghost"
-        size="icon"
+      </Text>
+      <div style={{ flex: 1 }} />
+      <ActionIcon
+        variant="subtle"
         onClick={() => onNavigate('dashboard')}
-        className="text-muted-foreground hover:text-foreground"
         title="Open Dashboard"
+        size="lg"
       >
-        <Settings className="h-5 w-5" />
-      </Button>
+        <Settings size={20} />
+      </ActionIcon>
       <StatusIndicator isConnected={isConnected} />
     </header>
   )

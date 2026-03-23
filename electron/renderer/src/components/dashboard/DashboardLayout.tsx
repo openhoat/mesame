@@ -1,3 +1,4 @@
+import { ActionIcon, AppShell, Container, Group, NavLink, Text } from '@mantine/core'
 import {
   BarChart3,
   FileText,
@@ -8,8 +9,6 @@ import {
   X,
 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 
 interface NavItem {
   label: string
@@ -18,11 +17,11 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Chat', icon: <MessageSquare className="h-4 w-4" />, id: 'chat' },
-  { label: 'Dashboard', icon: <LayoutDashboard className="h-4 w-4" />, id: 'dashboard' },
-  { label: 'Style Profiles', icon: <FileText className="h-4 w-4" />, id: 'profiles' },
-  { label: 'Request Logs', icon: <BarChart3 className="h-4 w-4" />, id: 'logs' },
-  { label: 'Configuration', icon: <Settings className="h-4 w-4" />, id: 'config' },
+  { label: 'Chat', icon: <MessageSquare size={16} />, id: 'chat' },
+  { label: 'Dashboard', icon: <LayoutDashboard size={16} />, id: 'dashboard' },
+  { label: 'Style Profiles', icon: <FileText size={16} />, id: 'profiles' },
+  { label: 'Request Logs', icon: <BarChart3 size={16} />, id: 'logs' },
+  { label: 'Configuration', icon: <Settings size={16} />, id: 'config' },
 ]
 
 export interface DashboardLayoutProps {
@@ -35,52 +34,55 @@ export function DashboardLayout({ currentPage, onNavigate, children }: Dashboard
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          'flex flex-col border-r bg-card transition-all duration-300',
-          sidebarOpen ? 'w-64' : 'w-16'
-        )}
-      >
+    <AppShell
+      navbar={{
+        width: sidebarOpen ? 250 : 80,
+        breakpoint: 'sm',
+      }}
+      padding="md"
+    >
+      <AppShell.Navbar p="md">
         {/* Logo & Toggle */}
-        <div className="flex h-14 items-center justify-between border-b px-4">
-          {sidebarOpen && <span className="text-lg font-bold">MeSame</span>}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className={cn(!sidebarOpen && 'mx-auto')}
-          >
-            {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </Button>
-        </div>
+        <AppShell.Section>
+          <Group justify="space-between" mb="md">
+            {sidebarOpen && (
+              <Text fw={700} size="lg">
+                MeSame
+              </Text>
+            )}
+            <ActionIcon
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              variant="subtle"
+              style={{
+                marginLeft: sidebarOpen ? 0 : 'auto',
+                marginRight: sidebarOpen ? 0 : 'auto',
+              }}
+            >
+              {sidebarOpen ? <X size={16} /> : <Menu size={16} />}
+            </ActionIcon>
+          </Group>
+        </AppShell.Section>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 p-2">
+        <AppShell.Section grow>
           {navItems.map(item => (
-            <button
-              type="button"
+            <NavLink
               key={item.id}
+              active={currentPage === item.id}
+              label={sidebarOpen ? item.label : undefined}
+              leftSection={item.icon}
               onClick={() => onNavigate(item.id)}
-              className={cn(
-                'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                currentPage === item.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-              )}
-            >
-              {item.icon}
-              {sidebarOpen && <span>{item.label}</span>}
-            </button>
+              style={{ borderRadius: 'var(--mantine-radius-default)' }}
+            />
           ))}
-        </nav>
-      </aside>
+        </AppShell.Section>
+      </AppShell.Navbar>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <div className="container mx-auto p-6">{children}</div>
-      </main>
-    </div>
+      <AppShell.Main>
+        <Container size="xl" p="md">
+          {children}
+        </Container>
+      </AppShell.Main>
+    </AppShell>
   )
 }

@@ -1,9 +1,17 @@
+import {
+  Badge,
+  Button,
+  Grid,
+  Group,
+  Paper,
+  Stack,
+  Text,
+  Textarea,
+  TextInput,
+  Title,
+} from '@mantine/core'
 import { CheckCircle2, Edit, FileText, Plus, Trash2 } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 
 interface StyleProfile {
   id: string
@@ -60,57 +68,49 @@ export function StyleProfiles() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <Stack gap="lg">
+      <Group justify="space-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Style Profiles</h1>
-          <p className="text-muted-foreground">Manage your writing style personas</p>
+          <Title order={1}>Style Profiles</Title>
+          <Text c="dimmed">Manage your writing style personas</Text>
         </div>
-        <Button onClick={() => setEditingId('new')}>
-          <Plus className="mr-2 h-4 w-4" />
+        <Button leftSection={<Plus size={16} />} onClick={() => setEditingId('new')}>
           New Profile
         </Button>
-      </div>
+      </Group>
 
       {/* Create/Edit Form */}
       {editingId && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{editingId === 'new' ? 'Create New Profile' : 'Edit Profile'}</CardTitle>
-            <CardDescription>Define your writing style and persona</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <Paper shadow="sm" p="md" withBorder>
+          <Stack gap="md">
             <div>
-              <label htmlFor="name" className="text-sm font-medium">
-                Profile Name
-              </label>
-              <Input
-                id="name"
-                value={editForm.name}
-                onChange={e => setEditForm({ ...editForm, name: e.target.value })}
-                placeholder="e.g., Technical Writer, Casual Blogger"
-                className="mt-1"
-              />
+              <Title order={3}>{editingId === 'new' ? 'Create New Profile' : 'Edit Profile'}</Title>
+              <Text size="sm" c="dimmed">
+                Define your writing style and persona
+              </Text>
             </div>
-            <div>
-              <label htmlFor="prompt" className="text-sm font-medium">
-                Persona Prompt
-              </label>
-              <textarea
-                id="prompt"
-                value={editForm.personaPrompt}
-                onChange={e => setEditForm({ ...editForm, personaPrompt: e.target.value })}
-                placeholder="Describe the writing style, tone, and structure..."
-                className="mt-1 flex min-h-[120px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={handleSave}>
-                <CheckCircle2 className="mr-2 h-4 w-4" />
+
+            <TextInput
+              label="Profile Name"
+              value={editForm.name}
+              onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+              placeholder="e.g., Technical Writer, Casual Blogger"
+            />
+
+            <Textarea
+              label="Persona Prompt"
+              value={editForm.personaPrompt}
+              onChange={e => setEditForm({ ...editForm, personaPrompt: e.target.value })}
+              placeholder="Describe the writing style, tone, and structure..."
+              minRows={5}
+            />
+
+            <Group gap="xs">
+              <Button leftSection={<CheckCircle2 size={16} />} onClick={handleSave}>
                 Save
               </Button>
               <Button
-                variant="outline"
+                variant="default"
                 onClick={() => {
                   setEditingId(null)
                   setEditForm({ name: '', personaPrompt: '' })
@@ -118,55 +118,69 @@ export function StyleProfiles() {
               >
                 Cancel
               </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </Group>
+          </Stack>
+        </Paper>
       )}
 
       {/* Profiles List */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <Grid>
         {profiles.length === 0 ? (
-          <Card className="col-span-2">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <FileText className="h-12 w-12 text-muted-foreground" />
-              <p className="mt-4 text-sm text-muted-foreground">
-                No style profiles yet. Create one to get started.
-              </p>
-            </CardContent>
-          </Card>
+          <Grid.Col span={12}>
+            <Paper shadow="sm" p="xl" withBorder>
+              <Stack align="center" gap="md">
+                <FileText size={48} opacity={0.5} />
+                <Text size="sm" c="dimmed">
+                  No style profiles yet. Create one to get started.
+                </Text>
+              </Stack>
+            </Paper>
+          </Grid.Col>
         ) : (
           profiles.map(profile => (
-            <Card key={profile.id} className={profile.isActive ? 'border-primary' : ''}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">{profile.name || 'Unnamed Profile'}</CardTitle>
-                  {profile.isActive && <Badge>Active</Badge>}
-                </div>
-                <CardDescription className="line-clamp-3">
-                  {profile.personaPrompt || 'No description'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2">
-                  {!profile.isActive && (
-                    <Button size="sm" onClick={() => handleActivate(profile.id)}>
-                      Activate
+            <Grid.Col key={profile.id} span={{ base: 12, md: 6 }}>
+              <Paper
+                shadow="sm"
+                p="md"
+                withBorder
+                style={
+                  profile.isActive ? { borderColor: 'var(--mantine-color-blue-6)' } : undefined
+                }
+              >
+                <Stack gap="md">
+                  <Group justify="space-between">
+                    <Title order={4}>{profile.name || 'Unnamed Profile'}</Title>
+                    {profile.isActive && <Badge color="blue">Active</Badge>}
+                  </Group>
+
+                  <Text size="sm" c="dimmed" lineClamp={3}>
+                    {profile.personaPrompt || 'No description'}
+                  </Text>
+
+                  <Group gap="xs">
+                    {!profile.isActive && (
+                      <Button size="sm" onClick={() => handleActivate(profile.id)}>
+                        Activate
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="default"
+                      leftSection={<Edit size={14} />}
+                      onClick={() => setEditingId(profile.id)}
+                    >
+                      Edit
                     </Button>
-                  )}
-                  <Button size="sm" variant="outline" onClick={() => setEditingId(profile.id)}>
-                    <Edit className="mr-2 h-3 w-3" />
-                    Edit
-                  </Button>
-                  <Button size="sm" variant="destructive">
-                    <Trash2 className="mr-2 h-3 w-3" />
-                    Delete
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                    <Button size="sm" color="red" leftSection={<Trash2 size={14} />}>
+                      Delete
+                    </Button>
+                  </Group>
+                </Stack>
+              </Paper>
+            </Grid.Col>
           ))
         )}
-      </div>
-    </div>
+      </Grid>
+    </Stack>
   )
 }
