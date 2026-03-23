@@ -111,6 +111,16 @@
           }
         }
       }
+    },
+    {
+      "includes": ["e2e/**/*.ts", "scripts/**/*.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
     }
   ]
 }
