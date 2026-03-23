@@ -11,6 +11,7 @@ export interface ElectronAPI {
     targetBaseUrl: string
     model: string
     logLevel: string
+    language: string
     hasApiKey: boolean
   }>
   onServerStatusChange: (callback: (status: string) => void) => void
