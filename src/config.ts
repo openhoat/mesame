@@ -42,6 +42,7 @@ export interface AppConfig {
   targetApiKey: string | undefined
   model: string
   logLevel: string
+  language: string
 }
 
 function getProviderApiKey(provider: Provider): string | undefined {
@@ -51,16 +52,39 @@ function getProviderApiKey(provider: Provider): string | undefined {
 }
 
 function parseProvider(value: string | undefined): Provider {
-  if (!value) return 'openai'
+  if (!value) return 'ollama'
   if (['openai', 'anthropic', 'google', 'ollama'].includes(value)) {
     return value as Provider
   }
   throw new Error(`Unknown provider: ${value}. Valid providers: openai, anthropic, google, ollama`)
 }
 
+function detectLanguage(): string {
+  if (process.env.MESAME_LANGUAGE) {
+    return process.env.MESAME_LANGUAGE
+  }
+
+  // Try to extract language from LANG (e.g., "fr_FR.UTF-8" -> "fr")
+  const lang = process.env.LANG || process.env.LC_ALL
+  if (lang) {
+    const parts = lang.split('_')[0]
+    if (parts) {
+      const languageCode = parts.split('.')[0]?.toLowerCase()
+      if (languageCode) {
+        return languageCode
+      }
+    }
+  }
+
+  return 'en'
+}
+
 export function loadConfig(): AppConfig {
   const provider = parseProvider(process.env.MESAME_PROVIDER)
   const providerConfig = PROVIDER_CONFIGS[provider]
+
+  // Default model based on provider
+  const defaultModel = provider === 'ollama' ? 'gemma3:1b' : 'gpt-4o'
 
   return {
     port: Number(process.env.MESAME_PORT) || 3000,
@@ -68,8 +92,9 @@ export function loadConfig(): AppConfig {
     provider,
     targetBaseUrl: process.env.MESAME_TARGET_BASE_URL ?? providerConfig.defaultBaseUrl,
     targetApiKey: getProviderApiKey(provider),
-    model: process.env.MESAME_MODEL ?? 'gpt-4o',
+    model: process.env.MESAME_MODEL ?? defaultModel,
     logLevel: process.env.MESAME_LOG_LEVEL ?? 'info',
+    language: detectLanguage(),
   }
 }
 

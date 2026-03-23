@@ -21,17 +21,21 @@ describe('config', () => {
     delete process.env.OPENAI_API_KEY
     delete process.env.MESAME_MODEL
     delete process.env.MESAME_LOG_LEVEL
+    delete process.env.MESAME_LANGUAGE
+    delete process.env.LANG
+    delete process.env.LC_ALL
 
     const { loadConfig } = await import('./config.js')
     const cfg = loadConfig()
 
     expect(cfg.port).toBe(3000)
     expect(cfg.host).toBe('localhost')
-    expect(cfg.provider).toBe('openai')
-    expect(cfg.targetBaseUrl).toBe('https://api.openai.com')
+    expect(cfg.provider).toBe('ollama')
+    expect(cfg.targetBaseUrl).toBe('http://localhost:11434')
     expect(cfg.targetApiKey).toBeUndefined()
-    expect(cfg.model).toBe('gpt-4o')
+    expect(cfg.model).toBe('gemma3:1b')
     expect(cfg.logLevel).toBe('info')
+    expect(cfg.language).toBe('en')
   })
 
   test('should read values from environment variables', async () => {
@@ -142,6 +146,60 @@ describe('config', () => {
       expect(() => loadConfig()).toThrow(
         'Unknown provider: unknown-provider. Valid providers: openai, anthropic, google, ollama'
       )
+    })
+  })
+
+  describe('Language detection', () => {
+    test('should detect language from MESAME_LANGUAGE', async () => {
+      process.env = {
+        ...originalEnv,
+        MESAME_LANGUAGE: 'fr',
+        LANG: 'en_US.UTF-8',
+      }
+
+      const { loadConfig } = await import('./config.js')
+      const cfg = loadConfig()
+
+      expect(cfg.language).toBe('fr')
+    })
+
+    test('should detect language from LANG environment variable', async () => {
+      process.env = {
+        ...originalEnv,
+        LANG: 'fr_FR.UTF-8',
+      }
+      delete process.env.MESAME_LANGUAGE
+
+      const { loadConfig } = await import('./config.js')
+      const cfg = loadConfig()
+
+      expect(cfg.language).toBe('fr')
+    })
+
+    test('should detect language from LC_ALL if LANG is not set', async () => {
+      process.env = {
+        ...originalEnv,
+        LC_ALL: 'es_ES.UTF-8',
+      }
+      delete process.env.MESAME_LANGUAGE
+      delete process.env.LANG
+
+      const { loadConfig } = await import('./config.js')
+      const cfg = loadConfig()
+
+      expect(cfg.language).toBe('es')
+    })
+
+    test('should default to en when no language environment variables are set', async () => {
+      process.env = { ...originalEnv }
+      delete process.env.MESAME_LANGUAGE
+      delete process.env.LANG
+      delete process.env.LC_ALL
+
+      const { loadConfig } = await import('./config.js')
+      const cfg = loadConfig()
+
+      expect(cfg.language).toBe('en')
     })
   })
 })

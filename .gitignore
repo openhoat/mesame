@@ -77,3 +77,6 @@ assets/_*
 # VitePress
 docs/.vitepress/dist
 docs/.vitepress/cache
+
+# Local environment configuration (should not be committed)
+.env
