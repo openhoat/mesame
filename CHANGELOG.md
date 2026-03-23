@@ -114,3 +114,22 @@
 - **[10:03:58] 🔧 [CHORE]** upgrade GitHub Actions to v5 for Node.js 24 support
 - **[10:07:52] 🔧 [CHORE]** upgrade to upload-artifact@v7 and download-artifact@v8
 - **[11:05:37] ✨ [FEAT]** add explicit LLM provider selector in admin panel
+- **[11:13:18] 🔧 [CHORE]** update kanban and changelog after llm-provider-selector merge
+
+## 22/03/2026
+
+- **[09:02:59] 📝 [DOCS]** add comprehensive VitePress documentation
+- **[15:09:25] 🐛 [FIX]** implement config loading from environment variables in Electron
+
+## 23/03/2026
+
+- **[19:03:48] ♻️ [REFACTOR]** change defaults to ollama/gemma3:1b and remove .env
+- **[19:04:03] ✅ [TEST]** add comprehensive E2E test suite with 63 new tests
+- **[19:05:31] 🔧 [CHORE]** allow console.log in e2e tests and scripts
+- **[19:05:38] ♻️ [REFACTOR]** migrate preload to CommonJS and add language support
+- **[19:05:49] ✨ [FEAT]** add multi-language support and improve streaming error handling
+- **[19:06:08] ♻️ [REFACTOR]** migrate from shadcn/ui to Mantine UI
+- **[19:10:26] 🐛 [FIX]** add missing language property to ElectronAPI type
+- **[19:13:08] 🔧 [CHORE]** add frontend i18n task to backlog
+- **[19:21:23] ✨ [FEAT]** implement frontend internationalization with react-i18next
+- **[19:30:46] 🐛 [FIX]** regenerate package-lock.json from main to resolve CI dependency conflicts
