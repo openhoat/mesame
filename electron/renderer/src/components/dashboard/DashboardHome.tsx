@@ -1,6 +1,7 @@
 import { Badge, Divider, Grid, Group, Paper, Stack, Text, Title } from '@mantine/core'
 import { Activity, FileText, TrendingUp, Zap } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface Stats {
   totalRequests: number
@@ -10,6 +11,7 @@ interface Stats {
 }
 
 export function DashboardHome() {
+  const { t } = useTranslation()
   const [stats, setStats] = useState<Stats>({
     totalRequests: 0,
     activeProfiles: 0,
@@ -42,8 +44,8 @@ export function DashboardHome() {
   return (
     <Stack gap="lg">
       <div>
-        <Title order={1}>Dashboard</Title>
-        <Text c="dimmed">Monitor your MeSame proxy server performance and usage</Text>
+        <Title order={1}>{t('dashboard.title')}</Title>
+        <Text c="dimmed">{t('dashboard.subtitle')}</Text>
       </div>
 
       {/* Stats Grid */}

@@ -1,0 +1,87 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "back": "Retour",
+    "close": "Fermer",
+    "reset": "Réinitialiser",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "confirm": "Confirmer",
+    "unsavedChanges": "Modifications non enregistrées"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "chat": "Discussion",
+    "profiles": "Profils de style",
+    "config": "Configuration",
+    "logs": "Journaux",
+    "sources": "Sources"
+  },
+  "chat": {
+    "title": "Discussion",
+    "placeholder": "Tapez votre message ici...",
+    "send": "Envoyer",
+    "clear": "Effacer la discussion",
+    "welcome": {
+      "title": "Bienvenue sur MeSame",
+      "subtitle": "Votre assistant IA personnalisé",
+      "description": "Commencez à discuter ou créez un profil de style pour personnaliser les réponses",
+      "startChatting": "Commencer à discuter"
+    },
+    "streaming": "En cours de frappe...",
+    "errorSending": "Erreur lors de l'envoi du message",
+    "retryMessage": "Réessayer"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "subtitle": "Surveillez les performances et l'utilisation de votre serveur proxy MeSame",
+    "serverStatus": "État du serveur",
+    "running": "En cours d'exécution",
+    "stopped": "Arrêté",
+    "activeProfile": "Profil actif",
+    "noProfile": "Aucun profil actif",
+    "quickActions": "Actions rapides",
+    "viewLogs": "Voir les journaux",
+    "createProfile": "Créer un profil",
+    "configure": "Configurer le serveur"
+  },
+  "config": {
+    "title": "Configuration du serveur",
+    "subtitle": "Gérer les paramètres du serveur proxy",
+    "serverSettings": {
+      "title": "Paramètres du serveur",
+      "subtitle": "Configuration de base du serveur",
+      "port": "Port",
+      "portDescription": "Le port sur lequel le serveur écoute",
+      "logLevel": "Niveau de journalisation",
+      "logLevelDescription": "Verbosité des journaux du serveur",
+      "language": "Langue des réponses",
+      "languageDescription": "Langue pour les réponses de l'assistant"
+    }
+  },
+  "profiles": {
+    "title": "Profils de style",
+    "subtitle": "Gérer vos styles de conversation"
+  },
+  "logs": {
+    "title": "Journaux de requêtes",
+    "subtitle": "Afficher l'historique des requêtes API"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français (French)",
+    "es": "Español (Spanish)",
+    "de": "Deutsch (German)",
+    "it": "Italiano (Italian)",
+    "pt": "Português (Portuguese)",
+    "ru": "Русский (Russian)",
+    "ja": "日本語 (Japanese)",
+    "zh": "中文 (Chinese)",
+    "ko": "한국어 (Korean)"
+  }
+}

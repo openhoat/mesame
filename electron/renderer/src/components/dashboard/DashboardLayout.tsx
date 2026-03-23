@@ -9,19 +9,20 @@ import {
   X,
 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface NavItem {
-  label: string
+  labelKey: string
   icon: ReactNode
   id: string
 }
 
 const navItems: NavItem[] = [
-  { label: 'Chat', icon: <MessageSquare size={16} />, id: 'chat' },
-  { label: 'Dashboard', icon: <LayoutDashboard size={16} />, id: 'dashboard' },
-  { label: 'Style Profiles', icon: <FileText size={16} />, id: 'profiles' },
-  { label: 'Request Logs', icon: <BarChart3 size={16} />, id: 'logs' },
-  { label: 'Configuration', icon: <Settings size={16} />, id: 'config' },
+  { labelKey: 'nav.chat', icon: <MessageSquare size={16} />, id: 'chat' },
+  { labelKey: 'nav.dashboard', icon: <LayoutDashboard size={16} />, id: 'dashboard' },
+  { labelKey: 'nav.profiles', icon: <FileText size={16} />, id: 'profiles' },
+  { labelKey: 'nav.logs', icon: <BarChart3 size={16} />, id: 'logs' },
+  { labelKey: 'nav.config', icon: <Settings size={16} />, id: 'config' },
 ]
 
 export interface DashboardLayoutProps {
@@ -31,6 +32,7 @@ export interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ currentPage, onNavigate, children }: DashboardLayoutProps) {
+  const { t } = useTranslation()
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   return (
@@ -69,7 +71,7 @@ export function DashboardLayout({ currentPage, onNavigate, children }: Dashboard
             <NavLink
               key={item.id}
               active={currentPage === item.id}
-              label={sidebarOpen ? item.label : undefined}
+              label={sidebarOpen ? t(item.labelKey) : undefined}
               leftSection={item.icon}
               onClick={() => onNavigate(item.id)}
               style={{ borderRadius: 'var(--mantine-radius-default)' }}

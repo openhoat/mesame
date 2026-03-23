@@ -1,0 +1,87 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "close": "Close",
+    "reset": "Reset to Defaults",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "unsavedChanges": "Unsaved changes"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "chat": "Chat",
+    "profiles": "Style Profiles",
+    "config": "Configuration",
+    "logs": "Request Logs",
+    "sources": "Sources"
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Type your message here...",
+    "send": "Send",
+    "clear": "Clear chat",
+    "welcome": {
+      "title": "Welcome to MeSame",
+      "subtitle": "Your personalized AI assistant",
+      "description": "Start chatting or create a style profile to customize responses",
+      "startChatting": "Start Chatting"
+    },
+    "streaming": "Typing...",
+    "errorSending": "Error sending message",
+    "retryMessage": "Retry"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Monitor your MeSame proxy server performance and usage",
+    "serverStatus": "Server Status",
+    "running": "Running",
+    "stopped": "Stopped",
+    "activeProfile": "Active Profile",
+    "noProfile": "No active profile",
+    "quickActions": "Quick Actions",
+    "viewLogs": "View Logs",
+    "createProfile": "Create Profile",
+    "configure": "Configure Server"
+  },
+  "config": {
+    "title": "Server Configuration",
+    "subtitle": "Manage proxy server settings",
+    "serverSettings": {
+      "title": "Server Settings",
+      "subtitle": "Basic server configuration",
+      "port": "Port",
+      "portDescription": "The port the server listens on",
+      "logLevel": "Log Level",
+      "logLevelDescription": "Verbosity of server logs",
+      "language": "Response Language",
+      "languageDescription": "Language for assistant responses"
+    }
+  },
+  "profiles": {
+    "title": "Style Profiles",
+    "subtitle": "Manage your conversation styles"
+  },
+  "logs": {
+    "title": "Request Logs",
+    "subtitle": "View API request history"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français (French)",
+    "es": "Español (Spanish)",
+    "de": "Deutsch (German)",
+    "it": "Italiano (Italian)",
+    "pt": "Português (Portuguese)",
+    "ru": "Русский (Russian)",
+    "ja": "日本語 (Japanese)",
+    "zh": "中文 (Chinese)",
+    "ko": "한국어 (Korean)"
+  }
+}
