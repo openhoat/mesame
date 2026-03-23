@@ -7,6 +7,7 @@
 <!-- MVP Phase 0: Frontend foundation -->
 <!-- MVP Phase 1: End-to-end style pipeline -->
 <!-- MVP Phase 2: Usability -->
+- [ ] **[I18N]** Implement frontend i18n with react-i18next and translation files (P1)
 - [ ] **[UX]** Add conversation history to chat interface (P2)
 <!-- Post-MVP enhancements -->
 - [ ] **[SECURITY]** Add regex-based data anonymization for sensitive content (P3)
