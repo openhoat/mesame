@@ -1,11 +1,16 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { config as dotenvConfig } from 'dotenv'
 import { app, BrowserWindow, ipcMain, screen, shell } from 'electron'
 import { buildApp } from '../src/app.js'
 import { config } from '../src/config.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
+// Load .env file from project root before anything else
+const envPath = path.resolve(__dirname, '../../../.env')
+dotenvConfig({ path: envPath, override: false })
 
 let mainWindow: BrowserWindow | null = null
 let server: Awaited<ReturnType<typeof buildApp>> | null = null
@@ -54,7 +59,7 @@ function createWindow(): void {
     title: 'MeSame',
     icon: path.join(__dirname, `../../assets/${iconName}`),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.cjs'),
       devTools: isDev,
       nodeIntegration: false,
       contextIsolation: true,
@@ -120,10 +125,11 @@ function setupIpcHandlers(): void {
       targetBaseUrl: config.targetBaseUrl,
       model: config.model,
       logLevel: config.logLevel,
+      language: config.language,
       // Don't expose API keys to renderer
       hasApiKey: !!config.targetApiKey,
     }
-    console.log('[IPC] get-config called, returning:', configData)
+
     return configData
   })
 }

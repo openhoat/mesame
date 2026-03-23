@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "node16",
+    "moduleResolution": "node16",
     "lib": ["ESNext"],
     "outDir": "./dist/electron",
     "strict": true,
@@ -14,8 +14,7 @@
     "sourceMap": true,
     "noEmit": false,
     "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "verbatimModuleSyntax": true
+    "noImplicitOverride": true
   },
   "include": ["electron/**/*", "src/**/*"],
   "exclude": [
