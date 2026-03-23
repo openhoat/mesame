@@ -19,127 +19,119 @@ test.describe('Proxy Endpoint Tests', () => {
     })
   })
 
-  test.describe('Chat Completions - Non-streaming', () => {
-    // Skip all tests if no API key is configured
-    test.beforeAll(() => {
-      const hasApiKey = !!(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY)
-      test.skip(!hasApiKey, 'Skipping: no API key configured')
-    })
+  // Skip in CI: requires real API calls
+  test.describe
+    .skip('Chat Completions - Non-streaming', () => {
+      test('should handle basic chat completion request', async ({ electronApp, port }) => {
+        const { page } = electronApp
 
-    test('should handle basic chat completion request', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
-      // Note: This test requires a valid API key or mocked response
-      // In CI, this would be mocked; in local dev, it uses real API
-      const response = await chatCompletion(
-        page,
-        port,
-        [{ role: 'user', content: 'Hello' }],
-        'gpt-4o-mini'
-      )
-
-      // If API key is set, expect 200; otherwise expect error
-      expect([200, 401, 500]).toContain(response.status)
-
-      if (response.status === 200) {
-        const body = response.body as { choices?: Array<{ message?: { content?: string } }> }
-        expect(body.choices).toBeDefined()
-        expect(body.choices?.length).toBeGreaterThan(0)
-        expect(body.choices?.[0]?.message?.content).toBeDefined()
-      }
-    })
-
-    test('should reject invalid model', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
-      const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
-        method: 'POST',
-        body: {
-          model: '',
-          messages: [{ role: 'user', content: 'Hello' }],
-          stream: false,
-        },
-      })
-
-      // The proxy overrides the model with config.model, so an empty model
-      // may still succeed. Accept 200 alongside error codes.
-      // 200 = proxy overrode model, 400 = bad request, 401 = unauthorized, 500 = server error
-      expect([200, 400, 401, 500]).toContain(response.status)
-    })
-
-    test('should reject empty messages array', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
-      const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
-        method: 'POST',
-        body: {
-          model: 'gpt-4o',
-          messages: [],
-          stream: false,
-        },
-      })
-
-      // Should return an error for empty messages
-      // 400 = bad request, 401 = unauthorized (no API key), 500 = server error
-      expect([400, 401, 500]).toContain(response.status)
-    })
-
-    test('should handle system message injection', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
-      // This test verifies that system prompts are properly handled
-      const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
-        method: 'POST',
-        body: {
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: 'You are a helpful assistant.' },
-            { role: 'user', content: 'Hello' },
-          ],
-          stream: false,
-        },
-      })
-
-      // Accept any response - this is mainly testing the request format
-      expect([200, 401, 500]).toContain(response.status)
-    })
-  })
-
-  test.describe('Chat Completions - Streaming', () => {
-    // Skip all tests if no API key is configured
-    test.beforeAll(() => {
-      const hasApiKey = !!(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY)
-      test.skip(!hasApiKey, 'Skipping: no API key configured')
-    })
-
-    test('should handle streaming request', async ({ electronApp, port }) => {
-      test.setTimeout(60000) // Increase timeout for LangChain streaming
-
-      const { page } = electronApp
-
-      // Test streaming endpoint
-      let chunkCount = 0
-      try {
-        for await (const _chunk of chatCompletionStream(
+        // Note: This test requires a valid API key or mocked response
+        // In CI, this would be mocked; in local dev, it uses real API
+        const response = await chatCompletion(
           page,
           port,
-          [{ role: 'user', content: 'Say hello' }],
+          [{ role: 'user', content: 'Hello' }],
           'gpt-4o-mini'
-        )) {
-          chunkCount++
-          // Limit chunks for test performance
-          if (chunkCount > 10) break
-        }
-      } catch {
-        // If API key is missing, streaming will fail
-        // This is expected in CI without credentials
-      }
+        )
 
-      // If streaming worked, we should have received chunks
-      // Otherwise, this test passes as it's mainly testing the endpoint format
-      expect(chunkCount).toBeGreaterThanOrEqual(0)
+        // If API key is set, expect 200; otherwise expect error
+        expect([200, 401, 500]).toContain(response.status)
+
+        if (response.status === 200) {
+          const body = response.body as { choices?: Array<{ message?: { content?: string } }> }
+          expect(body.choices).toBeDefined()
+          expect(body.choices?.length).toBeGreaterThan(0)
+          expect(body.choices?.[0]?.message?.content).toBeDefined()
+        }
+      })
+
+      test('should reject invalid model', async ({ electronApp, port }) => {
+        const { page } = electronApp
+
+        const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
+          method: 'POST',
+          body: {
+            model: '',
+            messages: [{ role: 'user', content: 'Hello' }],
+            stream: false,
+          },
+        })
+
+        // The proxy overrides the model with config.model, so an empty model
+        // may still succeed. Accept 200 alongside error codes.
+        // 200 = proxy overrode model, 400 = bad request, 401 = unauthorized, 500 = server error
+        expect([200, 400, 401, 500]).toContain(response.status)
+      })
+
+      test('should reject empty messages array', async ({ electronApp, port }) => {
+        const { page } = electronApp
+
+        const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
+          method: 'POST',
+          body: {
+            model: 'gpt-4o',
+            messages: [],
+            stream: false,
+          },
+        })
+
+        // Should return an error for empty messages
+        // 400 = bad request, 401 = unauthorized (no API key), 500 = server error
+        expect([400, 401, 500]).toContain(response.status)
+      })
+
+      test('should handle system message injection', async ({ electronApp, port }) => {
+        const { page } = electronApp
+
+        // This test verifies that system prompts are properly handled
+        const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
+          method: 'POST',
+          body: {
+            model: 'gpt-4o-mini',
+            messages: [
+              { role: 'system', content: 'You are a helpful assistant.' },
+              { role: 'user', content: 'Hello' },
+            ],
+            stream: false,
+          },
+        })
+
+        // Accept any response - this is mainly testing the request format
+        expect([200, 401, 500]).toContain(response.status)
+      })
     })
-  })
+
+  // Skip in CI: requires real API calls
+  test.describe
+    .skip('Chat Completions - Streaming', () => {
+      test('should handle streaming request', async ({ electronApp, port }) => {
+        test.setTimeout(60000) // Increase timeout for LangChain streaming
+
+        const { page } = electronApp
+
+        // Test streaming endpoint
+        let chunkCount = 0
+        try {
+          for await (const _chunk of chatCompletionStream(
+            page,
+            port,
+            [{ role: 'user', content: 'Say hello' }],
+            'gpt-4o-mini'
+          )) {
+            chunkCount++
+            // Limit chunks for test performance
+            if (chunkCount > 10) break
+          }
+        } catch {
+          // If API key is missing, streaming will fail
+          // This is expected in CI without credentials
+        }
+
+        // If streaming worked, we should have received chunks
+        // Otherwise, this test passes as it's mainly testing the endpoint format
+        expect(chunkCount).toBeGreaterThanOrEqual(0)
+      })
+    })
 
   test.describe('Models Endpoint', () => {
     test('should return available models list', async ({ electronApp, port }) => {
