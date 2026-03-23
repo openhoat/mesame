@@ -17,10 +17,8 @@ import { cleanupTestData, navigateToSection, setupTestProfile } from '../helpers
 test.describe('API Response Performance', () => {
   // Skip all tests if no API key is configured
   test.beforeAll(() => {
-    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
-    if (!hasApiKey) {
-      test.skip()
-    }
+    const hasApiKey = !!(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY)
+    test.skip(!hasApiKey, 'Skipping: no API key configured')
   })
 
   test('should respond to health check quickly', async ({ electronApp, port }) => {
@@ -88,10 +86,8 @@ test.describe('API Response Performance', () => {
 test.describe('Streaming Performance', () => {
   // Skip all tests if no API key is configured
   test.beforeAll(() => {
-    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
-    if (!hasApiKey) {
-      test.skip()
-    }
+    const hasApiKey = !!(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY)
+    test.skip(!hasApiKey, 'Skipping: no API key configured')
   })
 
   test('should start streaming response quickly', async ({ electronApp, port }) => {

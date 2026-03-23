@@ -27,10 +27,8 @@ import {
 test.describe('Style Injection Quality', () => {
   // Skip all tests if no API key is configured
   test.beforeAll(() => {
-    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
-    if (!hasApiKey) {
-      test.skip()
-    }
+    const hasApiKey = !!(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY)
+    test.skip(!hasApiKey, 'Skipping: no API key configured')
   })
 
   // Cleanup before and after
@@ -219,10 +217,8 @@ test.describe('Style Injection Quality', () => {
 test.describe('Style Injection via Proxy API', () => {
   // Skip all tests if no API key is configured
   test.beforeAll(() => {
-    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
-    if (!hasApiKey) {
-      test.skip()
-    }
+    const hasApiKey = !!(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY)
+    test.skip(!hasApiKey, 'Skipping: no API key configured')
   })
 
   test.beforeEach(async ({ electronApp, port }) => {
@@ -296,10 +292,8 @@ test.describe('Style Injection via Proxy API', () => {
 test.describe('Style Comparison', () => {
   // Skip all tests if no API key is configured
   test.beforeAll(() => {
-    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
-    if (!hasApiKey) {
-      test.skip()
-    }
+    const hasApiKey = !!(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY)
+    test.skip(!hasApiKey, 'Skipping: no API key configured')
   })
 
   test.beforeEach(async ({ electronApp, port }) => {
@@ -391,10 +385,8 @@ test.describe('Style Comparison', () => {
 test.describe('Style Injection Edge Cases', () => {
   // Skip all tests if no API key is configured
   test.beforeAll(() => {
-    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
-    if (!hasApiKey) {
-      test.skip()
-    }
+    const hasApiKey = !!(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY)
+    test.skip(!hasApiKey, 'Skipping: no API key configured')
   })
 
   test.beforeEach(async ({ electronApp, port }) => {

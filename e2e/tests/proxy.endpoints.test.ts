@@ -22,10 +22,8 @@ test.describe('Proxy Endpoint Tests', () => {
   test.describe('Chat Completions - Non-streaming', () => {
     // Skip all tests if no API key is configured
     test.beforeAll(() => {
-      const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
-      if (!hasApiKey) {
-        test.skip()
-      }
+      const hasApiKey = !!(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY)
+      test.skip(!hasApiKey, 'Skipping: no API key configured')
     })
 
     test('should handle basic chat completion request', async ({ electronApp, port }) => {
@@ -110,10 +108,8 @@ test.describe('Proxy Endpoint Tests', () => {
   test.describe('Chat Completions - Streaming', () => {
     // Skip all tests if no API key is configured
     test.beforeAll(() => {
-      const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
-      if (!hasApiKey) {
-        test.skip()
-      }
+      const hasApiKey = !!(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY)
+      test.skip(!hasApiKey, 'Skipping: no API key configured')
     })
 
     test('should handle streaming request', async ({ electronApp, port }) => {
