@@ -25,6 +25,14 @@ import {
 } from '../helpers/setup.js'
 
 test.describe('Style Injection Quality', () => {
+  // Skip all tests if no API key is configured
+  test.beforeAll(() => {
+    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
+    if (!hasApiKey) {
+      test.skip()
+    }
+  })
+
   // Cleanup before and after
   test.beforeEach(async ({ electronApp, port }) => {
     const { page } = electronApp
@@ -209,6 +217,14 @@ test.describe('Style Injection Quality', () => {
 })
 
 test.describe('Style Injection via Proxy API', () => {
+  // Skip all tests if no API key is configured
+  test.beforeAll(() => {
+    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
+    if (!hasApiKey) {
+      test.skip()
+    }
+  })
+
   test.beforeEach(async ({ electronApp, port }) => {
     const { page } = electronApp
     await cleanupTestData(page, port)
@@ -278,6 +294,14 @@ test.describe('Style Injection via Proxy API', () => {
 })
 
 test.describe('Style Comparison', () => {
+  // Skip all tests if no API key is configured
+  test.beforeAll(() => {
+    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
+    if (!hasApiKey) {
+      test.skip()
+    }
+  })
+
   test.beforeEach(async ({ electronApp, port }) => {
     const { page } = electronApp
     await cleanupTestData(page, port)
@@ -365,6 +389,14 @@ test.describe('Style Comparison', () => {
 })
 
 test.describe('Style Injection Edge Cases', () => {
+  // Skip all tests if no API key is configured
+  test.beforeAll(() => {
+    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
+    if (!hasApiKey) {
+      test.skip()
+    }
+  })
+
   test.beforeEach(async ({ electronApp, port }) => {
     const { page } = electronApp
     await cleanupTestData(page, port)

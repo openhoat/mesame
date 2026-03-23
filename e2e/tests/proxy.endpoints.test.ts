@@ -20,6 +20,14 @@ test.describe('Proxy Endpoint Tests', () => {
   })
 
   test.describe('Chat Completions - Non-streaming', () => {
+    // Skip all tests if no API key is configured
+    test.beforeAll(() => {
+      const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
+      if (!hasApiKey) {
+        test.skip()
+      }
+    })
+
     test('should handle basic chat completion request', async ({ electronApp, port }) => {
       const { page } = electronApp
 
@@ -100,6 +108,14 @@ test.describe('Proxy Endpoint Tests', () => {
   })
 
   test.describe('Chat Completions - Streaming', () => {
+    // Skip all tests if no API key is configured
+    test.beforeAll(() => {
+      const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
+      if (!hasApiKey) {
+        test.skip()
+      }
+    })
+
     test('should handle streaming request', async ({ electronApp, port }) => {
       test.setTimeout(60000) // Increase timeout for LangChain streaming
 

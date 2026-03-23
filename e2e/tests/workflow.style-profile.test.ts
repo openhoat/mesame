@@ -26,6 +26,14 @@ import {
 } from '../helpers/setup.js'
 
 test.describe('Style Profile Workflow', () => {
+  // Skip all tests if no API key is configured
+  test.beforeAll(() => {
+    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
+    if (!hasApiKey) {
+      test.skip()
+    }
+  })
+
   // Cleanup before and after each test to ensure isolation
   test.beforeEach(async ({ electronApp, port }) => {
     const { page } = electronApp

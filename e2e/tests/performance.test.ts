@@ -15,6 +15,14 @@ import { chatCompletion, chatCompletionStream } from '../helpers/api.js'
 import { cleanupTestData, navigateToSection, setupTestProfile } from '../helpers/setup.js'
 
 test.describe('API Response Performance', () => {
+  // Skip all tests if no API key is configured
+  test.beforeAll(() => {
+    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
+    if (!hasApiKey) {
+      test.skip()
+    }
+  })
+
   test('should respond to health check quickly', async ({ electronApp, port }) => {
     const { page } = electronApp
 
@@ -78,6 +86,14 @@ test.describe('API Response Performance', () => {
 })
 
 test.describe('Streaming Performance', () => {
+  // Skip all tests if no API key is configured
+  test.beforeAll(() => {
+    const hasApiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
+    if (!hasApiKey) {
+      test.skip()
+    }
+  })
+
   test('should start streaming response quickly', async ({ electronApp, port }) => {
     test.setTimeout(60000)
 
