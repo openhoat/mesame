@@ -66,7 +66,8 @@ export const test = base.extend<{
       await waitForServer(port, process.env.CI ? 60000 : 30000)
 
       // Setup mock routes for API calls (unless real API is requested)
-      if (!process.env.USE_REAL_API) {
+      // Use TEST_REAL_API=true to test with real LLM API
+      if (process.env.TEST_REAL_API !== 'true') {
         await mockProxyAPI(page, port)
       }
 
