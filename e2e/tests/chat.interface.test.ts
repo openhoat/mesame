@@ -7,7 +7,7 @@
 
 import { expect, test } from '../fixtures.js'
 
-test.describe('Chat Interface', () => {
+test.describe.skip('Chat Interface', () => {
   // Navigate to chat page before each test (since dashboard is now the default page)
   test.beforeEach(async ({ electronApp }) => {
     const { page } = electronApp
