@@ -106,6 +106,10 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
     delete testEnv.NODE_OPTIONS
     testEnv.ELECTRON_ENABLE_LOGGING = '0'
     testEnv.ELECTRON_NO_ATTACH_CONSOLE = '1'
+
+    // HACK: Trick Playwright into thinking we're not in CI to disable forced debugging
+    testEnv.CI = 'false'
+    testEnv.GITHUB_ACTIONS = 'false'
   }
 
   // Launch Electron app (Playwright will find the electron executable automatically)
