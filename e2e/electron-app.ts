@@ -98,6 +98,11 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
     ...env,
   } as Record<string, string>
 
+  // Disable Node.js inspector via environment variable in CI/headless
+  if (process.env.CI || process.env.HEADLESS === 'true') {
+    testEnv.NODE_OPTIONS = '--inspect=0'
+  }
+
   // Launch Electron app (Playwright will find the electron executable automatically)
   if (process.env.CI) {
     console.log('[E2E] Launching Electron with env:', JSON.stringify(testEnv, null, 2))
