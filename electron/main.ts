@@ -33,19 +33,19 @@ const iconName = isDev ? 'MeSame_icon_512.png' : 'MeSame_icon.png'
 
 async function startServer(): Promise<void> {
   if (process.env.CI) {
-    console.log('[Electron Main] Starting server...')
+    process.stderr.write('[Electron Main] Starting server...\n')
   }
   server = await buildApp()
   await server.listen({ port: config.port, host: config.host })
   server.log.info(`[Electron] Server started at http://localhost:${config.port}`)
   if (process.env.CI) {
-    console.log(`[Electron Main] Server listening on port ${config.port}`)
+    process.stderr.write(`[Electron Main] Server listening on port ${config.port}\n`)
   }
 }
 
 function createWindow(): void {
   if (process.env.CI) {
-    console.log('[Electron Main] Creating window...')
+    process.stderr.write('[Electron Main] Creating window...\n')
   }
   const windowWidth = 1200
   const windowHeight = 800
@@ -55,7 +55,7 @@ function createWindow(): void {
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize
 
   if (process.env.CI) {
-    console.log(`[Electron Main] Primary display: ${screenWidth}x${screenHeight}`)
+    process.stderr.write(`[Electron Main] Primary display: ${screenWidth}x${screenHeight}\n`)
   }
 
   // Calculate centered position (add bounds offset for multi-screen support)
@@ -63,7 +63,7 @@ function createWindow(): void {
   const y = Math.round((screenHeight - windowHeight) / 2 + primaryDisplay.bounds.y)
 
   if (process.env.CI) {
-    console.log('[Electron Main] Creating BrowserWindow...')
+    process.stderr.write('[Electron Main] Creating BrowserWindow...\n')
   }
 
   mainWindow = new BrowserWindow({
@@ -86,7 +86,9 @@ function createWindow(): void {
   })
 
   if (process.env.CI) {
-    console.log(`[Electron Main] BrowserWindow created, loading URL: http://localhost:${config.port}`)
+    process.stderr.write(
+      `[Electron Main] BrowserWindow created, loading URL: http://localhost:${config.port}\n`
+    )
   }
 
   // Load the app from the local server
@@ -100,14 +102,14 @@ function createWindow(): void {
   // Handle loading errors
   mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
     const msg = `Failed to load: ${errorCode} - ${errorDescription}`
-    console.error(`[Electron Main] ${msg}`)
+    process.stderr.write(`[Electron Main] ${msg}\n`)
     server?.log.error(msg)
   })
 
   mainWindow.webContents.on('did-finish-load', () => {
     const msg = 'Page loaded successfully'
     if (process.env.CI) {
-      console.log(`[Electron Main] ${msg}`)
+      process.stderr.write(`[Electron Main] ${msg}\n`)
     }
     server?.log.info(msg)
   })
@@ -115,7 +117,7 @@ function createWindow(): void {
   // Show window when ready
   mainWindow.once('ready-to-show', () => {
     if (process.env.CI) {
-      console.log('[Electron Main] Window ready-to-show event fired')
+      process.stderr.write('[Electron Main] Window ready-to-show event fired\n')
     }
     mainWindow?.center()
     mainWindow?.show()
