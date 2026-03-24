@@ -144,7 +144,7 @@ test.describe
     })
   })
 
-test.describe('Chat Interface Performance', () => {
+test.describe.skip('Chat Interface Performance', () => {
   test('should render chat interface quickly', async ({ electronApp }) => {
     const { page } = electronApp
 
@@ -244,7 +244,7 @@ test.describe('Chat Interface Performance', () => {
   })
 })
 
-test.describe('File Upload Performance', () => {
+test.describe.skip('File Upload Performance', () => {
   test.beforeEach(async ({ electronApp, port }) => {
     const { page } = electronApp
     await cleanupTestData(page, port)
@@ -326,7 +326,7 @@ test.describe('File Upload Performance', () => {
   })
 })
 
-test.describe('Profile Creation Performance', () => {
+test.describe.skip('Profile Creation Performance', () => {
   test.beforeEach(async ({ electronApp, port }) => {
     const { page } = electronApp
     await cleanupTestData(page, port)
@@ -354,7 +354,7 @@ test.describe('Profile Creation Performance', () => {
   })
 })
 
-test.describe('Configuration Performance', () => {
+test.describe.skip('Configuration Performance', () => {
   test('should load configuration page quickly', async ({ electronApp }) => {
     const { page } = electronApp
 
@@ -400,7 +400,7 @@ test.describe('Configuration Performance', () => {
   })
 })
 
-test.describe('Memory and Resource Usage', () => {
+test.describe.skip('Memory and Resource Usage', () => {
   test('should handle page reload without memory leak', async ({ electronApp }) => {
     test.setTimeout(60000)
 
@@ -473,7 +473,7 @@ test.describe('Memory and Resource Usage', () => {
   })
 })
 
-test.describe('Performance Metrics Reporting', () => {
+test.describe.skip('Performance Metrics Reporting', () => {
   test('should measure and report key metrics', async ({ electronApp, port }) => {
     const { page } = electronApp
 

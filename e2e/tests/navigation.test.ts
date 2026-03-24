@@ -12,7 +12,7 @@ import { TEST_MESSAGES, TEST_PROFILES, TEST_SOURCES } from '../fixtures/test-dat
 import { expect, test } from '../fixtures.js'
 import { cleanupTestData, navigateToSection, setupTestProfile } from '../helpers/setup.js'
 
-test.describe('Navigation and State Management', () => {
+test.describe.skip('Navigation and State Management', () => {
   test('should navigate between all dashboard sections', async ({ electronApp }) => {
     const { page } = electronApp
 

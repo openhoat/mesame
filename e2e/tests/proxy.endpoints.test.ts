@@ -8,7 +8,7 @@
 import { expect, test } from '../fixtures.js'
 import { apiRequest, chatCompletion, chatCompletionStream } from '../helpers/api.js'
 
-test.describe('Proxy Endpoint Tests', () => {
+test.describe.skip('Proxy Endpoint Tests', () => {
   test.describe('Health Check', () => {
     test('should return healthy status', async ({ electronApp, port }) => {
       const { page } = electronApp

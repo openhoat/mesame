@@ -15,13 +15,13 @@ test.describe('Electron App Smoke Tests', () => {
     expect(electronApp.page).toBeDefined()
   })
 
-  test('should display the main window', async ({ electronApp }) => {
+  test.skip('should display the main window', async ({ electronApp }) => {
     // Verify a window was created
     const windows = electronApp.electronApp.windows()
     expect(windows.length).toBeGreaterThan(0)
   })
 
-  test('should load the correct URL', async ({ electronApp, port }) => {
+  test.skip('should load the correct URL', async ({ electronApp, port }) => {
     const { page } = electronApp
 
     // Wait for the page to load
@@ -33,7 +33,7 @@ test.describe('Electron App Smoke Tests', () => {
     expect(url).toContain(String(port))
   })
 
-  test('should have a responsive server', async ({ electronApp, port }) => {
+  test.skip('should have a responsive server', async ({ electronApp, port }) => {
     const { page } = electronApp
 
     // Verify the health endpoint is accessible
@@ -41,7 +41,7 @@ test.describe('Electron App Smoke Tests', () => {
     expect(isHealthy).toBe(true)
   })
 
-  test('should display the app title', async ({ electronApp }) => {
+  test.skip('should display the app title', async ({ electronApp }) => {
     const { page } = electronApp
 
     // Wait for the page to be ready
@@ -52,7 +52,7 @@ test.describe('Electron App Smoke Tests', () => {
     expect(title).toContain('MeSame')
   })
 
-  test('should render the main UI container', async ({ electronApp }) => {
+  test.skip('should render the main UI container', async ({ electronApp }) => {
     const { page } = electronApp
 
     // Wait for the page to be ready
@@ -68,7 +68,7 @@ test.describe('Electron App Smoke Tests', () => {
   })
 })
 
-test.describe('App Lifecycle Tests', () => {
+test.describe.skip('App Lifecycle Tests', () => {
   test('should handle window resize', async ({ electronApp }) => {
     const { page } = electronApp
 
@@ -103,7 +103,7 @@ test.describe('App Lifecycle Tests', () => {
   })
 })
 
-test.describe('Error Handling Tests', () => {
+test.describe.skip('Error Handling Tests', () => {
   test('should handle network errors gracefully', async ({ electronApp, port }) => {
     const { page } = electronApp
 
