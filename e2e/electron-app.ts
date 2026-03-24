@@ -97,36 +97,44 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
   // Launch Electron app
   const electronApp = await electron.launch({ args, env: testEnv })
 
-  // Get the first window (with timeout to prevent indefinite hang)
-  const page = await electronApp.firstWindow({ timeout })
+  try {
+    // Get the first window (with timeout to prevent indefinite hang)
+    const page = await electronApp.firstWindow({ timeout })
 
-  // Wait for the app to be ready
-  await page.waitForLoadState('domcontentloaded', { timeout })
+    // Wait for the app to be ready
+    await page.waitForLoadState('domcontentloaded', { timeout })
 
-  // Create stop function
-  const stop = async () => {
-    try {
-      await electronApp.close()
-    } catch {
-      // Ignore errors during cleanup
+    // Create stop function
+    const stop = async () => {
+      try {
+        await electronApp.close()
+      } catch {
+        // Ignore errors during cleanup
+      }
+
+      // Clean up the temporary user data directory
+      try {
+        const fs = await import('node:fs/promises')
+        await fs.rm(userDataDir, { recursive: true, force: true })
+      } catch {
+        // Ignore cleanup errors
+      }
+
+      // Brief pause to let X11/system resources be released
+      await new Promise(resolve => setTimeout(resolve, 200))
     }
 
-    // Clean up the temporary user data directory
-    try {
-      const fs = await import('node:fs/promises')
-      await fs.rm(userDataDir, { recursive: true, force: true })
-    } catch {
-      // Ignore cleanup errors
+    return {
+      electronApp,
+      page,
+      stop,
     }
-
-    // Brief pause to let X11/system resources be released
-    await new Promise(resolve => setTimeout(resolve, 200))
-  }
-
-  return {
-    electronApp,
-    page,
-    stop,
+  } catch (err) {
+    // Ensure the app is closed if launch setup fails
+    await electronApp.close().catch(() => {
+      // Ignore close errors during failed launch cleanup
+    })
+    throw err
   }
 }
 
