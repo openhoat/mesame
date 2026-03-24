@@ -43,7 +43,7 @@ export interface ElectronAppOptions {
  * ```
  */
 export async function startElectronApp(options: ElectronAppOptions = {}): Promise<ElectronTestApp> {
-  const { env = {}, timeout = 30000 } = options
+  const { env = {}, timeout = 15000 } = options
 
   // Get project root from this script's location
   // e2e/electron-app.ts -> project root is one level up
@@ -93,59 +93,11 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
     ...env,
   } as Record<string, string>
 
-  // Launch Electron app (Playwright will find the electron executable automatically)
-  if (process.env.CI || process.env.DEBUG_E2E) {
-    console.log('[E2E] Launching Electron with env:', JSON.stringify(testEnv, null, 2))
-    console.log('[E2E] Args:', args)
+  // Launch Electron app
+  const electronApp = await electron.launch({ args, env: testEnv })
 
-    // Extract relevant env vars for logging
-    const relevantEnv: Record<string, string> = {}
-    for (const key of Object.keys(testEnv)) {
-      if (key.includes('NODE') || key.includes('INSPECT') || key.includes('DEBUG')) {
-        relevantEnv[key] = testEnv[key]
-      }
-    }
-
-    console.log(
-      '[E2E] Playwright launch options:',
-      JSON.stringify(
-        {
-          executablePath: process.env.ELECTRON_EXEC_PATH,
-          timeout: process.env.CI ? 60000 : 30000,
-          env: relevantEnv,
-        },
-        null,
-        2
-      )
-    )
-  }
-
-  const electronApp = await electron.launch({
-    args,
-    env: testEnv,
-    executablePath: process.env.ELECTRON_EXEC_PATH, // Allow override for CI
-    timeout: process.env.CI ? 60000 : 30000,
-  })
-
-  if (process.env.CI) {
-    console.log('[E2E] Electron launched successfully, waiting for first window...')
-
-    // Capture Electron main process stdout/stderr in CI
-    const electronProcess = electronApp.process()
-    electronProcess.stdout?.on('data', (data: Buffer) => {
-      console.log(`[Electron stdout] ${data.toString()}`)
-    })
-    electronProcess.stderr?.on('data', (data: Buffer) => {
-      console.log(`[Electron stderr] ${data.toString()}`)
-    })
-  }
-
-  // Get the main window with timeout
+  // Get the first window (with timeout to prevent indefinite hang)
   const page = await electronApp.firstWindow({ timeout })
-
-  if (process.env.CI) {
-    console.log('[E2E] First window obtained successfully')
-  }
 
   // Wait for the app to be ready
   await page.waitForLoadState('domcontentloaded', { timeout })
