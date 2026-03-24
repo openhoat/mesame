@@ -68,77 +68,79 @@ test.describe('Electron App Smoke Tests', () => {
   })
 })
 
-test.describe.skip('App Lifecycle Tests', () => {
-  test('should handle window resize', async ({ electronApp }) => {
-    const { page } = electronApp
+test.describe
+  .skip('App Lifecycle Tests', () => {
+    test('should handle window resize', async ({ electronApp }) => {
+      const { page } = electronApp
 
-    // Get initial size
-    const initialSize = await page.viewportSize()
+      // Get initial size
+      const initialSize = await page.viewportSize()
 
-    // Resize the window
-    await page.setViewportSize({ width: 800, height: 600 })
+      // Resize the window
+      await page.setViewportSize({ width: 800, height: 600 })
 
-    // Verify resize
-    const newSize = await page.viewportSize()
-    expect(newSize?.width).toBe(800)
-    expect(newSize?.height).toBe(600)
+      // Verify resize
+      const newSize = await page.viewportSize()
+      expect(newSize?.width).toBe(800)
+      expect(newSize?.height).toBe(600)
 
-    // Restore original size if we had one
-    if (initialSize) {
-      await page.setViewportSize(initialSize)
-    }
-  })
-
-  test('should handle app minimize and restore', async ({ electronApp }) => {
-    const { page } = electronApp
-
-    // This test verifies the app can handle window state changes
-    // The actual minimize/restore would require Electron-specific APIs
-    // For now, just verify the window is still responsive
-    await page.waitForLoadState('networkidle')
-
-    // Verify the page is still interactive
-    const title = await page.title()
-    expect(title).toBeTruthy()
-  })
-})
-
-test.describe.skip('Error Handling Tests', () => {
-  test('should handle network errors gracefully', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
-    // Try to access a non-existent endpoint
-    const response = await page.evaluate(async url => {
-      try {
-        const res = await fetch(url)
-        return { status: res.status, ok: res.ok }
-      } catch (error) {
-        return { error: String(error) }
+      // Restore original size if we had one
+      if (initialSize) {
+        await page.setViewportSize(initialSize)
       }
-    }, `http://localhost:${port}/api/nonexistent`)
+    })
 
-    // Should return 404, not crash
-    expect(response.status).toBe(404)
+    test('should handle app minimize and restore', async ({ electronApp }) => {
+      const { page } = electronApp
+
+      // This test verifies the app can handle window state changes
+      // The actual minimize/restore would require Electron-specific APIs
+      // For now, just verify the window is still responsive
+      await page.waitForLoadState('networkidle')
+
+      // Verify the page is still interactive
+      const title = await page.title()
+      expect(title).toBeTruthy()
+    })
   })
 
-  test('should handle malformed requests', async ({ electronApp, port }) => {
-    const { page } = electronApp
+test.describe
+  .skip('Error Handling Tests', () => {
+    test('should handle network errors gracefully', async ({ electronApp, port }) => {
+      const { page } = electronApp
 
-    // Send malformed JSON
-    const response = await page.evaluate(async url => {
-      try {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: 'not valid json',
-        })
-        return { status: res.status }
-      } catch (error) {
-        return { error: String(error) }
-      }
-    }, `http://localhost:${port}/v1/chat/completions`)
+      // Try to access a non-existent endpoint
+      const response = await page.evaluate(async url => {
+        try {
+          const res = await fetch(url)
+          return { status: res.status, ok: res.ok }
+        } catch (error) {
+          return { error: String(error) }
+        }
+      }, `http://localhost:${port}/api/nonexistent`)
 
-    // Should return an error status, not crash
-    expect([400, 500]).toContain(response.status)
+      // Should return 404, not crash
+      expect(response.status).toBe(404)
+    })
+
+    test('should handle malformed requests', async ({ electronApp, port }) => {
+      const { page } = electronApp
+
+      // Send malformed JSON
+      const response = await page.evaluate(async url => {
+        try {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: 'not valid json',
+          })
+          return { status: res.status }
+        } catch (error) {
+          return { error: String(error) }
+        }
+      }, `http://localhost:${port}/v1/chat/completions`)
+
+      // Should return an error status, not crash
+      expect([400, 500]).toContain(response.status)
+    })
   })
-})

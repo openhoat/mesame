@@ -12,139 +12,140 @@ import { TEST_MESSAGES, TEST_PROFILES, TEST_SOURCES } from '../fixtures/test-dat
 import { expect, test } from '../fixtures.js'
 import { cleanupTestData, navigateToSection, setupTestProfile } from '../helpers/setup.js'
 
-test.describe.skip('Navigation and State Management', () => {
-  test('should navigate between all dashboard sections', async ({ electronApp }) => {
-    const { page } = electronApp
+test.describe
+  .skip('Navigation and State Management', () => {
+    test('should navigate between all dashboard sections', async ({ electronApp }) => {
+      const { page } = electronApp
 
-    // Wait for app to load
-    await page.waitForLoadState('networkidle')
-
-    // Test navigation to each section
-    const sections = ['chat', 'profiles', 'config', 'logs'] as const
-
-    for (const section of sections) {
-      await navigateToSection(page, section)
-
-      // Verify we're on the correct section by checking URL or content
-      // Wait for the section to load
+      // Wait for app to load
       await page.waitForLoadState('networkidle')
 
-      // Verify we can navigate back to dashboard
-      await navigateToSection(page, 'dashboard')
-      await page.waitForLoadState('networkidle')
-    }
+      // Test navigation to each section
+      const sections = ['chat', 'profiles', 'config', 'logs'] as const
 
-    // Final verification - we're back on dashboard
-    const dashboardHeading = page.locator('text=/Dashboard|Home/i')
-    const headingCount = await dashboardHeading.count()
+      for (const section of sections) {
+        await navigateToSection(page, section)
 
-    expect(headingCount).toBeGreaterThanOrEqual(0)
-  })
+        // Verify we're on the correct section by checking URL or content
+        // Wait for the section to load
+        await page.waitForLoadState('networkidle')
 
-  test('should preserve chat messages during navigation', async ({ electronApp }) => {
-    const { page } = electronApp
+        // Verify we can navigate back to dashboard
+        await navigateToSection(page, 'dashboard')
+        await page.waitForLoadState('networkidle')
+      }
 
-    // Navigate to chat
-    await navigateToSection(page, 'chat')
+      // Final verification - we're back on dashboard
+      const dashboardHeading = page.locator('text=/Dashboard|Home/i')
+      const headingCount = await dashboardHeading.count()
 
-    // Wait for chat interface
-    await page.waitForSelector('textarea', { timeout: 10000 })
+      expect(headingCount).toBeGreaterThanOrEqual(0)
+    })
 
-    // Send a message
-    const testMessage = 'Test message for navigation'
-    const textarea = page.locator('textarea')
-    await textarea.fill(testMessage)
-    await textarea.press('Enter')
+    test('should preserve chat messages during navigation', async ({ electronApp }) => {
+      const { page } = electronApp
 
-    // Wait for message to appear
-    await expect(page.locator(`text=${testMessage}`)).toBeVisible({ timeout: 5000 })
+      // Navigate to chat
+      await navigateToSection(page, 'chat')
 
-    // Navigate away
-    await navigateToSection(page, 'config')
-    await page.waitForTimeout(500)
+      // Wait for chat interface
+      await page.waitForSelector('textarea', { timeout: 10000 })
 
-    // Navigate back to chat
-    await navigateToSection(page, 'chat')
-    await page.waitForTimeout(500)
+      // Send a message
+      const testMessage = 'Test message for navigation'
+      const textarea = page.locator('textarea')
+      await textarea.fill(testMessage)
+      await textarea.press('Enter')
 
-    // Verify message is still there
-    const messageStillVisible = await page.locator(`text=${testMessage}`).count()
-    expect(messageStillVisible).toBeGreaterThan(0)
-  })
-
-  test('should preserve form data during navigation', async ({ electronApp }) => {
-    const { page } = electronApp
-
-    // Navigate to config
-    await navigateToSection(page, 'config')
-
-    // Fill in a field (but don't save)
-    const modelInput = page.locator('input[name*="model"]').first()
-    const modelInputCount = await modelInput.count()
-
-    if (modelInputCount > 0) {
-      const testValue = 'test-model-navigation'
-      await modelInput.fill(testValue)
+      // Wait for message to appear
+      await expect(page.locator(`text=${testMessage}`)).toBeVisible({ timeout: 5000 })
 
       // Navigate away
-      await navigateToSection(page, 'dashboard')
-      await page.waitForTimeout(500)
-
-      // Navigate back
       await navigateToSection(page, 'config')
       await page.waitForTimeout(500)
 
-      // Check if value is preserved (may or may not be, depending on implementation)
-      const currentValue = await modelInput.inputValue()
+      // Navigate back to chat
+      await navigateToSection(page, 'chat')
+      await page.waitForTimeout(500)
 
-      // Either value is preserved or reset - both are valid behaviors
-      expect(currentValue.length).toBeGreaterThanOrEqual(0)
-    }
+      // Verify message is still there
+      const messageStillVisible = await page.locator(`text=${testMessage}`).count()
+      expect(messageStillVisible).toBeGreaterThan(0)
+    })
+
+    test('should preserve form data during navigation', async ({ electronApp }) => {
+      const { page } = electronApp
+
+      // Navigate to config
+      await navigateToSection(page, 'config')
+
+      // Fill in a field (but don't save)
+      const modelInput = page.locator('input[name*="model"]').first()
+      const modelInputCount = await modelInput.count()
+
+      if (modelInputCount > 0) {
+        const testValue = 'test-model-navigation'
+        await modelInput.fill(testValue)
+
+        // Navigate away
+        await navigateToSection(page, 'dashboard')
+        await page.waitForTimeout(500)
+
+        // Navigate back
+        await navigateToSection(page, 'config')
+        await page.waitForTimeout(500)
+
+        // Check if value is preserved (may or may not be, depending on implementation)
+        const currentValue = await modelInput.inputValue()
+
+        // Either value is preserved or reset - both are valid behaviors
+        expect(currentValue.length).toBeGreaterThanOrEqual(0)
+      }
+    })
+
+    test('should handle rapid navigation without errors', async ({ electronApp }) => {
+      const { page } = electronApp
+
+      await page.waitForLoadState('networkidle')
+
+      // Rapidly switch between sections
+      const sections = ['chat', 'config', 'dashboard', 'profiles', 'chat'] as const
+
+      for (const section of sections) {
+        await navigateToSection(page, section)
+        // Minimal wait to allow navigation to start
+        await page.waitForTimeout(100)
+      }
+
+      // Wait for final navigation to complete
+      await page.waitForLoadState('networkidle')
+
+      // Verify app is still functional
+      const body = await page.locator('body').count()
+      expect(body).toBe(1)
+    })
+
+    test('should maintain active section indicator', async ({ electronApp }) => {
+      const { page } = electronApp
+
+      // Navigate to chat
+      await navigateToSection(page, 'chat')
+      await page.waitForTimeout(300)
+
+      // Look for active indicator on Chat link
+      // NavLink from Mantine is not a button, use text selector instead
+      const chatLink = page.getByText('Chat', { exact: true })
+      const chatLinkCount = await chatLink.count()
+
+      if (chatLinkCount > 0) {
+        // Check if link has active state (implementation-dependent)
+        const className = await chatLink.getAttribute('class')
+
+        // Active state might be indicated by a class name
+        expect(className).toBeTruthy()
+      }
+    })
   })
-
-  test('should handle rapid navigation without errors', async ({ electronApp }) => {
-    const { page } = electronApp
-
-    await page.waitForLoadState('networkidle')
-
-    // Rapidly switch between sections
-    const sections = ['chat', 'config', 'dashboard', 'profiles', 'chat'] as const
-
-    for (const section of sections) {
-      await navigateToSection(page, section)
-      // Minimal wait to allow navigation to start
-      await page.waitForTimeout(100)
-    }
-
-    // Wait for final navigation to complete
-    await page.waitForLoadState('networkidle')
-
-    // Verify app is still functional
-    const body = await page.locator('body').count()
-    expect(body).toBe(1)
-  })
-
-  test('should maintain active section indicator', async ({ electronApp }) => {
-    const { page } = electronApp
-
-    // Navigate to chat
-    await navigateToSection(page, 'chat')
-    await page.waitForTimeout(300)
-
-    // Look for active indicator on Chat link
-    // NavLink from Mantine is not a button, use text selector instead
-    const chatLink = page.getByText('Chat', { exact: true })
-    const chatLinkCount = await chatLink.count()
-
-    if (chatLinkCount > 0) {
-      // Check if link has active state (implementation-dependent)
-      const className = await chatLink.getAttribute('class')
-
-      // Active state might be indicated by a class name
-      expect(className).toBeTruthy()
-    }
-  })
-})
 
 test.describe
   .skip('Data Persistence', () => {
