@@ -38,7 +38,7 @@ export const test = base.extend<{
           MESAME_PROVIDER: process.env.MESAME_PROVIDER || 'mock',
           MESAME_MODEL: process.env.MESAME_MODEL || 'mock-model',
           MESAME_PORT: '0', // Use random available port
-          MESAME_LOG_LEVEL: 'silent',
+          MESAME_LOG_LEVEL: process.env.CI ? 'debug' : 'silent', // Debug logs in CI
           NODE_ENV: 'test',
         },
       })
