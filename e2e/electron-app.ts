@@ -104,9 +104,15 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
   }
 
   // Launch Electron app (Playwright will find the electron executable automatically)
-  if (process.env.CI) {
+  if (process.env.CI || process.env.DEBUG_E2E) {
     console.log('[E2E] Launching Electron with env:', JSON.stringify(testEnv, null, 2))
     console.log('[E2E] Args:', args)
+    console.log('[E2E] Playwright launch options:', JSON.stringify({
+      executablePath: process.env.ELECTRON_EXEC_PATH,
+      timeout: process.env.CI ? 60000 : 30000,
+      env: Object.keys(testEnv).filter(k => k.includes('NODE') || k.includes('INSPECT') || k.includes('DEBUG'))
+        .reduce((obj, key) => ({ ...obj, [key]: testEnv[key] }), {})
+    }, null, 2))
   }
 
   const electronApp = await electron.launch({
