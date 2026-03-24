@@ -90,7 +90,7 @@
     "prisma": "6.5.0",
     "tailwindcss": "4.2.1",
     "tsx": "4.19.4",
-    "typescript": "5.9.3",
+    "typescript": "6.0.2",
     "vitepress": "1.6.4",
     "vitest": "3.2.4",
     "wireit": "0.14.12"
