@@ -10,7 +10,6 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { ElectronApplication, Page } from '@playwright/test'
 import { _electron as electron } from '@playwright/test'
-import { config as dotenvConfig } from 'dotenv'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -49,12 +48,6 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
   // Get project root from this script's location
   // e2e/electron-app.ts -> project root is one level up
   const projectRoot = path.resolve(__dirname, '..')
-
-  // Load .env.test for test configuration (mock provider, etc.)
-  const envTestPath = path.join(projectRoot, '.env.test')
-  if (fs.existsSync(envTestPath)) {
-    dotenvConfig({ path: envTestPath })
-  }
 
   const mainPath = path.join(projectRoot, 'dist', 'electron', 'electron', 'main.js')
 
