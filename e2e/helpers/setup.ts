@@ -273,9 +273,10 @@ export async function navigateToSection(
     throw new Error(`Unknown section: ${section}`)
   }
 
-  // Click the navigation button
-  const button = page.getByRole('button', { name: buttonName })
-  await button.click()
+  // Click the navigation link
+  // NavLink from Mantine is not a button, use text selector instead
+  const navLink = page.getByText(buttonName, { exact: true })
+  await navLink.click()
 
   // Wait for navigation to complete
   await page.waitForLoadState('networkidle')

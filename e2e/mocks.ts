@@ -328,3 +328,60 @@ export async function mockWithRetry(
     }
   })
 }
+
+/**
+ * Mock the local proxy API for chat completions
+ * This intercepts requests to the mesame proxy instead of external APIs
+ */
+export async function mockProxyAPI(page: Page, port: number): Promise<void> {
+  // Mock chat completions endpoint (both streaming and non-streaming)
+  await page.route(`http://localhost:${port}/api/v1/chat/completions`, async (route: Route) => {
+    const request = route.request()
+    const postData = request.postDataJSON()
+    const isStreaming = postData?.stream === true
+
+    if (isStreaming) {
+      // Streaming response
+      const chunks = mockOpenAIResponses.chatCompletionStreaming
+      const body = `${chunks.map(chunk => `data: ${JSON.stringify(chunk)}\n\n`).join('')}data: [DONE]\n\n`
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/event-stream',
+        body,
+      })
+    } else {
+      // Non-streaming response
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockOpenAIResponses.chatCompletion),
+      })
+    }
+  })
+
+  // Mock models endpoint
+  await page.route(`http://localhost:${port}/api/v1/models`, async (route: Route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        object: 'list',
+        data: [
+          { id: 'gpt-4o', object: 'model', created: Date.now(), owned_by: 'openai' },
+          { id: 'gpt-4o-mini', object: 'model', created: Date.now(), owned_by: 'openai' },
+          { id: 'gpt-4', object: 'model', created: Date.now(), owned_by: 'openai' },
+        ],
+      }),
+    })
+  })
+
+  // Mock health endpoint
+  await page.route(`http://localhost:${port}/health`, async (route: Route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ status: 'ok', timestamp: Date.now() }),
+    })
+  })
+}

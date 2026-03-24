@@ -136,6 +136,32 @@ Utilities for test environment management:
 - `navigateToSection()` - Navigate dashboard sections
 - `matchesStylePattern()` - Verify style patterns in text
 
+## API Mocking
+
+**By default, all E2E tests use mocked API responses** to avoid making real API calls. This makes tests:
+- ✅ **Faster** - No network latency
+- ✅ **Reliable** - No rate limits or API outages
+- ✅ **Deterministic** - Consistent responses
+- ✅ **Free** - No API costs
+
+### Using Real API (Optional)
+
+To test with real LLM API calls (requires valid API keys):
+
+```bash
+# Set environment variable
+TEST_REAL_API=true npm run test:e2e
+
+# Or for a specific test file
+TEST_REAL_API=true npx playwright test tests/chat.simple.test.ts
+```
+
+**Note:** Real API tests will:
+- Require valid `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`
+- Incur API costs
+- Take longer due to network latency
+- May fail if API is rate-limited or unavailable
+
 ## Running Tests
 
 ### Prerequisites
@@ -153,8 +179,11 @@ Utilities for test environment management:
 ### Test Commands
 
 ```bash
-# Run E2E tests
+# Run E2E tests (with mocks)
 npm run test:e2e
+
+# Run tests with real API calls
+TEST_REAL_API=true npm run test:e2e
 
 # Run tests with UI
 npm run test:e2e:ui

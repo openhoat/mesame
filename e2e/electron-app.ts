@@ -7,8 +7,12 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import type { ElectronApplication, Page } from '@playwright/test'
 import { _electron as electron } from '@playwright/test'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 export interface ElectronTestApp {
   electronApp: ElectronApplication
@@ -39,11 +43,12 @@ export interface ElectronAppOptions {
  * ```
  */
 export async function startElectronApp(options: ElectronAppOptions = {}): Promise<ElectronTestApp> {
-  const { env = {}, timeout = 30000 } = options
+  const { env = {}, timeout = 15000 } = options
 
-  // Use process.cwd() to get the project root
-  // This works reliably in both local development and CI environments
-  const projectRoot = process.cwd()
+  // Get project root from this script's location
+  // e2e/electron-app.ts -> project root is one level up
+  const projectRoot = path.resolve(__dirname, '..')
+
   const mainPath = path.join(projectRoot, 'dist', 'electron', 'electron', 'main.js')
 
   // Verify the build exists
@@ -73,57 +78,73 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
     args.push('--disable-gpu')
     args.push('--disable-software-rasterizer')
     args.push('--disable-dev-shm-usage')
-  } else {
-    // Local development flags
-    args.push('--ozone-platform=x11')
-    args.push('--disable-vulkan')
   }
 
-  // Set test environment variables
+  // Start minimized (like termaid does - separate condition)
+  args.push('--start-minimized')
+
+  // Build environment variables
   const testEnv: Record<string, string> = {
     ...process.env,
     NODE_ENV: 'test',
     MESAME_LOG_LEVEL: 'silent',
     MESAME_PORT: env.MESAME_PORT || '0', // Use random available port
     ...env,
-  } as Record<string, string>
-
-  // Launch Electron app (Playwright will find the electron executable automatically)
-  const electronApp = await electron.launch({
-    args,
-    env: testEnv,
-  })
-
-  // Get the main window with timeout
-  const page = await electronApp.firstWindow({ timeout })
-
-  // Wait for the app to be ready
-  await page.waitForLoadState('domcontentloaded', { timeout })
-
-  // Create stop function
-  const stop = async () => {
-    try {
-      await electronApp.close()
-    } catch {
-      // Ignore errors during cleanup
-    }
-
-    // Clean up the temporary user data directory
-    try {
-      const fs = await import('node:fs/promises')
-      await fs.rm(userDataDir, { recursive: true, force: true })
-    } catch {
-      // Ignore cleanup errors
-    }
-
-    // Brief pause to let X11/system resources be released
-    await new Promise(resolve => setTimeout(resolve, 200))
   }
 
-  return {
-    electronApp,
-    page,
-    stop,
+  // Launch Electron app
+  const electronApp = await electron.launch({ args, env: testEnv })
+
+  // Capture Electron stderr for debugging (temporarily)
+  if (process.env.CI) {
+    const electronProcess = electronApp.process()
+    electronProcess.stderr?.on('data', (data: Buffer) => {
+      console.log(`[Electron stderr] ${data.toString()}`)
+    })
+  }
+
+  try {
+    // Get the browser context (like termaid does)
+    // This seems to be necessary before calling firstWindow()
+    void electronApp.context()
+
+    // Get the first window (with timeout to prevent indefinite hang)
+    const page = await electronApp.firstWindow({ timeout })
+
+    // Wait for the app to be ready
+    await page.waitForLoadState('domcontentloaded', { timeout })
+
+    // Create stop function
+    const stop = async () => {
+      try {
+        await electronApp.close()
+      } catch {
+        // Ignore errors during cleanup
+      }
+
+      // Clean up the temporary user data directory
+      try {
+        const fs = await import('node:fs/promises')
+        await fs.rm(userDataDir, { recursive: true, force: true })
+      } catch {
+        // Ignore cleanup errors
+      }
+
+      // Brief pause to let X11/system resources be released
+      await new Promise(resolve => setTimeout(resolve, 200))
+    }
+
+    return {
+      electronApp,
+      page,
+      stop,
+    }
+  } catch (err) {
+    // Ensure the app is closed if launch setup fails
+    await electronApp.close().catch(() => {
+      // Ignore close errors during failed launch cleanup
+    })
+    throw err
   }
 }
 

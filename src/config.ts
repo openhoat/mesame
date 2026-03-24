@@ -1,4 +1,4 @@
-export type Provider = 'openai' | 'anthropic' | 'google' | 'ollama'
+export type Provider = 'openai' | 'anthropic' | 'google' | 'ollama' | 'mock'
 
 export interface ProviderConfig {
   name: string
@@ -32,6 +32,12 @@ const PROVIDER_CONFIGS: Record<Provider, ProviderConfig> = {
     apiKeyEnvVar: '',
     requiresApiKey: false,
   },
+  mock: {
+    name: 'Mock',
+    defaultBaseUrl: 'http://localhost:3000',
+    apiKeyEnvVar: '',
+    requiresApiKey: false,
+  },
 }
 
 export interface AppConfig {
@@ -53,10 +59,12 @@ function getProviderApiKey(provider: Provider): string | undefined {
 
 function parseProvider(value: string | undefined): Provider {
   if (!value) return 'ollama'
-  if (['openai', 'anthropic', 'google', 'ollama'].includes(value)) {
+  if (['openai', 'anthropic', 'google', 'ollama', 'mock'].includes(value)) {
     return value as Provider
   }
-  throw new Error(`Unknown provider: ${value}. Valid providers: openai, anthropic, google, ollama`)
+  throw new Error(
+    `Unknown provider: ${value}. Valid providers: openai, anthropic, google, ollama, mock`
+  )
 }
 
 function detectLanguage(): string {
