@@ -279,7 +279,7 @@ export async function navigateToSection(
   await navLink.click()
 
   // Wait for navigation to complete
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('domcontentloaded')
 }
 
 /**

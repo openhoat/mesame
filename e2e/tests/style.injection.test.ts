@@ -353,10 +353,7 @@ test.describe('Style Injection Edge Cases', () => {
     await cleanupTestData(page, port)
   })
 
-  test('should handle very long user messages with style injection', async ({
-    electronApp,
-    port,
-  }) => {
+  test('should handle very long user messages with style injection', async ({ page, port }) => {
     test.setTimeout(90000)
 
     // Create style profile

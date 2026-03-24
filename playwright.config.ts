@@ -5,6 +5,8 @@ import { defineConfig } from '@playwright/test'
  *
  * This configuration supports:
  * - Running tests against the Electron app
+ * - Sequential execution (Electron apps can't run in parallel)
+ * - Isolated database per test run
  * - Headless mode for CI environments (set HEADLESS=true)
  * - Debug mode for interactive debugging
  */
@@ -12,10 +14,10 @@ import { defineConfig } from '@playwright/test'
 export default defineConfig({
   testDir: './e2e/tests',
   outputDir: 'dist/test-results',
-  fullyParallel: false, // Electron app tests should run sequentially
+  fullyParallel: false, // Electron apps require sequential execution
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0, // Reduced from 2 to 1 for faster CI
-  workers: 1, // Electron apps require single worker
+  workers: 1, // Electron apps require single worker (can't run in parallel)
   reporter: [['list'], ['html', { outputFolder: 'dist/e2e-report', open: 'never' }]],
   timeout: 30000, // Reduced from 45s to 30s
   use: {

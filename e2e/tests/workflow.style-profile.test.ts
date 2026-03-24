@@ -36,7 +36,7 @@ test.describe('Style Profile Workflow', () => {
   })
 
   test('should complete full workflow: upload source → create profile → use in chat', async ({
-    electronApp,
+    page,
     port,
   }) => {
     test.setTimeout(60000) // Extended timeout for full workflow
@@ -179,7 +179,7 @@ test.describe('Style Profile Workflow', () => {
     // ========================================
 
     await page.reload()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // ========================================
     // Step 3: Verify profile still exists

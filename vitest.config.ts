@@ -1,4 +1,8 @@
+import { config as dotenvConfig } from 'dotenv'
 import { defineConfig } from 'vitest/config'
+
+// Load .env before anything else to prevent noisy dotenv logs from dependencies
+dotenvConfig({ quiet: true })
 
 export default defineConfig({
   test: {

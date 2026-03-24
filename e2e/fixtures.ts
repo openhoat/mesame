@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename)
 const projectRoot = path.resolve(__dirname, '..')
 const envTestPath = path.join(projectRoot, '.env.test')
 if (fs.existsSync(envTestPath)) {
-  dotenvConfig({ path: envTestPath })
+  dotenvConfig({ path: envTestPath, quiet: true })
 }
 
 // Extend base test with Electron fixtures (like termaid)
@@ -27,7 +27,11 @@ export const test = base.extend<{
 }>({
   // Launch the Electron app before each test (like termaid)
   // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture pattern requires empty object
-  electronApp: async ({}, use) => {
+  electronApp: async ({}, use, testInfo) => {
+    // Use a unique database per worker to enable parallel test execution
+    const workerIndex = testInfo.parallelIndex
+    const dbPath = `file:./prisma/test-${workerIndex}.db`
+
     const appData = await startElectronApp({
       timeout: process.env.CI ? 60000 : 30000,
       env: {
@@ -36,6 +40,7 @@ export const test = base.extend<{
         MESAME_PORT: '0',
         MESAME_LOG_LEVEL: 'silent',
         NODE_ENV: 'test',
+        DATABASE_URL: dbPath,
       },
     })
 

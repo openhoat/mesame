@@ -23,7 +23,7 @@ test.describe('Electron App Smoke Tests', () => {
 
   test('should load the correct URL', async ({ page, port }) => {
     // Wait for the page to load
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // Verify we're on localhost
     const url = page.url()
@@ -48,7 +48,7 @@ test.describe('Electron App Smoke Tests', () => {
 
   test('should render the main UI container', async ({ page }) => {
     // Wait for the page to be ready
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // Check for main container (adjust selector based on actual UI)
     const body = await page.$('body')
@@ -83,7 +83,7 @@ test.describe('App Lifecycle Tests', () => {
     // This test verifies the app can handle window state changes
     // The actual minimize/restore would require Electron-specific APIs
     // For now, just verify the window is still responsive
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // Verify the page is still interactive
     const title = await page.title()
