@@ -7,15 +7,16 @@
 
 import { expect, test } from '../fixtures.js'
 
-test.describe.skip('Chat Interface', () => {
+test.describe('Chat Interface', () => {
   // Navigate to chat page before each test (since dashboard is now the default page)
   test.beforeEach(async ({ electronApp }) => {
     const { page } = electronApp
     await page.waitForLoadState('networkidle')
 
-    // Click on the Chat button in the sidebar to navigate to chat
-    const chatButton = page.getByRole('button', { name: 'Chat' })
-    await chatButton.click()
+    // Click on the Chat link in the sidebar to navigate to chat
+    // NavLink from Mantine is not a button, use text selector instead
+    const chatLink = page.getByText('Chat', { exact: true })
+    await chatLink.click()
 
     // Wait for chat to load by checking for the chat input
     await expect(page.locator('#input')).toBeVisible({ timeout: 5000 })

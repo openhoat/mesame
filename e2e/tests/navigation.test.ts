@@ -12,7 +12,7 @@ import { TEST_MESSAGES, TEST_PROFILES, TEST_SOURCES } from '../fixtures/test-dat
 import { expect, test } from '../fixtures.js'
 import { cleanupTestData, navigateToSection, setupTestProfile } from '../helpers/setup.js'
 
-test.describe.skip('Navigation and State Management', () => {
+test.describe('Navigation and State Management', () => {
   test('should navigate between all dashboard sections', async ({ electronApp }) => {
     const { page } = electronApp
 
@@ -131,13 +131,14 @@ test.describe.skip('Navigation and State Management', () => {
     await navigateToSection(page, 'chat')
     await page.waitForTimeout(300)
 
-    // Look for active indicator on Chat button
-    const chatButton = page.getByRole('button', { name: 'Chat' })
-    const chatButtonCount = await chatButton.count()
+    // Look for active indicator on Chat link
+    // NavLink from Mantine is not a button, use text selector instead
+    const chatLink = page.getByText('Chat', { exact: true })
+    const chatLinkCount = await chatLink.count()
 
-    if (chatButtonCount > 0) {
-      // Check if button has active state (implementation-dependent)
-      const className = await chatButton.getAttribute('class')
+    if (chatLinkCount > 0) {
+      // Check if link has active state (implementation-dependent)
+      const className = await chatLink.getAttribute('class')
 
       // Active state might be indicated by a class name
       expect(className).toBeTruthy()
