@@ -78,6 +78,7 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
     args.push('--disable-gpu')
     args.push('--disable-software-rasterizer')
     args.push('--disable-dev-shm-usage')
+    args.push('--start-minimized')
   } else {
     // Local development flags
     args.push('--ozone-platform=x11')
