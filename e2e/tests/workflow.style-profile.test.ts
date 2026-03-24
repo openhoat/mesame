@@ -25,7 +25,6 @@ import {
   waitForProfile,
 } from '../helpers/setup.js'
 
-// Skip in CI: requires real API calls
 test.describe
   .skip('Style Profile Workflow', () => {
     // Cleanup before and after each test to ensure isolation

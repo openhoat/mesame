@@ -14,7 +14,6 @@ import { expect, test } from '../fixtures.js'
 import { chatCompletion, chatCompletionStream } from '../helpers/api.js'
 import { cleanupTestData, navigateToSection, setupTestProfile } from '../helpers/setup.js'
 
-// Skip in CI: requires real API calls
 test.describe
   .skip('API Response Performance', () => {
     test('should respond to health check quickly', async ({ electronApp, port }) => {
@@ -79,7 +78,6 @@ test.describe
     })
   })
 
-// Skip in CI: requires real API calls
 test.describe
   .skip('Streaming Performance', () => {
     test('should start streaming response quickly', async ({ electronApp, port }) => {

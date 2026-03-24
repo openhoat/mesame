@@ -1,7 +1,6 @@
 import { expect } from '@playwright/test'
 import { test } from '../fixtures.js'
 
-// Skip in CI: requires real API calls
 test.describe
   .skip('Chat Streaming Tests', () => {
     test('should receive and display streaming chat response', async ({ electronApp }) => {
