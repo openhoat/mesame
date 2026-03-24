@@ -146,201 +146,206 @@ test.describe('Navigation and State Management', () => {
   })
 })
 
-test.describe.skip('Data Persistence', () => {
-  // Cleanup before and after
-  test.beforeEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
-    await cleanupTestData(page, port)
-  })
-
-  test.afterEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
-    await cleanupTestData(page, port)
-  })
-
-  test('should persist style profile after page reload', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
-    // Create a profile
-    const result = await setupTestProfile(page, port, TEST_PROFILES.casual, TEST_SOURCES.casual)
-    expect(result.success).toBe(true)
-
-    // Reload the page
-    await page.reload()
-    await page.waitForLoadState('networkidle')
-
-    // Navigate to profiles
-    await navigateToSection(page, 'profiles')
-
-    // Verify profile still exists
-    await expect(page.locator(`text=${TEST_PROFILES.casual.name}`)).toBeVisible({
-      timeout: 5000,
+test.describe
+  .skip('Data Persistence', () => {
+    // Cleanup before and after
+    test.beforeEach(async ({ electronApp, port }) => {
+      const { page } = electronApp
+      await cleanupTestData(page, port)
     })
-  })
 
-  test('should persist configuration after page reload', async ({ electronApp }) => {
-    const { page } = electronApp
+    test.afterEach(async ({ electronApp, port }) => {
+      const { page } = electronApp
+      await cleanupTestData(page, port)
+    })
 
-    // Navigate to config
-    await navigateToSection(page, 'config')
+    test('should persist style profile after page reload', async ({ electronApp, port }) => {
+      const { page } = electronApp
 
-    // Get current model value
-    const modelInput = page.locator('input[name*="model"]').first()
-    const modelInputCount = await modelInput.count()
-
-    if (modelInputCount > 0) {
-      const originalValue = await modelInput.inputValue()
+      // Create a profile
+      const result = await setupTestProfile(page, port, TEST_PROFILES.casual, TEST_SOURCES.casual)
+      expect(result.success).toBe(true)
 
       // Reload the page
       await page.reload()
       await page.waitForLoadState('networkidle')
 
-      // Navigate back to config
-      await navigateToSection(page, 'config')
-      await page.waitForTimeout(500)
+      // Navigate to profiles
+      await navigateToSection(page, 'profiles')
 
-      // Verify value is the same
-      const newValue = await modelInput.inputValue()
-      expect(newValue).toBe(originalValue)
-    }
-  })
-
-  test('should preserve chat history after reload', async ({ electronApp }) => {
-    const { page } = electronApp
-
-    // Navigate to chat
-    await navigateToSection(page, 'chat')
-    await page.waitForSelector('textarea', { timeout: 10000 })
-
-    // Send a message
-    const textarea = page.locator('textarea')
-    await textarea.fill(TEST_MESSAGES.simpleGreeting.content)
-    await textarea.press('Enter')
-
-    // Wait for message to appear
-    await expect(page.locator(`text=${TEST_MESSAGES.simpleGreeting.content}`)).toBeVisible({
-      timeout: 5000,
+      // Verify profile still exists
+      await expect(page.locator(`text=${TEST_PROFILES.casual.name}`)).toBeVisible({
+        timeout: 5000,
+      })
     })
 
-    // Reload the page
-    await page.reload()
-    await page.waitForLoadState('networkidle')
+    test('should persist configuration after page reload', async ({ electronApp }) => {
+      const { page } = electronApp
 
-    // Navigate to chat
-    await navigateToSection(page, 'chat')
+      // Navigate to config
+      await navigateToSection(page, 'config')
 
-    // Check if message history is preserved (implementation-dependent)
-    const messageCount = await page.locator(`text=${TEST_MESSAGES.simpleGreeting.content}`).count()
+      // Get current model value
+      const modelInput = page.locator('input[name*="model"]').first()
+      const modelInputCount = await modelInput.count()
 
-    // History may or may not be preserved - both are valid
-    expect(messageCount).toBeGreaterThanOrEqual(0)
-  })
+      if (modelInputCount > 0) {
+        const originalValue = await modelInput.inputValue()
 
-  test('should handle multiple reloads without data loss', async ({ electronApp, port }) => {
-    const { page } = electronApp
+        // Reload the page
+        await page.reload()
+        await page.waitForLoadState('networkidle')
 
-    // Create a profile
-    const result = await setupTestProfile(
-      page,
-      port,
-      TEST_PROFILES.technical,
-      TEST_SOURCES.technical
-    )
-    expect(result.success).toBe(true)
+        // Navigate back to config
+        await navigateToSection(page, 'config')
+        await page.waitForTimeout(500)
 
-    // Reload multiple times
-    for (let i = 0; i < 3; i++) {
+        // Verify value is the same
+        const newValue = await modelInput.inputValue()
+        expect(newValue).toBe(originalValue)
+      }
+    })
+
+    test('should preserve chat history after reload', async ({ electronApp }) => {
+      const { page } = electronApp
+
+      // Navigate to chat
+      await navigateToSection(page, 'chat')
+      await page.waitForSelector('textarea', { timeout: 10000 })
+
+      // Send a message
+      const textarea = page.locator('textarea')
+      await textarea.fill(TEST_MESSAGES.simpleGreeting.content)
+      await textarea.press('Enter')
+
+      // Wait for message to appear
+      await expect(page.locator(`text=${TEST_MESSAGES.simpleGreeting.content}`)).toBeVisible({
+        timeout: 5000,
+      })
+
+      // Reload the page
       await page.reload()
       await page.waitForLoadState('networkidle')
-    }
 
-    // Verify profile still exists
-    await navigateToSection(page, 'profiles')
-    await expect(page.locator(`text=${TEST_PROFILES.technical.name}`)).toBeVisible({
-      timeout: 5000,
+      // Navigate to chat
+      await navigateToSection(page, 'chat')
+
+      // Check if message history is preserved (implementation-dependent)
+      const messageCount = await page
+        .locator(`text=${TEST_MESSAGES.simpleGreeting.content}`)
+        .count()
+
+      // History may or may not be preserved - both are valid
+      expect(messageCount).toBeGreaterThanOrEqual(0)
+    })
+
+    test('should handle multiple reloads without data loss', async ({ electronApp, port }) => {
+      const { page } = electronApp
+
+      // Create a profile
+      const result = await setupTestProfile(
+        page,
+        port,
+        TEST_PROFILES.technical,
+        TEST_SOURCES.technical
+      )
+      expect(result.success).toBe(true)
+
+      // Reload multiple times
+      for (let i = 0; i < 3; i++) {
+        await page.reload()
+        await page.waitForLoadState('networkidle')
+      }
+
+      // Verify profile still exists
+      await navigateToSection(page, 'profiles')
+      await expect(page.locator(`text=${TEST_PROFILES.technical.name}`)).toBeVisible({
+        timeout: 5000,
+      })
     })
   })
-})
 
-test.describe.skip('Browser Navigation', () => {
-  test('should handle browser back button', async ({ electronApp }) => {
-    const { page } = electronApp
+test.describe
+  .skip('Browser Navigation', () => {
+    test('should handle browser back button', async ({ electronApp }) => {
+      const { page } = electronApp
 
-    // Navigate through sections
-    await navigateToSection(page, 'chat')
-    await page.waitForTimeout(300)
+      // Navigate through sections
+      await navigateToSection(page, 'chat')
+      await page.waitForTimeout(300)
 
-    await navigateToSection(page, 'config')
-    await page.waitForTimeout(300)
+      await navigateToSection(page, 'config')
+      await page.waitForTimeout(300)
 
-    // Use browser back button
-    await page.goBack()
-    await page.waitForLoadState('networkidle')
+      // Use browser back button
+      await page.goBack()
+      await page.waitForLoadState('networkidle')
 
-    // Should be back on chat (or previous section)
-    // Just verify the page is still functional
-    const body = await page.locator('body').count()
-    expect(body).toBe(1)
+      // Should be back on chat (or previous section)
+      // Just verify the page is still functional
+      const body = await page.locator('body').count()
+      expect(body).toBe(1)
+    })
+
+    test('should handle browser forward button', async ({ electronApp }) => {
+      const { page } = electronApp
+
+      // Navigate and go back
+      await navigateToSection(page, 'chat')
+      await page.waitForTimeout(300)
+
+      await navigateToSection(page, 'config')
+      await page.waitForTimeout(300)
+
+      await page.goBack()
+      await page.waitForTimeout(300)
+
+      // Use browser forward button
+      await page.goForward()
+      await page.waitForLoadState('networkidle')
+
+      // Verify the page is functional
+      const body = await page.locator('body').count()
+      expect(body).toBe(1)
+    })
   })
 
-  test('should handle browser forward button', async ({ electronApp }) => {
-    const { page } = electronApp
+test.describe
+  .skip('Error Recovery', () => {
+    test('should recover from network error during navigation', async ({ electronApp, port }) => {
+      const { page } = electronApp
 
-    // Navigate and go back
-    await navigateToSection(page, 'chat')
-    await page.waitForTimeout(300)
+      // Navigate normally
+      await navigateToSection(page, 'chat')
+      await page.waitForTimeout(300)
 
-    await navigateToSection(page, 'config')
-    await page.waitForTimeout(300)
+      // Try to access a non-existent endpoint (simulate error)
+      await page.evaluate(async url => {
+        try {
+          await fetch(url)
+        } catch {
+          // Expected to fail
+        }
+      }, `http://localhost:${port}/api/nonexistent`)
 
-    await page.goBack()
-    await page.waitForTimeout(300)
+      // Navigate to another section
+      await navigateToSection(page, 'config')
 
-    // Use browser forward button
-    await page.goForward()
-    await page.waitForLoadState('networkidle')
+      // App should still be functional
+      await expect(page.locator('body')).toBeVisible()
+    })
 
-    // Verify the page is functional
-    const body = await page.locator('body').count()
-    expect(body).toBe(1)
+    test('should handle missing section gracefully', async ({ electronApp }) => {
+      const { page } = electronApp
+
+      // Try to navigate to a section that might not exist
+      const button = page.getByRole('button', { name: 'NonExistentSection' })
+      const buttonCount = await button.count()
+
+      // Should be 0 (button doesn't exist)
+      expect(buttonCount).toBe(0)
+
+      // App should still be functional
+      await expect(page.locator('body')).toBeVisible()
+    })
   })
-})
-
-test.describe.skip('Error Recovery', () => {
-  test('should recover from network error during navigation', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
-    // Navigate normally
-    await navigateToSection(page, 'chat')
-    await page.waitForTimeout(300)
-
-    // Try to access a non-existent endpoint (simulate error)
-    await page.evaluate(async url => {
-      try {
-        await fetch(url)
-      } catch {
-        // Expected to fail
-      }
-    }, `http://localhost:${port}/api/nonexistent`)
-
-    // Navigate to another section
-    await navigateToSection(page, 'config')
-
-    // App should still be functional
-    await expect(page.locator('body')).toBeVisible()
-  })
-
-  test('should handle missing section gracefully', async ({ electronApp }) => {
-    const { page } = electronApp
-
-    // Try to navigate to a section that might not exist
-    const button = page.getByRole('button', { name: 'NonExistentSection' })
-    const buttonCount = await button.count()
-
-    // Should be 0 (button doesn't exist)
-    expect(buttonCount).toBe(0)
-
-    // App should still be functional
-    await expect(page.locator('body')).toBeVisible()
-  })
-})
