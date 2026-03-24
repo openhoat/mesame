@@ -108,6 +108,15 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
 
   if (process.env.CI) {
     console.log('[E2E] Electron launched successfully, waiting for first window...')
+
+    // Capture Electron main process stdout/stderr in CI
+    const electronProcess = electronApp.process()
+    electronProcess.stdout?.on('data', (data: Buffer) => {
+      console.log(`[Electron stdout] ${data.toString()}`)
+    })
+    electronProcess.stderr?.on('data', (data: Buffer) => {
+      console.log(`[Electron stderr] ${data.toString()}`)
+    })
   }
 
   // Get the main window with timeout

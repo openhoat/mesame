@@ -43,13 +43,6 @@ export const test = base.extend<{
         },
       })
 
-      // Capture Electron process logs in CI
-      if (process.env.CI) {
-        app.electronApp.on('console', msg => {
-          console.log(`[Electron Console ${msg.type()}]`, msg.text())
-        })
-      }
-
       // Provide the app to the test
       await use(app)
     } catch (error) {
