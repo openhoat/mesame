@@ -8,7 +8,6 @@
 import { test as base } from '@playwright/test'
 import type { ElectronTestApp } from './electron-app.js'
 import { startElectronApp, waitForServer } from './electron-app.js'
-import { mockProxyAPI } from './mocks.js'
 
 // Extend base test with Electron fixtures
 export const test = base.extend<{
@@ -64,12 +63,6 @@ export const test = base.extend<{
       }
 
       await waitForServer(port, process.env.CI ? 60000 : 30000)
-
-      // Setup mock routes for API calls (unless real API is requested)
-      // Use TEST_REAL_API=true to test with real LLM API
-      if (process.env.TEST_REAL_API !== 'true') {
-        await mockProxyAPI(page, port)
-      }
 
       await use(port)
     } catch (error) {

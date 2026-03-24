@@ -1,4 +1,4 @@
-export type Provider = 'openai' | 'anthropic' | 'google' | 'ollama'
+export type Provider = 'openai' | 'anthropic' | 'google' | 'ollama' | 'mock'
 
 export interface ProviderConfig {
   name: string
@@ -29,6 +29,12 @@ const PROVIDER_CONFIGS: Record<Provider, ProviderConfig> = {
   ollama: {
     name: 'Ollama',
     defaultBaseUrl: 'http://localhost:11434',
+    apiKeyEnvVar: '',
+    requiresApiKey: false,
+  },
+  mock: {
+    name: 'Mock',
+    defaultBaseUrl: 'http://localhost:3000',
     apiKeyEnvVar: '',
     requiresApiKey: false,
   },
