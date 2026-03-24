@@ -61,6 +61,11 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
   // Build args for Electron
   const args = [mainPath]
 
+  // Disable Node.js inspector to prevent "Waiting for debugger" hang in CI
+  if (process.env.CI || process.env.HEADLESS === 'true') {
+    args.unshift('--inspect=0')
+  }
+
   // Use a unique user data directory for each test to isolate data
   const userDataDir = path.join(
     projectRoot,
