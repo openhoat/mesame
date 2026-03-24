@@ -9,8 +9,7 @@ import { expect, test } from '../fixtures.js'
 
 test.describe('Chat Interface', () => {
   // Navigate to chat page before each test (since dashboard is now the default page)
-  test.beforeEach(async ({ electronApp }) => {
-    const { page } = electronApp
+  test.beforeEach(async ({ page }) => {
     await page.waitForLoadState('networkidle')
 
     // Click on the Chat link in the sidebar to navigate to chat
@@ -22,9 +21,7 @@ test.describe('Chat Interface', () => {
     await expect(page.locator('#input')).toBeVisible({ timeout: 5000 })
   })
 
-  test('should display the welcome screen on load', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should display the welcome screen on load', async ({ page }) => {
     // Welcome section is visible
     const welcome = page.locator('#welcome')
     await expect(welcome).toBeVisible()
@@ -39,17 +36,13 @@ test.describe('Chat Interface', () => {
     await expect(sendBtn).toBeDisabled()
   })
 
-  test('should show connection status indicator', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should show connection status indicator', async ({ page }) => {
     // Wait for health check to complete
     await expect(page.locator('#status-dot')).toHaveClass(/connected/, { timeout: 15000 })
     await expect(page.locator('#status-label')).toHaveText('Connected')
   })
 
-  test('should enable send button when typing a message', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should enable send button when typing a message', async ({ page }) => {
     const input = page.locator('#input')
     const sendBtn = page.locator('#send-btn')
 
@@ -65,9 +58,7 @@ test.describe('Chat Interface', () => {
     await expect(sendBtn).toBeDisabled()
   })
 
-  test('should send a message and display user bubble', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should send a message and display user bubble', async ({ page }) => {
     const input = page.locator('#input')
 
     // Type and send a message
@@ -86,9 +77,7 @@ test.describe('Chat Interface', () => {
     await expect(input).toHaveValue('')
   })
 
-  test('should display assistant response or error after sending', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should display assistant response or error after sending', async ({ page }) => {
     const input = page.locator('#input')
 
     // Send a message
@@ -105,9 +94,7 @@ test.describe('Chat Interface', () => {
     await expect(assistantMessage.or(errorMessage)).toBeVisible({ timeout: 30000 })
   })
 
-  test('should support Shift+Enter for newline without sending', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should support Shift+Enter for newline without sending', async ({ page }) => {
     const input = page.locator('#input')
 
     // Type first line
@@ -125,9 +112,7 @@ test.describe('Chat Interface', () => {
     expect(value).toContain('Line 2')
   })
 
-  test('should display header with branding', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should display header with branding', async ({ page }) => {
     await expect(page.locator('.header-title')).toHaveText('MeSame')
     await expect(page.locator('.header-subtitle')).toHaveText('Your personal style proxy')
   })

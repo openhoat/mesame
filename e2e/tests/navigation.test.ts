@@ -13,9 +13,7 @@ import { expect, test } from '../fixtures.js'
 import { cleanupTestData, navigateToSection, setupTestProfile } from '../helpers/setup.js'
 
 test.describe('Navigation and State Management', () => {
-  test('should navigate between all dashboard sections', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should navigate between all dashboard sections', async ({ page }) => {
     // Wait for app to load
     await page.waitForLoadState('networkidle')
 
@@ -41,9 +39,7 @@ test.describe('Navigation and State Management', () => {
     expect(headingCount).toBeGreaterThanOrEqual(0)
   })
 
-  test('should preserve chat messages during navigation', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should preserve chat messages during navigation', async ({ page }) => {
     // Navigate to chat
     await navigateToSection(page, 'chat')
 
@@ -72,9 +68,7 @@ test.describe('Navigation and State Management', () => {
     expect(messageStillVisible).toBeGreaterThan(0)
   })
 
-  test('should preserve form data during navigation', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should preserve form data during navigation', async ({ page }) => {
     // Navigate to config
     await navigateToSection(page, 'config')
 
@@ -102,9 +96,7 @@ test.describe('Navigation and State Management', () => {
     }
   })
 
-  test('should handle rapid navigation without errors', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should handle rapid navigation without errors', async ({ page }) => {
     await page.waitForLoadState('networkidle')
 
     // Rapidly switch between sections
@@ -124,9 +116,7 @@ test.describe('Navigation and State Management', () => {
     expect(body).toBe(1)
   })
 
-  test('should maintain active section indicator', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should maintain active section indicator', async ({ page }) => {
     // Navigate to chat
     await navigateToSection(page, 'chat')
     await page.waitForTimeout(300)
@@ -148,19 +138,15 @@ test.describe('Navigation and State Management', () => {
 
 test.describe('Data Persistence', () => {
   // Cleanup before and after
-  test.beforeEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.beforeEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test.afterEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.afterEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test('should persist style profile after page reload', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
+  test('should persist style profile after page reload', async ({ page, port }) => {
     // Create a profile
     const result = await setupTestProfile(page, port, TEST_PROFILES.casual, TEST_SOURCES.casual)
     expect(result.success).toBe(true)
@@ -178,9 +164,7 @@ test.describe('Data Persistence', () => {
     })
   })
 
-  test('should persist configuration after page reload', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should persist configuration after page reload', async ({ page }) => {
     // Navigate to config
     await navigateToSection(page, 'config')
 
@@ -205,9 +189,7 @@ test.describe('Data Persistence', () => {
     }
   })
 
-  test('should preserve chat history after reload', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should preserve chat history after reload', async ({ page }) => {
     // Navigate to chat
     await navigateToSection(page, 'chat')
     await page.waitForSelector('textarea', { timeout: 10000 })
@@ -236,9 +218,7 @@ test.describe('Data Persistence', () => {
     expect(messageCount).toBeGreaterThanOrEqual(0)
   })
 
-  test('should handle multiple reloads without data loss', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
+  test('should handle multiple reloads without data loss', async ({ page, port }) => {
     // Create a profile
     const result = await setupTestProfile(
       page,
@@ -263,9 +243,7 @@ test.describe('Data Persistence', () => {
 })
 
 test.describe('Browser Navigation', () => {
-  test('should handle browser back button', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should handle browser back button', async ({ page }) => {
     // Navigate through sections
     await navigateToSection(page, 'chat')
     await page.waitForTimeout(300)
@@ -283,9 +261,7 @@ test.describe('Browser Navigation', () => {
     expect(body).toBe(1)
   })
 
-  test('should handle browser forward button', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should handle browser forward button', async ({ page }) => {
     // Navigate and go back
     await navigateToSection(page, 'chat')
     await page.waitForTimeout(300)
@@ -307,9 +283,7 @@ test.describe('Browser Navigation', () => {
 })
 
 test.describe('Error Recovery', () => {
-  test('should recover from network error during navigation', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
+  test('should recover from network error during navigation', async ({ page, port }) => {
     // Navigate normally
     await navigateToSection(page, 'chat')
     await page.waitForTimeout(300)
@@ -330,9 +304,7 @@ test.describe('Error Recovery', () => {
     await expect(page.locator('body')).toBeVisible()
   })
 
-  test('should handle missing section gracefully', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should handle missing section gracefully', async ({ page }) => {
     // Try to navigate to a section that might not exist
     const button = page.getByRole('button', { name: 'NonExistentSection' })
     const buttonCount = await button.count()

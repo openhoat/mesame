@@ -15,9 +15,7 @@ import { chatCompletion, chatCompletionStream } from '../helpers/api.js'
 import { cleanupTestData, navigateToSection, setupTestProfile } from '../helpers/setup.js'
 
 test.describe('API Response Performance', () => {
-  test('should respond to health check quickly', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
+  test('should respond to health check quickly', async ({ page, port }) => {
     const startTime = Date.now()
 
     const response = await page.evaluate(async url => {
@@ -32,9 +30,7 @@ test.describe('API Response Performance', () => {
     expect(response.status).toBe(200)
   })
 
-  test('should respond to models endpoint quickly', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
+  test('should respond to models endpoint quickly', async ({ page, port }) => {
     const startTime = Date.now()
 
     const response = await page.evaluate(async url => {
@@ -49,10 +45,8 @@ test.describe('API Response Performance', () => {
     expect(response.status).toBe(200)
   })
 
-  test('should handle chat completion with reasonable latency', async ({ electronApp, port }) => {
+  test('should handle chat completion with reasonable latency', async ({ page, port }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     const startTime = Date.now()
 
@@ -78,10 +72,8 @@ test.describe('API Response Performance', () => {
 })
 
 test.describe('Streaming Performance', () => {
-  test('should start streaming response quickly', async ({ electronApp, port }) => {
+  test('should start streaming response quickly', async ({ page, port }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     const startTime = Date.now()
     let firstChunkTime = 0
@@ -117,10 +109,8 @@ test.describe('Streaming Performance', () => {
     }
   })
 
-  test('should handle streaming without blocking UI', async ({ electronApp }) => {
+  test('should handle streaming without blocking UI', async ({ page }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     // Navigate to chat
     await navigateToSection(page, 'chat')
@@ -131,8 +121,8 @@ test.describe('Streaming Performance', () => {
     await textarea.fill('Write a short story')
     await textarea.press('Enter')
 
-    // Wait a bit for streaming to start
-    await page.waitForTimeout(2000)
+    // Wait for streaming to start
+    await page.waitForSelector('[data-role="assistant"]', { timeout: 10000 })
 
     // Try to interact with UI while streaming
     const inputStillAccessible = await textarea.isEnabled()
@@ -143,9 +133,7 @@ test.describe('Streaming Performance', () => {
 })
 
 test.describe('Chat Interface Performance', () => {
-  test('should render chat interface quickly', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should render chat interface quickly', async ({ page }) => {
     const startTime = Date.now()
 
     await navigateToSection(page, 'chat')
@@ -157,9 +145,7 @@ test.describe('Chat Interface Performance', () => {
     expect(duration).toBeLessThan(3000)
   })
 
-  test('should handle typing input without lag', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should handle typing input without lag', async ({ page }) => {
     await navigateToSection(page, 'chat')
     await page.waitForSelector('textarea', { timeout: 10000 })
 
@@ -184,9 +170,7 @@ test.describe('Chat Interface Performance', () => {
     expect(overhead).toBeLessThan(500)
   })
 
-  test('should render messages quickly', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should render messages quickly', async ({ page }) => {
     await navigateToSection(page, 'chat')
     await page.waitForSelector('textarea', { timeout: 10000 })
 
@@ -210,8 +194,6 @@ test.describe('Chat Interface Performance', () => {
     electronApp,
   }) => {
     test.setTimeout(90000)
-
-    const { page } = electronApp
 
     await navigateToSection(page, 'chat')
     await page.waitForSelector('textarea', { timeout: 10000 })
@@ -243,19 +225,15 @@ test.describe('Chat Interface Performance', () => {
 })
 
 test.describe('File Upload Performance', () => {
-  test.beforeEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.beforeEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test.afterEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.afterEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test('should upload small file quickly', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
+  test('should upload small file quickly', async ({ page, port }) => {
     const startTime = Date.now()
 
     // Upload a small test file
@@ -286,10 +264,8 @@ test.describe('File Upload Performance', () => {
     expect([200, 201]).toContain(response.status)
   })
 
-  test('should handle large file upload', async ({ electronApp, port }) => {
+  test('should handle large file upload', async ({ page, port }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     // Create a larger content (10KB)
     const largeContent = TEST_SOURCES.technical.content.repeat(50)
@@ -325,20 +301,16 @@ test.describe('File Upload Performance', () => {
 })
 
 test.describe('Profile Creation Performance', () => {
-  test.beforeEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.beforeEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test.afterEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.afterEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test('should create style profile quickly', async ({ electronApp, port }) => {
+  test('should create style profile quickly', async ({ page, port }) => {
     test.setTimeout(30000)
-
-    const { page } = electronApp
 
     const startTime = Date.now()
 
@@ -353,9 +325,7 @@ test.describe('Profile Creation Performance', () => {
 })
 
 test.describe('Configuration Performance', () => {
-  test('should load configuration page quickly', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should load configuration page quickly', async ({ page }) => {
     const startTime = Date.now()
 
     await navigateToSection(page, 'config')
@@ -367,9 +337,7 @@ test.describe('Configuration Performance', () => {
     expect(duration).toBeLessThan(2000)
   })
 
-  test('should save configuration quickly', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should save configuration quickly', async ({ page }) => {
     await navigateToSection(page, 'config')
 
     const modelInput = page.locator('input[name*="model"]').first()
@@ -399,10 +367,8 @@ test.describe('Configuration Performance', () => {
 })
 
 test.describe('Memory and Resource Usage', () => {
-  test('should handle page reload without memory leak', async ({ electronApp }) => {
+  test('should handle page reload without memory leak', async ({ page }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     // Get initial metrics (if available)
     const initialMetrics = await page
@@ -447,10 +413,8 @@ test.describe('Memory and Resource Usage', () => {
     }
   })
 
-  test('should handle multiple navigations efficiently', async ({ electronApp }) => {
+  test('should handle multiple navigations efficiently', async ({ page }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     const sections = ['chat', 'config', 'profiles', 'dashboard'] as const
 
@@ -472,9 +436,7 @@ test.describe('Memory and Resource Usage', () => {
 })
 
 test.describe('Performance Metrics Reporting', () => {
-  test('should measure and report key metrics', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
+  test('should measure and report key metrics', async ({ page, port }) => {
     const metrics = {
       healthCheckTime: 0,
       chatLoadTime: 0,

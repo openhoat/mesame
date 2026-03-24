@@ -26,20 +26,16 @@ import {
 
 test.describe('Style Injection Quality', () => {
   // Cleanup before and after
-  test.beforeEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.beforeEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test.afterEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.afterEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test('should inject casual style into responses', async ({ electronApp, port }) => {
+  test('should inject casual style into responses', async ({ page, port }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     // Create casual style profile
     const result = await setupTestProfile(page, port, TEST_PROFILES.casual, TEST_SOURCES.casual)
@@ -79,10 +75,8 @@ test.describe('Style Injection Quality', () => {
     }
   })
 
-  test('should inject technical style into responses', async ({ electronApp, port }) => {
+  test('should inject technical style into responses', async ({ page, port }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     // Create technical style profile
     const result = await setupTestProfile(
@@ -127,10 +121,8 @@ test.describe('Style Injection Quality', () => {
     }
   })
 
-  test('should inject professional style into responses', async ({ electronApp, port }) => {
+  test('should inject professional style into responses', async ({ page, port }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     // Create professional style profile
     const result = await setupTestProfile(
@@ -169,10 +161,8 @@ test.describe('Style Injection Quality', () => {
     }
   })
 
-  test('should inject minimal style into responses', async ({ electronApp, port }) => {
+  test('should inject minimal style into responses', async ({ page, port }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     // Create minimal style profile
     const result = await setupTestProfile(page, port, TEST_PROFILES.minimal, TEST_SOURCES.minimal)
@@ -209,20 +199,16 @@ test.describe('Style Injection Quality', () => {
 })
 
 test.describe('Style Injection via Proxy API', () => {
-  test.beforeEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.beforeEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test.afterEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.afterEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test('should inject style via proxy API endpoint', async ({ electronApp, port }) => {
+  test('should inject style via proxy API endpoint', async ({ page, port }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     // Create a style profile
     const result = await setupTestProfile(page, port, TEST_PROFILES.casual, TEST_SOURCES.casual)
@@ -257,10 +243,8 @@ test.describe('Style Injection via Proxy API', () => {
     }
   })
 
-  test('should handle requests without style profile', async ({ electronApp, port }) => {
+  test('should handle requests without style profile', async ({ page, port }) => {
     test.setTimeout(60000)
-
-    const { page } = electronApp
 
     // Don't create any style profile - use default behavior
 
@@ -278,20 +262,16 @@ test.describe('Style Injection via Proxy API', () => {
 })
 
 test.describe('Style Comparison', () => {
-  test.beforeEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.beforeEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test.afterEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.afterEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test('should produce different responses for different styles', async ({ electronApp, port }) => {
+  test('should produce different responses for different styles', async ({ page, port }) => {
     test.setTimeout(120000) // Extended timeout for multiple API calls
-
-    const { page } = electronApp
 
     const responses: Record<string, string> = {}
 
@@ -365,13 +345,11 @@ test.describe('Style Comparison', () => {
 })
 
 test.describe('Style Injection Edge Cases', () => {
-  test.beforeEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.beforeEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test.afterEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.afterEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
@@ -380,8 +358,6 @@ test.describe('Style Injection Edge Cases', () => {
     port,
   }) => {
     test.setTimeout(90000)
-
-    const { page } = electronApp
 
     // Create style profile
     const result = await setupTestProfile(page, port, TEST_PROFILES.casual, TEST_SOURCES.casual)
@@ -409,10 +385,8 @@ test.describe('Style Injection Edge Cases', () => {
     expect(responseText!.length).toBeGreaterThan(0)
   })
 
-  test('should handle rapid consecutive messages with style', async ({ electronApp, port }) => {
+  test('should handle rapid consecutive messages with style', async ({ page, port }) => {
     test.setTimeout(90000)
-
-    const { page } = electronApp
 
     // Create style profile
     const result = await setupTestProfile(page, port, TEST_PROFILES.minimal, TEST_SOURCES.minimal)

@@ -10,9 +10,7 @@ import { apiRequest, chatCompletion, chatCompletionStream } from '../helpers/api
 
 test.describe('Proxy Endpoint Tests', () => {
   test.describe('Health Check', () => {
-    test('should return healthy status', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should return healthy status', async ({ page, port }) => {
       const response = await apiRequest(page, `http://localhost:${port}/health`)
 
       expect(response.status).toBe(200)
@@ -21,9 +19,7 @@ test.describe('Proxy Endpoint Tests', () => {
 
   // Skip in CI: requires real API calls
   test.describe('Chat Completions - Non-streaming', () => {
-    test('should handle basic chat completion request', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should handle basic chat completion request', async ({ page, port }) => {
       // Note: This test requires a valid API key or mocked response
       // In CI, this would be mocked; in local dev, it uses real API
       const response = await chatCompletion(
@@ -44,9 +40,7 @@ test.describe('Proxy Endpoint Tests', () => {
       }
     })
 
-    test('should reject invalid model', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should reject invalid model', async ({ page, port }) => {
       const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
         method: 'POST',
         body: {
@@ -62,9 +56,7 @@ test.describe('Proxy Endpoint Tests', () => {
       expect([200, 400, 401, 500]).toContain(response.status)
     })
 
-    test('should reject empty messages array', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should reject empty messages array', async ({ page, port }) => {
       const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
         method: 'POST',
         body: {
@@ -79,9 +71,7 @@ test.describe('Proxy Endpoint Tests', () => {
       expect([400, 401, 500]).toContain(response.status)
     })
 
-    test('should handle system message injection', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should handle system message injection', async ({ page, port }) => {
       // This test verifies that system prompts are properly handled
       const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
         method: 'POST',
@@ -102,10 +92,8 @@ test.describe('Proxy Endpoint Tests', () => {
 
   // Skip in CI: requires real API calls
   test.describe('Chat Completions - Streaming', () => {
-    test('should handle streaming request', async ({ electronApp, port }) => {
+    test('should handle streaming request', async ({ page, port }) => {
       test.setTimeout(60000) // Increase timeout for LangChain streaming
-
-      const { page } = electronApp
 
       // Test streaming endpoint
       let chunkCount = 0
@@ -132,9 +120,7 @@ test.describe('Proxy Endpoint Tests', () => {
   })
 
   test.describe('Models Endpoint', () => {
-    test('should return available models list', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should return available models list', async ({ page, port }) => {
       const response = await apiRequest(page, `http://localhost:${port}/v1/models`)
 
       expect(response.status).toBe(200)
@@ -157,17 +143,13 @@ test.describe('Proxy Endpoint Tests', () => {
   })
 
   test.describe('Error Handling', () => {
-    test('should return 404 for unknown endpoints', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should return 404 for unknown endpoints', async ({ page, port }) => {
       const response = await apiRequest(page, `http://localhost:${port}/api/unknown`)
 
       expect(response.status).toBe(404)
     })
 
-    test('should return error for invalid JSON body', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should return error for invalid JSON body', async ({ page, port }) => {
       const response = await page.evaluate(async url => {
         const res = await fetch(url, {
           method: 'POST',
@@ -180,9 +162,7 @@ test.describe('Proxy Endpoint Tests', () => {
       expect([400, 500]).toContain(response.status)
     })
 
-    test('should handle missing Content-Type header', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should handle missing Content-Type header', async ({ page, port }) => {
       const response = await page.evaluate(async url => {
         const res = await fetch(url, {
           method: 'POST',
@@ -196,9 +176,7 @@ test.describe('Proxy Endpoint Tests', () => {
       expect([200, 400, 401, 415, 500]).toContain(response.status)
     })
 
-    test('should handle large request body', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should handle large request body', async ({ page, port }) => {
       // Create a large message
       const largeContent = 'x'.repeat(100000)
       const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
@@ -218,9 +196,7 @@ test.describe('Proxy Endpoint Tests', () => {
   })
 
   test.describe('CORS Headers', () => {
-    test('should include CORS headers in response', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should include CORS headers in response', async ({ page, port }) => {
       const response = await apiRequest(page, `http://localhost:${port}/health`)
 
       // Fastify CORS plugin should add these headers
@@ -230,9 +206,7 @@ test.describe('Proxy Endpoint Tests', () => {
   })
 
   test.describe('Request Validation', () => {
-    test('should validate required fields in chat completion', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should validate required fields in chat completion', async ({ page, port }) => {
       // Missing 'messages' field
       const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
         method: 'POST',
@@ -246,9 +220,7 @@ test.describe('Proxy Endpoint Tests', () => {
       expect([400, 401, 500]).toContain(response.status)
     })
 
-    test('should handle extra fields gracefully', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should handle extra fields gracefully', async ({ page, port }) => {
       const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
         method: 'POST',
         body: {

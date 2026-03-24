@@ -2,9 +2,7 @@ import { expect } from '@playwright/test'
 import { test } from '../fixtures.js'
 
 test.describe('Chat Streaming Tests', () => {
-  test('should receive and display streaming chat response', async ({ electronApp }) => {
-    const page = electronApp.page
-
+  test('should receive and display streaming chat response', async ({ page }) => {
     // Wait for chat interface to load
     await page.waitForSelector('textarea', { timeout: 10000 })
 
@@ -21,8 +19,14 @@ test.describe('Chat Streaming Tests', () => {
     // Wait for assistant response to start appearing
     await page.waitForSelector('[data-role="assistant"]', { timeout: 10000 })
 
-    // Wait a bit for streaming to complete
-    await page.waitForTimeout(3000)
+    // Wait for streaming to complete by checking send button is enabled again
+    await page.waitForFunction(
+      () => {
+        const sendBtn = document.querySelector('#send-btn')
+        return sendBtn && !sendBtn.hasAttribute('disabled')
+      },
+      { timeout: 15000 }
+    )
 
     // Check that assistant message has content
     const assistantMessage = page.locator('[data-role="assistant"]').first()
@@ -32,9 +36,7 @@ test.describe('Chat Streaming Tests', () => {
     expect(content!.length).toBeGreaterThan(0)
   })
 
-  test('should handle multiple messages in sequence', async ({ electronApp }) => {
-    const page = electronApp.page
-
+  test('should handle multiple messages in sequence', async ({ page }) => {
     await page.waitForSelector('textarea', { timeout: 10000 })
 
     // Send first message
@@ -42,9 +44,15 @@ test.describe('Chat Streaming Tests', () => {
     await textarea.fill('First message')
     await textarea.press('Enter')
 
-    // Wait for first response
+    // Wait for first response and streaming to complete
     await page.waitForSelector('[data-role="assistant"]', { timeout: 10000 })
-    await page.waitForTimeout(2000)
+    await page.waitForFunction(
+      () => {
+        const sendBtn = document.querySelector('#send-btn')
+        return sendBtn && !sendBtn.hasAttribute('disabled')
+      },
+      { timeout: 15000 }
+    )
 
     // Send second message
     await textarea.fill('Second message')

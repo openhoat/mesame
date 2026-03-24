@@ -10,9 +10,7 @@ import { apiRequest, getSources, uploadSource } from '../helpers/api.js'
 
 test.describe('Admin Dashboard Tests', () => {
   test.describe('UI Page Access', () => {
-    test('should serve the admin UI', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should serve the admin UI', async ({ page, port }) => {
       // Navigate to the main page
       await page.goto(`http://localhost:${port}/`)
 
@@ -24,9 +22,7 @@ test.describe('Admin Dashboard Tests', () => {
       expect(content.length).toBeGreaterThan(0)
     })
 
-    test('should have accessible UI elements', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should have accessible UI elements', async ({ page, port }) => {
       // Navigate to the main page
       await page.goto(`http://localhost:${port}/`)
       await page.waitForLoadState('networkidle')
@@ -43,9 +39,7 @@ test.describe('Admin Dashboard Tests', () => {
   })
 
   test.describe('Sources API', () => {
-    test('should list sources (empty or with data)', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should list sources (empty or with data)', async ({ page, port }) => {
       const response = await getSources(page, port)
 
       expect(response.status).toBe(200)
@@ -53,9 +47,7 @@ test.describe('Admin Dashboard Tests', () => {
       expect(Array.isArray(response.body)).toBe(true)
     })
 
-    test('should handle source upload', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should handle source upload', async ({ page, port }) => {
       // Upload a test file
       const response = await uploadSource(
         page,
@@ -69,9 +61,7 @@ test.describe('Admin Dashboard Tests', () => {
       expect([200, 201, 400, 500]).toContain(response.status)
     })
 
-    test('should reject invalid file types', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should reject invalid file types', async ({ page, port }) => {
       // Try to upload with empty filename
       const response = await page.evaluate(async url => {
         try {
@@ -96,9 +86,7 @@ test.describe('Admin Dashboard Tests', () => {
   })
 
   test.describe('Style Profile API', () => {
-    test('should get style profile', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should get style profile', async ({ page, port }) => {
       // Try to get the active style profile
       const response = await apiRequest(page, `http://localhost:${port}/api/style-profile`)
 
@@ -106,9 +94,7 @@ test.describe('Admin Dashboard Tests', () => {
       expect([200, 404]).toContain(response.status)
     })
 
-    test('should handle style profile creation', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should handle style profile creation', async ({ page, port }) => {
       // Try to create a style profile
       const response = await apiRequest(page, `http://localhost:${port}/api/style-profile`, {
         method: 'POST',
@@ -124,9 +110,7 @@ test.describe('Admin Dashboard Tests', () => {
   })
 
   test.describe('Dashboard Interactions', () => {
-    test('should handle page refresh', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should handle page refresh', async ({ page, port }) => {
       // Load the page
       await page.goto(`http://localhost:${port}/`)
       await page.waitForLoadState('networkidle')
@@ -140,9 +124,7 @@ test.describe('Admin Dashboard Tests', () => {
       expect(content.length).toBeGreaterThan(0)
     })
 
-    test('should handle navigation', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should handle navigation', async ({ page, port }) => {
       // Load the main page
       await page.goto(`http://localhost:${port}/`)
       await page.waitForLoadState('networkidle')
@@ -156,9 +138,7 @@ test.describe('Admin Dashboard Tests', () => {
       expect(url).toContain('/health')
     })
 
-    test('should maintain state during session', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should maintain state during session', async ({ page, port }) => {
       // Make multiple API calls to verify session persistence
       const response1 = await apiRequest(page, `http://localhost:${port}/health`)
       expect(response1.status).toBe(200)
@@ -172,9 +152,7 @@ test.describe('Admin Dashboard Tests', () => {
   })
 
   test.describe('Error Display', () => {
-    test('should display error for network failure', async ({ electronApp }) => {
-      const { page } = electronApp
-
+    test('should display error for network failure', async ({ page }) => {
       // Try to access an endpoint that will fail
       const response = await page.evaluate(async () => {
         try {
@@ -189,9 +167,7 @@ test.describe('Admin Dashboard Tests', () => {
       expect(response.error).toBe(true)
     })
 
-    test('should handle 500 errors gracefully', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should handle 500 errors gracefully', async ({ page, port }) => {
       // Try to trigger a server error
       const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
         method: 'POST',
@@ -208,9 +184,7 @@ test.describe('Admin Dashboard Tests', () => {
   })
 
   test.describe('Accessibility', () => {
-    test('should have proper page structure', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should have proper page structure', async ({ page, port }) => {
       await page.goto(`http://localhost:${port}/`)
       await page.waitForLoadState('networkidle')
 
@@ -224,9 +198,7 @@ test.describe('Admin Dashboard Tests', () => {
       expect(body).not.toBeNull()
     })
 
-    test('should have a title', async ({ electronApp, port }) => {
-      const { page } = electronApp
-
+    test('should have a title', async ({ page, port }) => {
       await page.goto(`http://localhost:${port}/`)
       await page.waitForLoadState('networkidle')
 

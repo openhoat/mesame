@@ -2,9 +2,7 @@ import { expect } from '@playwright/test'
 import { test } from '../fixtures.js'
 
 test.describe('Simple Chat Test', () => {
-  test('should send "hello" and receive a response', async ({ electronApp }) => {
-    const page = electronApp.page
-
+  test('should send "hello" and receive a response', async ({ page }) => {
     // Wait for chat interface to load
     await page.waitForSelector('textarea', { timeout: 10000 })
 
@@ -21,8 +19,14 @@ test.describe('Simple Chat Test', () => {
     // Wait for assistant response to start appearing
     await page.waitForSelector('[data-role="assistant"]', { timeout: 15000 })
 
-    // Wait for streaming to complete (give it 10 seconds)
-    await page.waitForTimeout(10000)
+    // Wait for streaming to complete by checking send button is enabled again
+    await page.waitForFunction(
+      () => {
+        const sendBtn = document.querySelector('#send-btn')
+        return sendBtn && !sendBtn.hasAttribute('disabled')
+      },
+      { timeout: 15000 }
+    )
 
     // Check that assistant message has content
     const assistantMessage = page.locator('[data-role="assistant"]').first()
@@ -32,9 +36,7 @@ test.describe('Simple Chat Test', () => {
     expect(content!.length).toBeGreaterThan(0)
   })
 
-  test('should send "bonjour" and receive a French response', async ({ electronApp }) => {
-    const page = electronApp.page
-
+  test('should send "bonjour" and receive a French response', async ({ page }) => {
     // Wait for chat interface to load
     await page.waitForSelector('textarea', { timeout: 10000 })
 
@@ -51,8 +53,14 @@ test.describe('Simple Chat Test', () => {
     // Wait for assistant response to start appearing
     await page.waitForSelector('[data-role="assistant"]', { timeout: 15000 })
 
-    // Wait for streaming to complete (give it 10 seconds)
-    await page.waitForTimeout(10000)
+    // Wait for streaming to complete by checking send button is enabled again
+    await page.waitForFunction(
+      () => {
+        const sendBtn = document.querySelector('#send-btn')
+        return sendBtn && !sendBtn.hasAttribute('disabled')
+      },
+      { timeout: 15000 }
+    )
 
     // Check that assistant message has content
     const assistantMessage = page.locator('[data-role="assistant"]').first()

@@ -14,9 +14,7 @@ import { expect, test } from '../fixtures.js'
 import { navigateToSection } from '../helpers/setup.js'
 
 test.describe('Provider Configuration', () => {
-  test('should display server config page with all fields', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should display server config page with all fields', async ({ page }) => {
     // Navigate to Server Config
     await navigateToSection(page, 'config')
 
@@ -59,9 +57,7 @@ test.describe('Provider Configuration', () => {
     expect(urlInputCount).toBeGreaterThanOrEqual(0)
   })
 
-  test('should load current configuration on page load', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should load current configuration on page load', async ({ page }) => {
     await navigateToSection(page, 'config')
 
     // Wait for config to load
@@ -91,10 +87,8 @@ test.describe('Provider Configuration', () => {
     }
   })
 
-  test('should change provider and update default values', async ({ electronApp }) => {
+  test('should change provider and update default values', async ({ page }) => {
     test.setTimeout(45000)
-
-    const { page } = electronApp
 
     await navigateToSection(page, 'config')
 
@@ -163,9 +157,7 @@ test.describe('Provider Configuration', () => {
     }
   })
 
-  test('should save configuration and persist after reload', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should save configuration and persist after reload', async ({ page }) => {
     await navigateToSection(page, 'config')
 
     // ========================================
@@ -226,9 +218,7 @@ test.describe('Provider Configuration', () => {
     }
   })
 
-  test('should validate required fields', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should validate required fields', async ({ page }) => {
     await navigateToSection(page, 'config')
 
     // ========================================
@@ -271,9 +261,7 @@ test.describe('Provider Configuration', () => {
     }
   })
 
-  test('should handle API key input securely', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should handle API key input securely', async ({ page }) => {
     await navigateToSection(page, 'config')
 
     // Check for API key input
@@ -296,9 +284,7 @@ test.describe('Provider Configuration', () => {
     }
   })
 
-  test('should display provider-specific help text', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should display provider-specific help text', async ({ page }) => {
     await navigateToSection(page, 'config')
 
     // Look for help text or descriptions
@@ -309,9 +295,7 @@ test.describe('Provider Configuration', () => {
     expect(helpTextCount).toBeGreaterThan(0)
   })
 
-  test('should allow resetting to default values', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should allow resetting to default values', async ({ page }) => {
     await navigateToSection(page, 'config')
 
     // Look for a reset/default button
@@ -338,9 +322,7 @@ test.describe('Provider Configuration', () => {
     }
   })
 
-  test('should update provider URL when switching providers', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should update provider URL when switching providers', async ({ page }) => {
     await navigateToSection(page, 'config')
 
     const providerSelect = page.locator('select').first()
@@ -372,9 +354,7 @@ test.describe('Provider Configuration', () => {
     }
   })
 
-  test('should show connection status indicator', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should show connection status indicator', async ({ page }) => {
     await navigateToSection(page, 'config')
 
     // Look for a connection status indicator
@@ -387,9 +367,7 @@ test.describe('Provider Configuration', () => {
     expect(statusIndicatorCount).toBeGreaterThanOrEqual(0)
   })
 
-  test('should handle concurrent config changes gracefully', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should handle concurrent config changes gracefully', async ({ page }) => {
     await navigateToSection(page, 'config')
 
     // Make multiple rapid changes

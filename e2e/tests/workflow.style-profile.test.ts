@@ -27,13 +27,11 @@ import {
 
 test.describe('Style Profile Workflow', () => {
   // Cleanup before and after each test to ensure isolation
-  test.beforeEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.beforeEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
-  test.afterEach(async ({ electronApp, port }) => {
-    const { page } = electronApp
+  test.afterEach(async ({ page, port }) => {
     await cleanupTestData(page, port)
   })
 
@@ -42,8 +40,6 @@ test.describe('Style Profile Workflow', () => {
     port,
   }) => {
     test.setTimeout(60000) // Extended timeout for full workflow
-
-    const { page } = electronApp
 
     // ========================================
     // Step 1: Upload a source document
@@ -127,10 +123,8 @@ test.describe('Style Profile Workflow', () => {
     }
   })
 
-  test('should handle multiple profiles and switch between them', async ({ electronApp, port }) => {
+  test('should handle multiple profiles and switch between them', async ({ page, port }) => {
     test.setTimeout(90000) // Extended timeout for multiple profiles
-
-    const { page } = electronApp
 
     // ========================================
     // Step 1: Create two different profiles
@@ -167,9 +161,7 @@ test.describe('Style Profile Workflow', () => {
     })
   })
 
-  test('should persist profile after page reload', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
+  test('should persist profile after page reload', async ({ page, port }) => {
     // ========================================
     // Step 1: Create a profile
     // ========================================
@@ -197,9 +189,7 @@ test.describe('Style Profile Workflow', () => {
     expect(profileStillExists).toBe(true)
   })
 
-  test('should update profile persona prompt', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
+  test('should update profile persona prompt', async ({ page, port }) => {
     // ========================================
     // Step 1: Create initial profile
     // ========================================
@@ -257,9 +247,7 @@ test.describe('Style Profile Workflow', () => {
     }
   })
 
-  test('should handle profile deletion', async ({ electronApp, port }) => {
-    const { page } = electronApp
-
+  test('should handle profile deletion', async ({ page, port }) => {
     // ========================================
     // Step 1: Create a profile
     // ========================================
@@ -317,9 +305,7 @@ test.describe('Style Profile Workflow', () => {
     }
   })
 
-  test('should show validation error for empty profile name', async ({ electronApp }) => {
-    const { page } = electronApp
-
+  test('should show validation error for empty profile name', async ({ page }) => {
     await navigateToSection(page, 'profiles')
 
     // Click "New Profile" button
