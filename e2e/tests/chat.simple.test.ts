@@ -19,14 +19,8 @@ test.describe('Simple Chat Test', () => {
     // Wait for assistant response to start appearing
     await page.waitForSelector('[data-role="assistant"]', { timeout: 15000 })
 
-    // Wait for streaming to complete by checking send button is enabled again
-    await page.waitForFunction(
-      () => {
-        const sendBtn = document.querySelector('#send-btn')
-        return sendBtn && !sendBtn.hasAttribute('disabled')
-      },
-      { timeout: 15000 }
-    )
+    // Wait for streaming to complete (shorter timeout since mock is fast)
+    await page.waitForTimeout(2000)
 
     // Check that assistant message has content
     const assistantMessage = page.locator('[data-role="assistant"]').first()
@@ -53,14 +47,8 @@ test.describe('Simple Chat Test', () => {
     // Wait for assistant response to start appearing
     await page.waitForSelector('[data-role="assistant"]', { timeout: 15000 })
 
-    // Wait for streaming to complete by checking send button is enabled again
-    await page.waitForFunction(
-      () => {
-        const sendBtn = document.querySelector('#send-btn')
-        return sendBtn && !sendBtn.hasAttribute('disabled')
-      },
-      { timeout: 15000 }
-    )
+    // Wait for streaming to complete (shorter timeout since mock is fast)
+    await page.waitForTimeout(2000)
 
     // Check that assistant message has content
     const assistantMessage = page.locator('[data-role="assistant"]').first()

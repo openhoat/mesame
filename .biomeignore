@@ -1,5 +1,3 @@
-node_modules
-dist
-build
-coverage
-prisma/migrations
+# Biome ignore file
+# Note: biome.json has "useIgnoreFile": true, so .gitignore is already respected
+# Only add entries here that should be ignored by Biome but NOT by git

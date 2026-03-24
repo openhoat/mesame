@@ -15,7 +15,7 @@ test.describe('Electron App Smoke Tests', () => {
     expect(page).toBeDefined()
   })
 
-  test('should display the main window', async ({ page }) => {
+  test('should display the main window', async ({ electronApp }) => {
     // Verify a window was created
     const windows = electronApp.windows()
     expect(windows.length).toBeGreaterThan(0)
