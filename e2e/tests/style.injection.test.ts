@@ -25,7 +25,7 @@ import {
 } from '../helpers/setup.js'
 
 test.describe
-  .skip('Style Injection Quality', () => {
+  ('Style Injection Quality', () => {
     // Cleanup before and after
     test.beforeEach(async ({ electronApp, port }) => {
       const { page } = electronApp
@@ -210,7 +210,7 @@ test.describe
   })
 
 test.describe
-  .skip('Style Injection via Proxy API', () => {
+  ('Style Injection via Proxy API', () => {
     test.beforeEach(async ({ electronApp, port }) => {
       const { page } = electronApp
       await cleanupTestData(page, port)
@@ -280,7 +280,7 @@ test.describe
   })
 
 test.describe
-  .skip('Style Comparison', () => {
+  ('Style Comparison', () => {
     test.beforeEach(async ({ electronApp, port }) => {
       const { page } = electronApp
       await cleanupTestData(page, port)
@@ -371,7 +371,7 @@ test.describe
   })
 
 test.describe
-  .skip('Style Injection Edge Cases', () => {
+  ('Style Injection Edge Cases', () => {
     test.beforeEach(async ({ electronApp, port }) => {
       const { page } = electronApp
       await cleanupTestData(page, port)

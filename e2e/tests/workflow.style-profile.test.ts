@@ -26,7 +26,7 @@ import {
 } from '../helpers/setup.js'
 
 test.describe
-  .skip('Style Profile Workflow', () => {
+  ('Style Profile Workflow', () => {
     // Cleanup before and after each test to ensure isolation
     test.beforeEach(async ({ electronApp, port }) => {
       const { page } = electronApp

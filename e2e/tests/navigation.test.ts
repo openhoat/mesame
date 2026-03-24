@@ -13,7 +13,7 @@ import { expect, test } from '../fixtures.js'
 import { cleanupTestData, navigateToSection, setupTestProfile } from '../helpers/setup.js'
 
 test.describe
-  .skip('Navigation and State Management', () => {
+  ('Navigation and State Management', () => {
     test('should navigate between all dashboard sections', async ({ electronApp }) => {
       const { page } = electronApp
 
@@ -148,7 +148,7 @@ test.describe
   })
 
 test.describe
-  .skip('Data Persistence', () => {
+  ('Data Persistence', () => {
     // Cleanup before and after
     test.beforeEach(async ({ electronApp, port }) => {
       const { page } = electronApp
@@ -267,7 +267,7 @@ test.describe
   })
 
 test.describe
-  .skip('Browser Navigation', () => {
+  ('Browser Navigation', () => {
     test('should handle browser back button', async ({ electronApp }) => {
       const { page } = electronApp
 
@@ -312,7 +312,7 @@ test.describe
   })
 
 test.describe
-  .skip('Error Recovery', () => {
+  ('Error Recovery', () => {
     test('should recover from network error during navigation', async ({ electronApp, port }) => {
       const { page } = electronApp
 

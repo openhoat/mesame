@@ -95,14 +95,6 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
   // Launch Electron app
   const electronApp = await electron.launch({ args, env: testEnv })
 
-  // Capture Electron stderr for debugging (temporarily)
-  if (process.env.CI) {
-    const electronProcess = electronApp.process()
-    electronProcess.stderr?.on('data', (data: Buffer) => {
-      console.log(`[Electron stderr] ${data.toString()}`)
-    })
-  }
-
   try {
     // Get the browser context (like termaid does)
     // This seems to be necessary before calling firstWindow()

@@ -15,7 +15,7 @@ import { chatCompletion, chatCompletionStream } from '../helpers/api.js'
 import { cleanupTestData, navigateToSection, setupTestProfile } from '../helpers/setup.js'
 
 test.describe
-  .skip('API Response Performance', () => {
+  ('API Response Performance', () => {
     test('should respond to health check quickly', async ({ electronApp, port }) => {
       const { page } = electronApp
 
@@ -79,7 +79,7 @@ test.describe
   })
 
 test.describe
-  .skip('Streaming Performance', () => {
+  ('Streaming Performance', () => {
     test('should start streaming response quickly', async ({ electronApp, port }) => {
       test.setTimeout(60000)
 
@@ -145,7 +145,7 @@ test.describe
   })
 
 test.describe
-  .skip('Chat Interface Performance', () => {
+  ('Chat Interface Performance', () => {
     test('should render chat interface quickly', async ({ electronApp }) => {
       const { page } = electronApp
 
@@ -246,7 +246,7 @@ test.describe
   })
 
 test.describe
-  .skip('File Upload Performance', () => {
+  ('File Upload Performance', () => {
     test.beforeEach(async ({ electronApp, port }) => {
       const { page } = electronApp
       await cleanupTestData(page, port)
@@ -329,7 +329,7 @@ test.describe
   })
 
 test.describe
-  .skip('Profile Creation Performance', () => {
+  ('Profile Creation Performance', () => {
     test.beforeEach(async ({ electronApp, port }) => {
       const { page } = electronApp
       await cleanupTestData(page, port)
@@ -358,7 +358,7 @@ test.describe
   })
 
 test.describe
-  .skip('Configuration Performance', () => {
+  ('Configuration Performance', () => {
     test('should load configuration page quickly', async ({ electronApp }) => {
       const { page } = electronApp
 
@@ -405,7 +405,7 @@ test.describe
   })
 
 test.describe
-  .skip('Memory and Resource Usage', () => {
+  ('Memory and Resource Usage', () => {
     test('should handle page reload without memory leak', async ({ electronApp }) => {
       test.setTimeout(60000)
 
@@ -479,7 +479,7 @@ test.describe
   })
 
 test.describe
-  .skip('Performance Metrics Reporting', () => {
+  ('Performance Metrics Reporting', () => {
     test('should measure and report key metrics', async ({ electronApp, port }) => {
       const { page } = electronApp
 

@@ -9,7 +9,7 @@ import { expect, test } from '../fixtures.js'
 import { apiRequest, getSources, uploadSource } from '../helpers/api.js'
 
 test.describe
-  .skip('Admin Dashboard Tests', () => {
+  ('Admin Dashboard Tests', () => {
     test.describe('UI Page Access', () => {
       test('should serve the admin UI', async ({ electronApp, port }) => {
         const { page } = electronApp

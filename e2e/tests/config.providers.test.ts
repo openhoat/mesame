@@ -14,7 +14,7 @@ import { expect, test } from '../fixtures.js'
 import { navigateToSection } from '../helpers/setup.js'
 
 test.describe
-  .skip('Provider Configuration', () => {
+  ('Provider Configuration', () => {
     test('should display server config page with all fields', async ({ electronApp }) => {
       const { page } = electronApp
 

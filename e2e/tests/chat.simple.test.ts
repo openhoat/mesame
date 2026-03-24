@@ -2,7 +2,7 @@ import { expect } from '@playwright/test'
 import { test } from '../fixtures.js'
 
 test.describe
-  .skip('Simple Chat Test', () => {
+  ('Simple Chat Test', () => {
     test('should send "hello" and receive a response', async ({ electronApp }) => {
       const page = electronApp.page
 

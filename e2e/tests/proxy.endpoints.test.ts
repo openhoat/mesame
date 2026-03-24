@@ -9,7 +9,7 @@ import { expect, test } from '../fixtures.js'
 import { apiRequest, chatCompletion, chatCompletionStream } from '../helpers/api.js'
 
 test.describe
-  .skip('Proxy Endpoint Tests', () => {
+  ('Proxy Endpoint Tests', () => {
     test.describe('Health Check', () => {
       test('should return healthy status', async ({ electronApp, port }) => {
         const { page } = electronApp
@@ -22,7 +22,7 @@ test.describe
 
     // Skip in CI: requires real API calls
     test.describe
-      .skip('Chat Completions - Non-streaming', () => {
+      ('Chat Completions - Non-streaming', () => {
         test('should handle basic chat completion request', async ({ electronApp, port }) => {
           const { page } = electronApp
 
@@ -104,7 +104,7 @@ test.describe
 
     // Skip in CI: requires real API calls
     test.describe
-      .skip('Chat Completions - Streaming', () => {
+      ('Chat Completions - Streaming', () => {
         test('should handle streaming request', async ({ electronApp, port }) => {
           test.setTimeout(60000) // Increase timeout for LangChain streaming
 
