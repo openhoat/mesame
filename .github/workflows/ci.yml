@@ -125,9 +125,6 @@ jobs:
           name: dist-artifacts
           path: .
 
-      - name: Install Playwright browsers
-        run: npx playwright install
-
       - name: Install Playwright system dependencies
         run: npx playwright install-deps
 
