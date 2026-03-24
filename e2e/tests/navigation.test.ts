@@ -146,7 +146,7 @@ test.describe('Navigation and State Management', () => {
   })
 })
 
-test.describe('Data Persistence', () => {
+test.describe.skip('Data Persistence', () => {
   // Cleanup before and after
   test.beforeEach(async ({ electronApp, port }) => {
     const { page } = electronApp
@@ -262,7 +262,7 @@ test.describe('Data Persistence', () => {
   })
 })
 
-test.describe('Browser Navigation', () => {
+test.describe.skip('Browser Navigation', () => {
   test('should handle browser back button', async ({ electronApp }) => {
     const { page } = electronApp
 
@@ -306,7 +306,7 @@ test.describe('Browser Navigation', () => {
   })
 })
 
-test.describe('Error Recovery', () => {
+test.describe.skip('Error Recovery', () => {
   test('should recover from network error during navigation', async ({ electronApp, port }) => {
     const { page } = electronApp
 

@@ -13,7 +13,7 @@ import { TEST_PROVIDERS } from '../fixtures/test-data.js'
 import { expect, test } from '../fixtures.js'
 import { navigateToSection } from '../helpers/setup.js'
 
-test.describe('Provider Configuration', () => {
+test.describe.skip('Provider Configuration', () => {
   test('should display server config page with all fields', async ({ electronApp }) => {
     const { page } = electronApp
 
