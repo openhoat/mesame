@@ -61,13 +61,6 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
   // Build args for Electron
   const args = [mainPath]
 
-  // Disable DevTools and inspector in CI/headless to prevent debugger hang
-  if (process.env.CI || process.env.HEADLESS === 'true') {
-    args.unshift('--no-inspect')
-    args.push('--disable-dev-tools')
-    args.push('--disable-extensions')
-  }
-
   // Use a unique user data directory for each test to isolate data
   const userDataDir = path.join(
     projectRoot,
@@ -99,18 +92,6 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
     MESAME_PORT: env.MESAME_PORT || '0', // Use random available port
     ...env,
   } as Record<string, string>
-
-  // Completely disable inspector in CI/headless by removing NODE_OPTIONS
-  if (process.env.CI || process.env.HEADLESS === 'true') {
-    // Clear any inspector options that might be inherited
-    delete testEnv.NODE_OPTIONS
-    testEnv.ELECTRON_ENABLE_LOGGING = '0'
-    testEnv.ELECTRON_NO_ATTACH_CONSOLE = '1'
-
-    // HACK: Trick Playwright into thinking we're not in CI to disable forced debugging
-    testEnv.CI = 'false'
-    testEnv.GITHUB_ACTIONS = 'false'
-  }
 
   // Launch Electron app (Playwright will find the electron executable automatically)
   if (process.env.CI || process.env.DEBUG_E2E) {
