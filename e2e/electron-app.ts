@@ -94,13 +94,28 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
   } as Record<string, string>
 
   // Launch Electron app (Playwright will find the electron executable automatically)
+  if (process.env.CI) {
+    console.log('[E2E] Launching Electron with env:', JSON.stringify(testEnv, null, 2))
+    console.log('[E2E] Args:', args)
+  }
+
   const electronApp = await electron.launch({
     args,
     env: testEnv,
+    executablePath: process.env.ELECTRON_EXEC_PATH, // Allow override for CI
+    timeout: process.env.CI ? 60000 : 30000,
   })
+
+  if (process.env.CI) {
+    console.log('[E2E] Electron launched successfully, waiting for first window...')
+  }
 
   // Get the main window with timeout
   const page = await electronApp.firstWindow({ timeout })
+
+  if (process.env.CI) {
+    console.log('[E2E] First window obtained successfully')
+  }
 
   // Wait for the app to be ready
   await page.waitForLoadState('domcontentloaded', { timeout })
