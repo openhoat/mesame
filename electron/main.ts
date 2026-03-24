@@ -1,13 +1,20 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { app, BrowserWindow, ipcMain, screen, shell } from 'electron'
 import { buildApp } from '../src/app.js'
 import { config } from '../src/config.js'
+import {
+  app,
+  BrowserWindow,
+  type BrowserWindowClass,
+  ipcMain,
+  screen,
+  shell,
+} from './electron-compat.cjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-let mainWindow: BrowserWindow | null = null
+let mainWindow: BrowserWindowClass | null = null
 let server: Awaited<ReturnType<typeof buildApp>> | null = null
 let isQuitting = false
 

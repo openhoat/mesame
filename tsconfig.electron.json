@@ -14,14 +14,9 @@
     "sourceMap": true,
     "noEmit": false,
     "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true
+    "noImplicitOverride": true,
+    "types": ["node"]
   },
-  "include": ["electron/**/*", "src/**/*"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "electron/renderer/src/**",
-    "electron/renderer/dist/**",
-    "**/*.test.ts"
-  ]
+  "include": ["electron/**/*"],
+  "exclude": ["node_modules", "dist", "electron/renderer/**", "**/*.test.ts", "src/**/*"]
 }
