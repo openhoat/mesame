@@ -97,6 +97,17 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
   // Launch Electron app
   const electronApp = await electron.launch({ args, env: testEnv })
 
+  // Capture Electron main process stdout/stderr for debugging
+  if (process.env.CI) {
+    const electronProcess = electronApp.process()
+    electronProcess.stdout?.on('data', (data: Buffer) => {
+      console.log(`[Electron stdout] ${data.toString()}`)
+    })
+    electronProcess.stderr?.on('data', (data: Buffer) => {
+      console.log(`[Electron stderr] ${data.toString()}`)
+    })
+  }
+
   try {
     // Get the first window (with timeout to prevent indefinite hang)
     const page = await electronApp.firstWindow({ timeout })
