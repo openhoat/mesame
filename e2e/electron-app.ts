@@ -89,6 +89,7 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
   const testEnv: Record<string, string> = {
     ...process.env,
     NODE_ENV: 'test',
+    NODE_OPTIONS: '', // Clear any inspector/debugger options
     MESAME_LOG_LEVEL: 'silent',
     MESAME_PORT: env.MESAME_PORT || '0', // Use random available port
     ...env,
