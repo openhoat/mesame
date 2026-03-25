@@ -19,17 +19,17 @@ export default defineConfig({
   retries: process.env.CI ? 0 : 0, // No retries in CI for faster feedback
   workers: 1, // Electron apps require single worker (can't run in parallel)
   reporter: [['list'], ['html', { outputFolder: 'dist/e2e-report', open: 'never' }]],
-  timeout: 15000, // Global test timeout (increased from 10s for teardown)
+  timeout: 10000, // Global test timeout (optimized for faster feedback)
   use: {
     trace: 'on-first-retry',
     // Disable visual captures in CI mode for headless execution
     screenshot: process.env.CI ? 'off' : 'only-on-failure',
     // Enable video recording for demo generation
     video: process.env.DEMO_VIDEO ? 'on' : process.env.CI ? 'off' : 'retain-on-failure',
-    actionTimeout: 5000, // Timeout for actions (click, fill, etc.)
-    navigationTimeout: 8000, // Timeout for page navigation
+    actionTimeout: 3000, // Timeout for actions (click, fill, etc.)
+    navigationTimeout: 5000, // Timeout for page navigation
   },
   expect: {
-    timeout: 3000, // Assertion timeout
+    timeout: 2000, // Assertion timeout
   },
 })

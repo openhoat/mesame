@@ -2,11 +2,11 @@
  * Proxy endpoint tests for E2E testing
  *
  * These tests verify the chat completions proxy functionality
- * including streaming responses and error handling.
+ * including error handling and basic endpoints.
  */
 
 import { expect, test } from '../fixtures.js'
-import { apiRequest, chatCompletion, chatCompletionStream } from '../helpers/api.js'
+import { apiRequest } from '../helpers/api.js'
 
 test.describe('Proxy Endpoint Tests', () => {
   test.describe('Health Check', () => {
@@ -16,109 +16,6 @@ test.describe('Proxy Endpoint Tests', () => {
       expect(response.status).toBe(200)
     })
   })
-
-  // Skip in CI: requires real API calls (timeout issues)
-  test.describe
-    .skip('Chat Completions - Non-streaming', () => {
-      test('should handle basic chat completion request', async ({ page, port }) => {
-        // Note: This test requires a valid API key or mocked response
-        // In CI, this would be mocked; in local dev, it uses real API
-        const response = await chatCompletion(
-          page,
-          port,
-          [{ role: 'user', content: 'Hello' }],
-          'gpt-4o-mini'
-        )
-
-        // If API key is set, expect 200; otherwise expect error
-        expect([200, 401, 500]).toContain(response.status)
-
-        if (response.status === 200) {
-          const body = response.body as { choices?: Array<{ message?: { content?: string } }> }
-          expect(body.choices).toBeDefined()
-          expect(body.choices?.length).toBeGreaterThan(0)
-          expect(body.choices?.[0]?.message?.content).toBeDefined()
-        }
-      })
-
-      test('should reject invalid model', async ({ page, port }) => {
-        const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
-          method: 'POST',
-          body: {
-            model: '',
-            messages: [{ role: 'user', content: 'Hello' }],
-            stream: false,
-          },
-        })
-
-        // The proxy overrides the model with config.model, so an empty model
-        // may still succeed. Accept 200 alongside error codes.
-        // 200 = proxy overrode model, 400 = bad request, 401 = unauthorized, 500 = server error
-        expect([200, 400, 401, 500]).toContain(response.status)
-      })
-
-      test('should reject empty messages array', async ({ page, port }) => {
-        const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
-          method: 'POST',
-          body: {
-            model: 'gpt-4o',
-            messages: [],
-            stream: false,
-          },
-        })
-
-        // Should return an error for empty messages
-        // 400 = bad request, 401 = unauthorized (no API key), 500 = server error
-        expect([400, 401, 500]).toContain(response.status)
-      })
-
-      test('should handle system message injection', async ({ page, port }) => {
-        // This test verifies that system prompts are properly handled
-        const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
-          method: 'POST',
-          body: {
-            model: 'gpt-4o-mini',
-            messages: [
-              { role: 'system', content: 'You are a helpful assistant.' },
-              { role: 'user', content: 'Hello' },
-            ],
-            stream: false,
-          },
-        })
-
-        // Accept any response - this is mainly testing the request format
-        expect([200, 401, 500]).toContain(response.status)
-      })
-    })
-
-  // Streaming tests - skipped until mock provider streaming is fixed
-  test.describe
-    .skip('Chat Completions - Streaming', () => {
-      test('should handle streaming request', async ({ page, port }) => {
-        test.setTimeout(30000)
-
-        // Test streaming endpoint with mock provider
-        let chunkCount = 0
-        try {
-          for await (const _chunk of chatCompletionStream(
-            page,
-            port,
-            [{ role: 'user', content: 'Say hello' }],
-            'mock-model'
-          )) {
-            chunkCount++
-            // Limit chunks for test performance
-            if (chunkCount > 5) break
-          }
-        } catch {
-          // If streaming fails, test still passes
-          // Mock provider should handle this
-        }
-
-        // Mock provider should return at least some chunks
-        expect(chunkCount).toBeGreaterThanOrEqual(0)
-      })
-    })
 
   test.describe('Models Endpoint', () => {
     test('should return available models list', async ({ page, port }) => {
@@ -162,38 +59,6 @@ test.describe('Proxy Endpoint Tests', () => {
 
       expect([400, 500]).toContain(response.status)
     })
-
-    test.skip('should handle missing Content-Type header', async ({ page, port }) => {
-      const response = await page.evaluate(async url => {
-        const res = await fetch(url, {
-          method: 'POST',
-          body: JSON.stringify({ model: 'gpt-4o', messages: [] }),
-        })
-        return { status: res.status }
-      }, `http://localhost:${port}/v1/chat/completions`)
-
-      // Should handle the request even without Content-Type
-      // (Fastify may accept or reject this)
-      expect([200, 400, 401, 415, 500]).toContain(response.status)
-    })
-
-    test.skip('should handle large request body', async ({ page, port }) => {
-      // Create a large message
-      const largeContent = 'x'.repeat(100000)
-      const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
-        method: 'POST',
-        body: {
-          model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: largeContent }],
-          stream: false,
-        },
-        timeout: 30000,
-      })
-
-      // Should handle large requests gracefully
-      // May return 413 (Payload Too Large) or process it
-      expect([200, 401, 413, 500]).toContain(response.status)
-    })
   })
 
   test.describe('CORS Headers', () => {
@@ -205,37 +70,4 @@ test.describe('Proxy Endpoint Tests', () => {
       expect(response.status).toBe(200)
     })
   })
-
-  test.describe
-    .skip('Request Validation', () => {
-      test('should validate required fields in chat completion', async ({ page, port }) => {
-        // Missing 'messages' field
-        const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
-          method: 'POST',
-          body: {
-            model: 'gpt-4o',
-            stream: false,
-          },
-        })
-
-        // 400 = bad request, 401 = unauthorized (no API key), 500 = server error
-        expect([400, 401, 500]).toContain(response.status)
-      })
-
-      test('should handle extra fields gracefully', async ({ page, port }) => {
-        const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
-          method: 'POST',
-          body: {
-            model: 'gpt-4o-mini',
-            messages: [{ role: 'user', content: 'Hello' }],
-            stream: false,
-            extraField: 'should be ignored',
-            anotherExtra: 123,
-          },
-        })
-
-        // Should accept the request and ignore extra fields
-        expect([200, 401, 500]).toContain(response.status)
-      })
-    })
 })
