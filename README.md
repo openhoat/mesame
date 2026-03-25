@@ -96,6 +96,77 @@ npm run dev
 
 > See the [Getting Started guide](https://openhoat.github.io/mesame/guide/getting-started) for detailed setup instructions including provider configuration.
 
+## 💻 CLI Usage
+
+MeSame includes a command-line interface for starting the proxy server with custom options.
+
+### Installation
+
+```bash
+# Install globally (recommended)
+npm install -g .
+
+# Or use npx without installation
+npx mesame [options]
+```
+
+### Usage
+
+```bash
+mesame [options]
+```
+
+### Options
+
+| Option | Alias | Description | Default |
+|--------|-------|-------------|---------|
+| `--port <number>` | `-p` | Port to listen on | `3000` |
+| `--host <string>` | `-h` | Host to bind to | `localhost` |
+| `--provider <provider>` | | LLM provider (`openai`, `anthropic`, `google`, `ollama`, `mock`) | `ollama` |
+| `--model <string>` | `-m` | Model to use | `gpt-4o` (varies by provider) |
+| `--target-base-url <url>` | `-u` | Target API base URL | Provider default |
+| `--log-level <level>` | `-l` | Log level (`fatal`, `error`, `warn`, `info`, `debug`, `trace`, `silent`) | `info` |
+| `--language <code>` | | Language code (e.g., `en`, `fr`) | Auto-detected |
+| `--version` | `-V` | Display version number | |
+| `--help` | | Display help information | |
+
+### Examples
+
+```bash
+# Start with default settings (Ollama on port 3000)
+mesame
+
+# Start on custom port and host
+mesame --port 8080 --host 0.0.0.0
+
+# Use OpenAI provider with specific model
+mesame --provider openai --model gpt-4o
+
+# Use Claude with debug logging
+mesame --provider anthropic --model claude-3-opus-20240229 --log-level debug
+
+# Use custom Ollama URL
+mesame --provider ollama --target-base-url http://192.168.1.100:11434
+
+# Combine multiple options
+mesame -p 8080 --provider anthropic -m claude-3-sonnet-20240229 -l info
+```
+
+### Environment Variables
+
+CLI options override environment variables. If no CLI option is provided, MeSame reads from:
+
+- `MESAME_PORT`: Server port
+- `MESAME_HOST`: Server host
+- `MESAME_PROVIDER`: LLM provider
+- `MESAME_MODEL`: Model name
+- `MESAME_TARGET_BASE_URL`: Target API URL
+- `MESAME_LOG_LEVEL`: Logging level
+- `MESAME_LANGUAGE`: Interface language
+- `OPENAI_API_KEY`: OpenAI API key
+- `ANTHROPIC_API_KEY`: Anthropic API key
+- `GOOGLE_API_KEY`: Google API key
+
 ## 📖 Documentation
 
 - [Getting Started](https://openhoat.github.io/mesame/guide/getting-started) — Installation and provider setup

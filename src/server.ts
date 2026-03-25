@@ -1,7 +1,7 @@
 import { buildApp } from './app.js'
 import { config } from './config.js'
 
-const start = async (): Promise<void> => {
+export const startServer = async (): Promise<void> => {
   const app = await buildApp()
 
   // Temporarily disable logger for listen to avoid duplicate logs
@@ -16,7 +16,10 @@ const start = async (): Promise<void> => {
   logger.info(`Server listening at http://localhost:${config.port}`)
 }
 
-start().catch(err => {
-  process.stderr.write(`${String(err)}\n`)
-  process.exit(1)
-})
+// Only start server if this file is run directly (not imported)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  startServer().catch(err => {
+    process.stderr.write(`${String(err)}\n`)
+    process.exit(1)
+  })
+}
