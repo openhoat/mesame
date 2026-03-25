@@ -11,6 +11,7 @@ import { defineConfig } from '@playwright/test'
  * - Debug mode for interactive debugging
  */
 
+// noinspection JSUnusedGlobalSymbols
 export default defineConfig({
   testDir: './e2e/tests',
   outputDir: 'dist/test-results',

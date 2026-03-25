@@ -2,7 +2,7 @@
  * API helper utilities for E2E testing
  *
  * Provides utilities for making HTTP requests to the Fastify server
- * and validating responses with automatic retries and error handling.
+ * and validating responses.
  */
 
 import type { Page } from '@playwright/test'
@@ -18,28 +18,6 @@ export interface ApiResponse<T = unknown> {
   status: number
   headers: Record<string, string>
   body: T
-}
-
-/**
- * Retry a function with exponential backoff
- */
-export async function retry<T>(fn: () => Promise<T>, maxAttempts = 3, delayMs = 1000): Promise<T> {
-  let lastError: Error | undefined
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      return await fn()
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error(String(error))
-
-      if (attempt < maxAttempts) {
-        const delay = delayMs * 2 ** (attempt - 1)
-        await new Promise(resolve => setTimeout(resolve, delay))
-      }
-    }
-  }
-
-  throw new Error(`Failed after ${maxAttempts} attempts: ${lastError?.message || 'Unknown error'}`)
 }
 
 /**
@@ -124,105 +102,6 @@ export async function checkHealth(page: Page, port: number): Promise<boolean> {
     return response.status === 200
   } catch {
     return false
-  }
-}
-
-/**
- * Make a chat completion request
- */
-export async function chatCompletion(
-  page: Page,
-  port: number,
-  messages: Array<{ role: string; content: string }>,
-  model = 'gpt-4o'
-): Promise<ApiResponse> {
-  return apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
-    method: 'POST',
-    body: {
-      model,
-      messages,
-      stream: false,
-    },
-  })
-}
-
-/**
- * Make a streaming chat completion request
- */
-export async function* chatCompletionStream(
-  page: Page,
-  port: number,
-  messages: Array<{ role: string; content: string }>,
-  model = 'gpt-4o'
-): AsyncGenerator<string, void, unknown> {
-  const response = await page.evaluate(
-    async ({ url, model, messages }) => {
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout (reduced from 50s)
-
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model,
-            messages,
-            stream: true,
-          }),
-          signal: controller.signal,
-        })
-
-        if (!response.ok) {
-          throw new Error(`Request failed: ${response.status}`)
-        }
-
-        const reader = response.body?.getReader()
-        if (!reader) {
-          throw new Error('No reader available')
-        }
-
-        const decoder = new TextDecoder()
-        const chunks: string[] = []
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          const chunk = decoder.decode(value)
-          chunks.push(chunk)
-        }
-
-        return chunks.join('')
-      } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-          throw new Error('Stream timeout after 10s')
-        }
-        throw error
-      } finally {
-        clearTimeout(timeoutId)
-      }
-    },
-    {
-      url: `http://localhost:${port}/v1/chat/completions`,
-      model,
-      messages,
-    }
-  )
-
-  // Parse SSE data
-  const lines = response.split('\n')
-  for (const line of lines) {
-    if (line.startsWith('data: ') && line !== 'data: [DONE]') {
-      try {
-        const data = JSON.parse(line.slice(6))
-        const content = data.choices?.[0]?.delta?.content
-        if (content) {
-          yield content
-        }
-      } catch {
-        // Skip malformed lines
-      }
-    }
   }
 }
 

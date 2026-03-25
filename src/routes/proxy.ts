@@ -110,7 +110,7 @@ export const proxyRoute: FastifyPluginAsync = async app => {
     // Non-streaming response
     try {
       const response = await chatModel.invoke(langchainMessages)
-      const openaiResponse = {
+      return {
         id: `chatcmpl-${Date.now()}`,
         object: 'chat.completion',
         created: Math.floor(Date.now() / 1000),
@@ -131,7 +131,6 @@ export const proxyRoute: FastifyPluginAsync = async app => {
           total_tokens: 0,
         },
       }
-      return openaiResponse
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       reply.status(500)

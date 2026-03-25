@@ -10,7 +10,6 @@ export const styleProfileRoute: FastifyPluginAsync = async app => {
 
   // POST /api/style-profile/generate - Generate style profile from all sources
   app.post('/api/style-profile/generate', async () => {
-    const profile = await generateStyleProfile()
-    return profile
+    return await generateStyleProfile()
   })
 }
