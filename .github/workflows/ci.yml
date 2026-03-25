@@ -123,7 +123,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run E2E tests (skip build, use artifacts)
-        run: HEADLESS=true xvfb-run -a npx playwright test
+        run: HEADLESS=true xvfb-run -a npm run test:e2e:ci
         env:
           MESAME_LOG_LEVEL: silent
           CI: true
