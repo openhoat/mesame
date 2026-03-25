@@ -53,7 +53,7 @@ export async function apiRequest<T = unknown>(
   url: string,
   options: RequestOptions = {}
 ): Promise<ApiResponse<T>> {
-  const { method = 'GET', headers = {}, body, timeout = 10000 } = options
+  const { method = 'GET', headers = {}, body, timeout = 5000 } = options
 
   try {
     const response = await page.evaluate(
@@ -158,7 +158,7 @@ export async function* chatCompletionStream(
   const response = await page.evaluate(
     async ({ url, model, messages }) => {
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 50000) // 50s timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout (reduced from 50s)
 
       try {
         const response = await fetch(url, {
@@ -195,7 +195,7 @@ export async function* chatCompletionStream(
         return chunks.join('')
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
-          throw new Error('Stream timeout after 50s')
+          throw new Error('Stream timeout after 10s')
         }
         throw error
       } finally {

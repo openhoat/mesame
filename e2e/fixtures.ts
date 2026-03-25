@@ -33,7 +33,7 @@ export const test = base.extend<{
     const dbPath = `file:./prisma/test-${workerIndex}.db`
 
     const appData = await startElectronApp({
-      timeout: process.env.CI ? 60000 : 30000,
+      timeout: process.env.CI ? 30000 : 15000, // Reduced startup timeout
       env: {
         MESAME_PROVIDER: process.env.MESAME_PROVIDER || 'mock',
         MESAME_MODEL: process.env.MESAME_MODEL || 'mock-model',
@@ -71,7 +71,7 @@ export const test = base.extend<{
         throw new Error(`Invalid port extracted: ${port}`)
       }
 
-      await waitForServer(port, process.env.CI ? 60000 : 30000)
+      await waitForServer(port, process.env.CI ? 30000 : 15000)
 
       await use(port)
     } catch (error) {

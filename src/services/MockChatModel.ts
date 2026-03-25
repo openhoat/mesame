@@ -110,7 +110,7 @@ JSON (JavaScript Object Notation) is a lightweight data format.
       throw new Error('No response generated')
     }
 
-    // Split into words and yield as chunks
+    // Split into words and yield as chunks (no delay for tests)
     const words = fullText.split(' ')
     for (let i = 0; i < words.length; i++) {
       const chunk = words[i] + (i < words.length - 1 ? ' ' : '')
@@ -119,8 +119,7 @@ JSON (JavaScript Object Notation) is a lightweight data format.
         text: chunk,
         message: chunkMessage,
       })
-      // Small delay to simulate streaming
-      await new Promise(resolve => setTimeout(resolve, 10))
+      // No delay for fast test execution
     }
   }
 }

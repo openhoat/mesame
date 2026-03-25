@@ -121,9 +121,6 @@ export async function startElectronApp(options: ElectronAppOptions = {}): Promis
       } catch {
         // Ignore cleanup errors
       }
-
-      // Brief pause to let X11/system resources be released
-      await new Promise(resolve => setTimeout(resolve, 200))
     }
 
     return {
