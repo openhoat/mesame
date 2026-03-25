@@ -19,7 +19,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0, // Reduced from 2 to 1 for faster CI
   workers: 1, // Electron apps require single worker (can't run in parallel)
   reporter: [['list'], ['html', { outputFolder: 'dist/e2e-report', open: 'never' }]],
-  timeout: 30000, // Reduced from 45s to 30s
+  timeout: 10000, // Reduced from 30s to 10s to identify slow tests
   use: {
     trace: 'on-first-retry',
     // Disable visual captures in CI mode for headless execution
@@ -28,6 +28,6 @@ export default defineConfig({
     video: process.env.DEMO_VIDEO ? 'on' : process.env.CI ? 'off' : 'retain-on-failure',
   },
   expect: {
-    timeout: 5000, // Reduced from 10s to 5s
+    timeout: 3000, // Reduced from 5s to 3s
   },
 })
