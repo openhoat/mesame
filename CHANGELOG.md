@@ -133,3 +133,36 @@
 - **[19:13:08] 🔧 [CHORE]** add frontend i18n task to backlog
 - **[19:21:23] ✨ [FEAT]** implement frontend internationalization with react-i18next
 - **[19:30:46] 🐛 [FIX]** regenerate package-lock.json from main to resolve CI dependency conflicts
+- **[19:36:58] 🔧 [CHORE]** update kanban and changelog after frontend-i18n merge
+
+## 24/03/2026
+
+- **[12:10:00] 🐛 [FIX]** fix E2E tests with mock provider support
+- **[14:27:52] 🔧 [CHORE]** trigger dependabot with daily schedule
+- **[14:28:17] 🔧 [CHORE]** restore weekly dependabot schedule
+- **[13:29:04] 👷 [CI]** bump actions/checkout from 5 to 6
+- **[13:29:08] 👷 [CI]** bump actions/download-artifact from 7 to 8
+- **[13:29:11] 👷 [CI]** bump actions/upload-pages-artifact from 3 to 4
+- **[13:29:17] 👷 [CI]** bump actions/setup-node from 5 to 6
+- **[14:38:50] 🔧 [CHORE]** remove GitHub Pages deployment (private repo)
+- **[14:49:12] 🐛 [FIX]** add React overrides to fix dependabot peer dependency conflicts
+- **[14:50:08] 🔧 [CHORE]** trigger dependabot recreation with React overrides
+- **[14:50:26] 🔧 [CHORE]** restore weekly dependabot schedule
+- **[14:56:06] ✅ [TEST]** remove stderr debugging and unskip all E2E tests
+- **[14:58:41] 🎨 [STYLE]** fix formatting after unskipping tests
+- **[13:53:52] 📦 [DEPS]** bump the minor-and-patch group with 10 updates
+- **[17:06:14] 🐛 [FIX]** resolve Electron CommonJS import in ES modules
+- **[17:15:49] ♻️ [REFACTOR]** fix fixture usage and replace waitForTimeout
+- **[17:16:36] 🔧 [CHORE]** optimize .biomeignore by removing redundant entries
+- **[18:40:44] 🐛 [FIX]** improve test performance and skip failing tests
+
+## 25/03/2026
+
+- **[09:38:11] 🐛 [FIX]** skip unstable navigation-dependent tests and reduce timeout
+- **[11:37:13] ⚡ [PERF]** optimize E2E tests for faster CI pipeline
+- **[13:31:51] ⚡ [PERF]** optimize E2E tests and CI pipeline for faster execution
+- **[13:47:17] ♻️ [REFACTOR]** fix IntelliJ warnings and improve code quality
+- **[13:51:38] 🐛 [FIX]** use npx playwright instead of playwright command
+- **[13:55:39] 🐛 [FIX]** add dedicated test:e2e:ci script for CI pipeline
+- **[19:31:02] 🔧 [CHORE]** add CLI for LLM proxy server startup to backlog
+- **[19:35:33] ✨ [FEAT]** add CLI with options to start LLM proxy server

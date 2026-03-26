@@ -9,7 +9,6 @@
 <!-- MVP Phase 2: Usability -->
 - [ ] **[UX]** Add conversation history to chat interface (P2)
 <!-- Post-MVP enhancements -->
-- [ ] **[UX]** Create CLI with options to start the LLM proxy server (P2)
 - [ ] **[SECURITY]** Add regex-based data anonymization for sensitive content (P3)
 - [ ] **[DEVOPS]** Implement real-time logging system with WebSocket (P3)
 - [ ] **[UX]** Add multi-profile style management support (P3)
