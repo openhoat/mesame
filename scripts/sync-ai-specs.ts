@@ -7,8 +7,8 @@
  * - .claude/ (for Claude Code AI assistant)
  */
 
-import * as fs from 'fs'
-import * as path from 'path'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname, '..')
 
@@ -25,31 +25,22 @@ const SYNC_CONFIGS: SyncConfig[] = [
   // Rules -> .clinerules/ and .claude/rules/
   {
     source: 'ai-specs/rules',
-    targets: [
-      { dest: '.clinerules' },
-      { dest: '.claude/rules' },
-    ],
+    targets: [{ dest: '.clinerules' }, { dest: '.claude/rules' }],
   },
   // Workflows -> .clinerules/workflows/
   {
     source: 'ai-specs/workflows',
-    targets: [
-      { dest: '.clinerules/workflows' },
-    ],
+    targets: [{ dest: '.clinerules/workflows' }],
   },
   // Skills -> .claude/skills/*/SKILL.md
   {
     source: 'ai-specs/skills',
-    targets: [
-      { dest: '.claude/skills', isSkill: true },
-    ],
+    targets: [{ dest: '.claude/skills', isSkill: true }],
   },
   // Agents -> .claude/agents/
   {
     source: 'ai-specs/agents',
-    targets: [
-      { dest: '.claude/agents' },
-    ],
+    targets: [{ dest: '.claude/agents' }],
   },
 ]
 
