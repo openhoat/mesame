@@ -71,8 +71,9 @@ test-results/
 !assets/.gitkeep
 assets/_*
 
-# Claude AI
-.claude/settings.local.json
+# AI-generated directories (synced from ai-specs/)
+.claude/
+.clinerules/
 
 # VitePress
 docs/.vitepress/dist

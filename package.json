@@ -18,6 +18,8 @@
     "@types/react": "19.2.14"
   },
   "scripts": {
+    "sync:ai:specs": "tsx scripts/sync-ai-specs.ts",
+    "sync:ai:specs:check": "tsx scripts/sync-ai-specs.ts --check",
     "build": "wireit",
     "build:all": "wireit",
     "build:electron": "wireit",
