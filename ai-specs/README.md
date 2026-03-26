@@ -31,7 +31,6 @@ Behavioral rules that define standards and expectations:
 - `package_json.md` - Package.json formatting
 - `log_changes.md` - CHANGELOG generation
 - `subagents.md` - Subagent usage guidelines
-- `WORKFLOW.md` - Quick reference workflow guide
 
 ### Workflows (`workflows/`)
 
