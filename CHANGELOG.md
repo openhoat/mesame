@@ -2,6 +2,11 @@
 
 ## 26/03/2026
 
+- **[18:42:34] ✨ [FEAT]** enhance CLI --help output with descriptions and examples
+- **[18:39:31] ✨ [FEAT]** add .editorconfig for consistent formatting across editors
+- **[17:16:02] ♻️ [REFACTOR]** remove duplicate WORKFLOW.md and README.md from ai-specs
+- **[16:47:54] 🐛 [FIX]** use node: protocol for Node.js imports in sync script
+- **[16:45:40] 🔧 [CHORE]** update kanban and changelog
 - **[16:45:23] 📝 [DOCS]** add SECURITY.md with vulnerability disclosure process
 - **[15:37:21] ♻️ [REFACTOR]** consolidate AI specs into single source of truth
 - **[15:04:49] 🔧 [CHORE]** add comprehensive backlog items from project analysis

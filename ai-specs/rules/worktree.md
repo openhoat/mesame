@@ -51,10 +51,9 @@ The entire task lifecycle is handled in a single continuous session whenever pos
 #### Phase 1: Start (on `main`)
 **Run `/start-task` from main worktree:**
 1. Select idea from backlog.
-2. Update `KANBAN.md` (move to "In Progress").
-3. **Commit `KANBAN.md` on `main`** (`chore(kanban): start task - ...`).
-4. Create branch and worktree with `git worktree add ../<project-name>-<name> <branch>`.
-5. **Manual switch**: User navigates to worktree with `cd ../<project-name>-<name>`.
+2. Update `KANBAN.md` (move to "In Progress") — **local change only, DO NOT commit**.
+3. Create branch and worktree with `git worktree add ../<project-name>-<name> <branch>`.
+4. **Manual switch**: User navigates to worktree with `cd ../<project-name>-<name>`.
 
 #### Phase 2: Implementation (in worktree)
 1. Implement the requested feature or fix.
@@ -141,7 +140,7 @@ The KANBAN.md file must always be modified on the `main` branch before creating 
 ```
 ┌──────────────────────────────────────────────────────────┐
 │  PHASE 1: START (on main)                                │
-│  - /start-task: Select idea, Update & Commit Kanban      │
+│  - /start-task: Select idea, Update Kanban (NO commit)  │
 │  - Create worktree & branch                              │
 │  - MANUAL switch: User runs cd ../<project>-<name>       │
 └──────────────┬───────────────────────────────────────────┘
@@ -169,7 +168,7 @@ The KANBAN.md file must always be modified on the `main` branch before creating 
 
 | Skill | Location | Purpose |
 |-------|----------|---------|
-| `/start-task` | **Main worktree only** | Start Kanban task: Update/Commit Kanban, Create worktree (user must manually cd to worktree) |
+| `/start-task` | **Main worktree only** | Start Kanban task: Update Kanban (no commit), Create worktree (user must manually cd to worktree) |
 | `/complete-task` | **Feature worktree only** | Complete implementation: Validate, Commit Code, Push, PR (No Changelog) |
 | `/push-and-pr` | **Feature worktree only** | Push branch and create PR only |
 | `/cleanup-worktree` | **Main worktree only** | Post-merge: Pull, **Update Kanban & Changelog**, Commit/Push Main, Cleanup |
@@ -202,7 +201,7 @@ cd ../<project-name>-<name>
 ### Important Rules
 
 1. **KANBAN.md on main only**: Never modify KANBAN.md in a feature worktree
-2. **Commit before worktree**: Always commit KANBAN.md changes before creating worktree
+2. **No start-task commits**: KANBAN.md changes are NOT committed at task start — they are committed during cleanup
 3. **One idea per worktree**: Each worktree corresponds to exactly one Kanban task
 4. **Clean separation**: Task tracking happens on main, implementation in worktree
 5. **No direct commits to main**: All changes must go through PR workflow

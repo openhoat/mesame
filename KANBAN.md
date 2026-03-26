@@ -8,9 +8,7 @@
 - [ ] **[SECURITY]** Restrict CORS to localhost only (P1)
 - [ ] **[SECURITY]** Add startup validation for API keys (P1)
 - [ ] **[SECURITY]** Redact API keys and secrets in logs (P1)
-- [ ] **[CONFIG]** Add .editorconfig for consistent formatting across editors (P1)
 - [ ] **[DEVOPS]** Add CODE_OF_CONDUCT.md for community guidelines (P1)
-- [ ] **[CONFIG]** Enhance CLI --help output with descriptions and examples (P1)
 
 <!-- Security & Validation -->
 - [ ] **[SECURITY]** Add request validation with Zod schema (P1)
