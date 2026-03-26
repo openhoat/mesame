@@ -9,6 +9,7 @@
 <!-- MVP Phase 2: Usability -->
 - [ ] **[UX]** Add conversation history to chat interface (P2)
 <!-- Post-MVP enhancements -->
+- [ ] **[TEST]** Remove skipped E2E tests (P1)
 - [ ] **[SECURITY]** Add regex-based data anonymization for sensitive content (P3)
 - [ ] **[DEVOPS]** Implement real-time logging system with WebSocket (P3)
 - [ ] **[UX]** Add multi-profile style management support (P3)
@@ -17,3 +18,7 @@
 <!-- Workflow & Skills Optimization - Priorité P2 -->
 
 ## In Progress
+
+- [ ] **[TEST]** Remove skipped E2E tests
+
+- [ ] **[TEST]** Clean up skipped E2E tests
