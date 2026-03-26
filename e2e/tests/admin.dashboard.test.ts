@@ -6,7 +6,7 @@
  */
 
 import { expect, test } from '../fixtures.js'
-import { apiRequest, getSources, uploadSource } from '../helpers/api.js'
+import { apiRequest } from '../helpers/api.js'
 
 test.describe('Admin Dashboard Tests', () => {
   test.describe('UI Page Access', () => {
@@ -38,62 +38,7 @@ test.describe('Admin Dashboard Tests', () => {
     })
   })
 
-  test.describe('Sources API', () => {
-    test.skip('should list sources (empty or with data)', async ({ page, port }) => {
-      const response = await getSources(page, port)
-
-      expect(response.status).toBe(200)
-      // Response should be an array
-      expect(Array.isArray(response.body)).toBe(true)
-    })
-
-    test.skip('should handle source upload', async ({ page, port }) => {
-      // Upload a test file
-      const response = await uploadSource(
-        page,
-        port,
-        'test-document.txt',
-        'This is a test document for source upload testing.'
-      )
-
-      // Should accept the upload or return an error
-      // 201 = created, 200 = success, 400/500 = error
-      expect([200, 201, 400, 500]).toContain(response.status)
-    })
-
-    test.skip('should reject invalid file types', async ({ page, port }) => {
-      // Try to upload with empty filename
-      const response = await page.evaluate(async url => {
-        try {
-          const formData = new FormData()
-          const blob = new Blob(['test'], { type: 'text/plain' })
-          formData.append('file', blob, '')
-
-          const res = await fetch(url, {
-            method: 'POST',
-            body: formData,
-          })
-
-          return { status: res.status }
-        } catch (error) {
-          return { error: String(error) }
-        }
-      }, `http://localhost:${port}/v1/sources/import`)
-
-      // Should handle invalid upload gracefully
-      expect([200, 201, 400, 500]).toContain(response.status)
-    })
-  })
-
   test.describe('Style Profile API', () => {
-    test.skip('should get style profile', async ({ page, port }) => {
-      // Try to get the active style profile
-      const response = await apiRequest(page, `http://localhost:${port}/api/style-profile`)
-
-      // May return 404 if no profile is set, or 200 with profile data
-      expect([200, 404]).toContain(response.status)
-    })
-
     test('should handle style profile creation', async ({ page, port }) => {
       // Try to create a style profile
       const response = await apiRequest(page, `http://localhost:${port}/api/style-profile`, {
@@ -137,18 +82,6 @@ test.describe('Admin Dashboard Tests', () => {
       const url = page.url()
       expect(url).toContain('/health')
     })
-
-    test.skip('should maintain state during session', async ({ page, port }) => {
-      // Make multiple API calls to verify session persistence
-      const response1 = await apiRequest(page, `http://localhost:${port}/health`)
-      expect(response1.status).toBe(200)
-
-      const response2 = await apiRequest(page, `http://localhost:${port}/v1/sources`)
-      expect(response2.status).toBe(200)
-
-      const response3 = await apiRequest(page, `http://localhost:${port}/health`)
-      expect(response3.status).toBe(200)
-    })
   })
 
   test.describe('Error Display', () => {
@@ -165,21 +98,6 @@ test.describe('Admin Dashboard Tests', () => {
 
       // Should handle network error gracefully
       expect(response.error).toBe(true)
-    })
-
-    test.skip('should handle 500 errors gracefully', async ({ page, port }) => {
-      // Try to trigger a server error
-      const response = await apiRequest(page, `http://localhost:${port}/v1/chat/completions`, {
-        method: 'POST',
-        body: {
-          model: 'invalid-model-that-should-not-exist-12345',
-          messages: [{ role: 'user', content: 'test' }],
-          stream: false,
-        },
-      })
-
-      // Should return an error status, not crash
-      expect([200, 400, 401, 500]).toContain(response.status)
     })
   })
 
