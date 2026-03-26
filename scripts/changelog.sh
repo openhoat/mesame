@@ -28,7 +28,7 @@ OUTPUT="CHANGELOG.md"
   current_date=""
   first_date=true
 
-  git log --format="%H %ai %s" --reverse | while IFS= read -r line; do
+  git log --format="%H %ai %s" | while IFS= read -r line; do
     date_part=$(echo "$line" | cut -d' ' -f2)
     time_part=$(echo "$line" | cut -d' ' -f3)
     subject=$(echo "$line" | cut -d' ' -f5-)
