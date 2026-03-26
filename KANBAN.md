@@ -19,6 +19,4 @@
 
 ## In Progress
 
-- [ ] **[TEST]** Remove skipped E2E tests
-
-- [ ] **[TEST]** Clean up skipped E2E tests
+(No tasks in progress)

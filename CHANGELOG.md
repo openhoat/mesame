@@ -166,3 +166,11 @@
 - **[13:55:39] 🐛 [FIX]** add dedicated test:e2e:ci script for CI pipeline
 - **[19:31:02] 🔧 [CHORE]** add CLI for LLM proxy server startup to backlog
 - **[19:35:33] ✨ [FEAT]** add CLI with options to start LLM proxy server
+
+## 26/03/2026
+
+- **[09:15:30] 🔧 [CHORE]** update kanban and changelog after cli-proxy-startup merge
+- **[09:23:31] 🔧 [CHORE]** add E2E tests cleanup task to backlog
+- **[09:28:35] ✅ [TEST]** remove skipped E2E tests
+- **[11:27:42] ⚡ [PERF]** optimize E2E tests execution time
+- **[11:49:36] ⚡ [PERF]** optimize CI pipeline performance
