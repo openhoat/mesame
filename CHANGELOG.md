@@ -2,6 +2,13 @@
 
 ## 26/03/2026
 
+- **[16:45:23] 📝 [DOCS]** add SECURITY.md with vulnerability disclosure process
+- **[15:37:21] ♻️ [REFACTOR]** consolidate AI specs into single source of truth
+- **[15:04:49] 🔧 [CHORE]** add comprehensive backlog items from project analysis
+- **[14:55:20] 📝 [DOCS]** add links to AI tools (Cline, Claude Code, Ollama, GLM)
+- **[14:54:49] 📝 [DOCS]** update AI tools attribution to include Cline, Claude Code, Ollama, and GLM
+- **[14:51:09] 🔧 [CHORE]** make project public with WIP notice and GitHub Pages
+- **[12:04:43] 🔧 [CHORE]** update kanban and changelog post-merge
 - **[11:58:26] 🔧 [CHORE]** update kanban and changelog after ci-performance-optimization merge
 - **[11:49:36] ⚡ [PERF]** optimize CI pipeline performance
 - **[11:27:42] ⚡ [PERF]** optimize E2E tests execution time

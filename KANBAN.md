@@ -5,7 +5,6 @@
 ## Backlog
 
 <!-- Quick Wins - High Impact, Low Effort -->
-- [ ] **[SECURITY]** Add SECURITY.md with vulnerability disclosure process (P1)
 - [ ] **[SECURITY]** Restrict CORS to localhost only (P1)
 - [ ] **[SECURITY]** Add startup validation for API keys (P1)
 - [ ] **[SECURITY]** Redact API keys and secrets in logs (P1)
