@@ -48,4 +48,4 @@ MeSame captures **your** writing style — tone, syntax, vocabulary patterns —
 4. **Proxy** — Intercepts LLM requests, injects your style, forwards to target model
 5. **Result** — AI responses match **your** tone and vocabulary
 
-> This project was entirely built with AI — from architecture to code, tests, and documentation, using [Claude Code](https://claude.ai/claude-code).
+> This project was entirely built with AI — from architecture to code, tests, and documentation, using Cline, Claude Code, Ollama, and GLM.
