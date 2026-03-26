@@ -8,6 +8,8 @@
 [![GitHub forks](https://img.shields.io/github/forks/openhoat/mesame?style=social)](https://github.com/openhoat/mesame/network/members)
 [![GitHub issues](https://img.shields.io/github/issues/openhoat/mesame)](https://github.com/openhoat/mesame/issues)
 
+> ⚠️ **Work In Progress** — This project is under active development. Features and documentation may be incomplete or subject to change.
+
 > **"The AI that writes like me, for me."**
 
 MeSame is a local meta-agent that analyzes your linguistic fingerprint and transforms any LLM (OpenAI, Claude, Ollama) into a faithful digital twin.

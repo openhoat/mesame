@@ -3,7 +3,7 @@ layout: home
 hero:
   name: MeSame
   text: Your Personal Style Proxy
-  tagline: Transform any LLM into your digital twin — locally analyze your writing style and inject it into GPT, Claude, or Ollama
+  tagline: ⚠️ Work In Progress — Transform any LLM into your digital twin — locally analyze your writing style and inject it into GPT, Claude, or Ollama
   image:
     src: /logo.png
     alt: MeSame Logo
