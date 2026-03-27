@@ -35,7 +35,6 @@
 - [ ] **[TEST]** Add test coverage thresholds in vitest.config.ts (P2)
 
 <!-- User Experience -->
-- [ ] **[UX]** Create Sources management UI component in admin dashboard with file upload, list, delete, and profile generation features (P1)
 - [ ] **[UX]** Add interactive CLI setup wizard (P2)
 - [ ] **[UX]** Implement dark mode support in admin dashboard (P2)
 - [ ] **[UX]** Add export functionality for chat history and style profile (P2)

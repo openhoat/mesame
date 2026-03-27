@@ -2,6 +2,8 @@
 
 ## 27/03/2026
 
+- **[08:41:52] ✨ [FEAT]** add Sources management UI component in admin dashboard
+- **[08:32:21] 🔧 [CHORE]** update kanban and changelog post-merge
 - **[08:27:41] 🐛 [FIX]** sync UI language with config language selector
 - **[08:23:33] ✨ [FEAT]** complete i18n coverage for all UI strings
 
