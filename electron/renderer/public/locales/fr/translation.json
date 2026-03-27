@@ -131,6 +131,26 @@
       "resetButton": "Réinitialiser aux valeurs par défaut"
     }
   },
+  "sources": {
+    "title": "Sources",
+    "subtitle": "Gérer les documents pour la génération de profils de style",
+    "loading": "Chargement des sources...",
+    "emptyState": "Aucune source pour le moment. Téléchargez ou créez-en une pour commencer.",
+    "buttons": {
+      "upload": "Télécharger un fichier",
+      "create": "Créer une source",
+      "view": "Voir",
+      "generateProfile": "Générer un profil"
+    },
+    "modal": {
+      "createTitle": "Créer une nouvelle source",
+      "viewTitle": "Voir la source: {{title}}",
+      "titleLabel": "Titre",
+      "titlePlaceholder": "Entrez le titre de la source",
+      "contentLabel": "Contenu",
+      "contentPlaceholder": "Entrez ou collez le contenu de la source..."
+    }
+  },
   "profiles": {
     "title": "Profils de style",
     "subtitle": "Gérer vos personas de style d'écriture",

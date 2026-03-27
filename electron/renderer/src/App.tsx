@@ -4,6 +4,7 @@ import { DashboardHome } from '@/components/dashboard/DashboardHome'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { RequestLogs } from '@/components/dashboard/RequestLogs'
 import { ServerConfig } from '@/components/dashboard/ServerConfig'
+import { Sources } from '@/components/dashboard/Sources'
 import { StyleProfiles } from '@/components/dashboard/StyleProfiles'
 
 export function App() {
@@ -17,6 +18,12 @@ export function App() {
         return (
           <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
             <DashboardHome />
+          </DashboardLayout>
+        )
+      case 'sources':
+        return (
+          <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
+            <Sources />
           </DashboardLayout>
         )
       case 'profiles':
