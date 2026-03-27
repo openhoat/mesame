@@ -3,6 +3,7 @@
  * Aligned with termaid's working implementation
  */
 
+import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -31,6 +32,18 @@ export const test = base.extend<{
     // Use a unique database per worker to enable parallel test execution
     const workerIndex = testInfo.parallelIndex
     const dbPath = `file:./prisma/test-${workerIndex}.db`
+
+    // Apply Prisma migrations to the test database
+    try {
+      execSync('npx prisma db push --skip-generate', {
+        env: { ...process.env, DATABASE_URL: dbPath } as NodeJS.ProcessEnv,
+        stdio: 'pipe', // Suppress output
+        cwd: projectRoot,
+      })
+    } catch (error) {
+      console.error('Failed to initialize test database:', error)
+      throw error
+    }
 
     const appData = await startElectronApp({
       timeout: process.env.CI ? 30000 : 15000, // Reduced startup timeout
@@ -61,7 +74,7 @@ export const test = base.extend<{
       const url = page.url()
       const match = url.match(/localhost:(\d+)/)
 
-      if (!match) {
+      if (!match?.[1]) {
         throw new Error(`Failed to extract port from URL: ${url}`)
       }
 
