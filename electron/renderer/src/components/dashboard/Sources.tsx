@@ -39,13 +39,20 @@ export function Sources() {
   const fetchSources = useCallback(async () => {
     try {
       setLoading(true)
-      const response = await fetch('/v1/sources')
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
+      const response = await fetch('/v1/sources', {
+        signal: controller.signal,
+      })
+      clearTimeout(timeoutId)
+
       if (response.ok) {
         const data = await response.json()
         setSources(Array.isArray(data) ? data : [])
       }
     } catch (_error) {
-      // Failed to fetch sources
+      setSources([])
     } finally {
       setLoading(false)
     }
@@ -63,17 +70,22 @@ export function Sources() {
       const formData = new FormData()
       formData.append('file', file)
 
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s for uploads
+
       const response = await fetch('/v1/sources/import', {
         method: 'POST',
         body: formData,
+        signal: controller.signal,
       })
+      clearTimeout(timeoutId)
 
       if (response.ok) {
         await fetchSources()
         resetRef.current?.()
       }
     } catch (_error) {
-      // Failed to upload file
+      // Silently handle upload errors
     } finally {
       setLoading(false)
     }
@@ -84,11 +96,16 @@ export function Sources() {
 
     try {
       setLoading(true)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000)
+
       const response = await fetch('/v1/sources', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm),
+        signal: controller.signal,
       })
+      clearTimeout(timeoutId)
 
       if (response.ok) {
         await fetchSources()
@@ -96,7 +113,7 @@ export function Sources() {
         setEditForm({ title: '', content: '' })
       }
     } catch (_error) {
-      // Failed to create source
+      // Silently handle create errors
     } finally {
       setLoading(false)
     }
@@ -105,15 +122,20 @@ export function Sources() {
   const handleDeleteSource = async (id: string) => {
     try {
       setLoading(true)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000)
+
       const response = await fetch(`/v1/sources/${id}`, {
         method: 'DELETE',
+        signal: controller.signal,
       })
+      clearTimeout(timeoutId)
 
       if (response.ok || response.status === 204) {
         await fetchSources()
       }
     } catch (_error) {
-      // Failed to delete source
+      // Silently handle delete errors
     } finally {
       setLoading(false)
     }
@@ -122,15 +144,20 @@ export function Sources() {
   const handleGenerateProfile = async (_sourceId: string) => {
     try {
       setGeneratingProfile(_sourceId)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 60000) // 60s for AI generation
+
       const response = await fetch('/api/style-profile/generate', {
         method: 'POST',
+        signal: controller.signal,
       })
+      clearTimeout(timeoutId)
 
       if (response.ok) {
         // Profile generated successfully from all sources
       }
     } catch (_error) {
-      // Failed to generate profile
+      // Silently handle profile generation errors
     } finally {
       setGeneratingProfile(null)
     }
