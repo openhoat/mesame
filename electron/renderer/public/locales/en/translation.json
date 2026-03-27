@@ -131,6 +131,26 @@
       "resetButton": "Reset to Defaults"
     }
   },
+  "sources": {
+    "title": "Sources",
+    "subtitle": "Manage documents for style profile generation",
+    "loading": "Loading sources...",
+    "emptyState": "No sources yet. Upload or create one to get started.",
+    "buttons": {
+      "upload": "Upload File",
+      "create": "Create Source",
+      "view": "View",
+      "generateProfile": "Generate Profile"
+    },
+    "modal": {
+      "createTitle": "Create New Source",
+      "viewTitle": "View Source: {{title}}",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Enter source title",
+      "contentLabel": "Content",
+      "contentPlaceholder": "Enter or paste the source content..."
+    }
+  },
   "profiles": {
     "title": "Style Profiles",
     "subtitle": "Manage your writing style personas",
