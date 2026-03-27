@@ -53,7 +53,7 @@ test.describe('Sources Page Tests', () => {
 
       // Should not have critical errors (allow some noise from React DevTools)
       const criticalErrors = errors.filter(
-        err => !err.includes('DevTools') && !err.includes('Download'),
+        err => !err.includes('DevTools') && !err.includes('Download')
       )
       expect(criticalErrors.length).toBe(0)
     })
@@ -130,7 +130,7 @@ test.describe('Sources Page Tests', () => {
           `http://localhost:${port}/v1/sources/${sourceId}`,
           {
             method: 'DELETE',
-          },
+          }
         )
 
         // Should delete successfully
@@ -158,8 +158,7 @@ test.describe('Sources Page Tests', () => {
           return { success: true }
         } catch (error) {
           clearTimeout(timeoutId)
-          // biome-ignore lint/suspicious/noExplicitAny: Test code needs to handle any error type
-          return { error: (error as any).name === 'AbortError' }
+          return { error: error instanceof Error && error.name === 'AbortError' }
         }
       })
 
@@ -180,8 +179,7 @@ test.describe('Sources Page Tests', () => {
           clearTimeout(timeoutId)
           return { status: response.status }
         } catch (error) {
-          // biome-ignore lint/suspicious/noExplicitAny: Test code needs to handle any error type
-          return { error: (error as any).name }
+          return { error: error instanceof Error ? error.name : 'UnknownError' }
         }
       })
 
@@ -198,9 +196,7 @@ test.describe('Sources Page Tests', () => {
       // Look for loading indicators (spinner, "Loading..." text, etc.)
       const content = await page.content()
       const hasLoadingIndicator =
-        content.includes('Loading') ||
-        content.includes('Chargement') ||
-        content.includes('loader')
+        content.includes('Loading') || content.includes('Chargement') || content.includes('loader')
 
       // May or may not have loading state depending on timing
       expect(typeof hasLoadingIndicator).toBe('boolean')
