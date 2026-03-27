@@ -14,6 +14,7 @@ import {
 import { AlertCircle, RotateCcw, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from '../../i18n'
 
 type LLMProvider = 'openai' | 'anthropic' | 'ollama'
 
@@ -68,6 +69,13 @@ export function ServerConfig() {
   useEffect(() => {
     setProvider(detectProvider(config.targetBaseUrl))
   }, [config.targetBaseUrl])
+
+  // Update i18n language when config.language changes
+  useEffect(() => {
+    if (config.language && i18n.language !== config.language) {
+      i18n.changeLanguage(config.language)
+    }
+  }, [config.language])
 
   useEffect(() => {
     // Load current config from server (works in both Electron and web mode)
