@@ -12,6 +12,7 @@ import {
 } from '@mantine/core'
 import { CheckCircle2, Edit, FileText, Plus, Trash2 } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface StyleProfile {
   id: string
@@ -23,6 +24,7 @@ interface StyleProfile {
 }
 
 export function StyleProfiles() {
+  const { t } = useTranslation()
   const [profiles, setProfiles] = useState<StyleProfile[]>([])
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editForm, setEditForm] = useState({ name: '', personaPrompt: '' })
@@ -71,11 +73,11 @@ export function StyleProfiles() {
     <Stack gap="lg">
       <Group justify="space-between">
         <div>
-          <Title order={1}>Style Profiles</Title>
-          <Text c="dimmed">Manage your writing style personas</Text>
+          <Title order={1}>{t('profiles.title')}</Title>
+          <Text c="dimmed">{t('profiles.subtitle')}</Text>
         </div>
         <Button leftSection={<Plus size={16} />} onClick={() => setEditingId('new')}>
-          New Profile
+          {t('profiles.newProfile')}
         </Button>
       </Group>
 
@@ -84,30 +86,32 @@ export function StyleProfiles() {
         <Paper shadow="sm" p="md" withBorder>
           <Stack gap="md">
             <div>
-              <Title order={3}>{editingId === 'new' ? 'Create New Profile' : 'Edit Profile'}</Title>
+              <Title order={3}>
+                {editingId === 'new' ? t('profiles.createNewProfile') : t('profiles.editProfile')}
+              </Title>
               <Text size="sm" c="dimmed">
-                Define your writing style and persona
+                {t('profiles.defineStyle')}
               </Text>
             </div>
 
             <TextInput
-              label="Profile Name"
+              label={t('profiles.nameLabel')}
               value={editForm.name}
               onChange={e => setEditForm({ ...editForm, name: e.target.value })}
-              placeholder="e.g., Technical Writer, Casual Blogger"
+              placeholder={t('profiles.namePlaceholder')}
             />
 
             <Textarea
-              label="Persona Prompt"
+              label={t('profiles.promptLabel')}
               value={editForm.personaPrompt}
               onChange={e => setEditForm({ ...editForm, personaPrompt: e.target.value })}
-              placeholder="Describe the writing style, tone, and structure..."
+              placeholder={t('profiles.promptPlaceholder')}
               minRows={5}
             />
 
             <Group gap="xs">
               <Button leftSection={<CheckCircle2 size={16} />} onClick={handleSave}>
-                Save
+                {t('profiles.buttons.save')}
               </Button>
               <Button
                 variant="default"
@@ -116,7 +120,7 @@ export function StyleProfiles() {
                   setEditForm({ name: '', personaPrompt: '' })
                 }}
               >
-                Cancel
+                {t('profiles.buttons.cancel')}
               </Button>
             </Group>
           </Stack>
@@ -131,7 +135,7 @@ export function StyleProfiles() {
               <Stack align="center" gap="md">
                 <FileText size={48} opacity={0.5} />
                 <Text size="sm" c="dimmed">
-                  No style profiles yet. Create one to get started.
+                  {t('profiles.emptyState')}
                 </Text>
               </Stack>
             </Paper>
@@ -149,18 +153,18 @@ export function StyleProfiles() {
               >
                 <Stack gap="md">
                   <Group justify="space-between">
-                    <Title order={4}>{profile.name || 'Unnamed Profile'}</Title>
-                    {profile.isActive && <Badge color="blue">Active</Badge>}
+                    <Title order={4}>{profile.name || t('profiles.unnamedProfile')}</Title>
+                    {profile.isActive && <Badge color="blue">{t('profiles.active')}</Badge>}
                   </Group>
 
                   <Text size="sm" c="dimmed" lineClamp={3}>
-                    {profile.personaPrompt || 'No description'}
+                    {profile.personaPrompt || t('profiles.noDescription')}
                   </Text>
 
                   <Group gap="xs">
                     {!profile.isActive && (
                       <Button size="sm" onClick={() => handleActivate(profile.id)}>
-                        Activate
+                        {t('profiles.buttons.activate')}
                       </Button>
                     )}
                     <Button
@@ -169,10 +173,10 @@ export function StyleProfiles() {
                       leftSection={<Edit size={14} />}
                       onClick={() => setEditingId(profile.id)}
                     >
-                      Edit
+                      {t('profiles.buttons.edit')}
                     </Button>
                     <Button size="sm" color="red" leftSection={<Trash2 size={14} />}>
-                      Delete
+                      {t('profiles.buttons.delete')}
                     </Button>
                   </Group>
                 </Stack>

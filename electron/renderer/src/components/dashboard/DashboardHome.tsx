@@ -54,7 +54,7 @@ export function DashboardHome() {
           <Paper shadow="sm" p="md" withBorder>
             <Group justify="space-between" mb="xs">
               <Text size="sm" fw={500}>
-                Total Requests
+                {t('dashboard.stats.totalRequests')}
               </Text>
               <Activity size={16} opacity={0.6} />
             </Group>
@@ -62,7 +62,7 @@ export function DashboardHome() {
               {stats.totalRequests.toLocaleString()}
             </Text>
             <Text size="xs" c="dimmed">
-              +12% from last hour
+              {t('dashboard.stats.totalRequestsChange')}
             </Text>
           </Paper>
         </Grid.Col>
@@ -71,7 +71,7 @@ export function DashboardHome() {
           <Paper shadow="sm" p="md" withBorder>
             <Group justify="space-between" mb="xs">
               <Text size="sm" fw={500}>
-                Active Profiles
+                {t('dashboard.stats.activeProfiles')}
               </Text>
               <FileText size={16} opacity={0.6} />
             </Group>
@@ -79,7 +79,7 @@ export function DashboardHome() {
               {stats.activeProfiles}
             </Text>
             <Text size="xs" c="dimmed">
-              Style profiles configured
+              {t('dashboard.stats.activeProfilesDescription')}
             </Text>
           </Paper>
         </Grid.Col>
@@ -88,7 +88,7 @@ export function DashboardHome() {
           <Paper shadow="sm" p="md" withBorder>
             <Group justify="space-between" mb="xs">
               <Text size="sm" fw={500}>
-                Avg Response Time
+                {t('dashboard.stats.avgResponseTime')}
               </Text>
               <Zap size={16} opacity={0.6} />
             </Group>
@@ -96,7 +96,7 @@ export function DashboardHome() {
               {stats.avgResponseTime}ms
             </Text>
             <Text size="xs" c="dimmed">
-              -23ms from yesterday
+              {t('dashboard.stats.avgResponseTimeChange')}
             </Text>
           </Paper>
         </Grid.Col>
@@ -105,7 +105,7 @@ export function DashboardHome() {
           <Paper shadow="sm" p="md" withBorder>
             <Group justify="space-between" mb="xs">
               <Text size="sm" fw={500}>
-                Server Uptime
+                {t('dashboard.stats.serverUptime')}
               </Text>
               <TrendingUp size={16} opacity={0.6} />
             </Group>
@@ -113,7 +113,7 @@ export function DashboardHome() {
               {stats.uptime}
             </Text>
             <Text size="xs" c="dimmed">
-              System running normally
+              {t('dashboard.stats.uptimeStatus')}
             </Text>
           </Paper>
         </Grid.Col>
@@ -123,9 +123,9 @@ export function DashboardHome() {
       <Paper shadow="sm" p="md" withBorder>
         <Stack gap="md">
           <div>
-            <Title order={3}>Recent Activity</Title>
+            <Title order={3}>{t('dashboard.recentActivity.title')}</Title>
             <Text size="sm" c="dimmed">
-              Latest requests and system events
+              {t('dashboard.recentActivity.subtitle')}
             </Text>
           </div>
 
@@ -133,19 +133,19 @@ export function DashboardHome() {
             {[
               {
                 time: '2 min ago',
-                event: 'Chat completion',
+                event: t('dashboard.recentActivity.chatCompletion'),
                 model: 'gpt-4o-mini',
                 status: 'success',
               },
               {
                 time: '5 min ago',
-                event: 'Style profile updated',
+                event: t('dashboard.recentActivity.styleProfileUpdated'),
                 model: 'Technical Writer',
                 status: 'success',
               },
               {
                 time: '12 min ago',
-                event: 'Chat completion',
+                event: t('dashboard.recentActivity.chatCompletion'),
                 model: 'gpt-4o',
                 status: 'success',
               },

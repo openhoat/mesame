@@ -49,7 +49,7 @@ export function DashboardLayout({ currentPage, onNavigate, children }: Dashboard
           <Group justify="space-between" mb="md">
             {sidebarOpen && (
               <Text fw={700} size="lg">
-                MeSame
+                {t('common.appName')}
               </Text>
             )}
             <ActionIcon

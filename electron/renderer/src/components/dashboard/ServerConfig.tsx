@@ -13,6 +13,7 @@ import {
 } from '@mantine/core'
 import { AlertCircle, RotateCcw, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type LLMProvider = 'openai' | 'anthropic' | 'ollama'
 
@@ -47,6 +48,7 @@ function detectProvider(url: string): LLMProvider {
 }
 
 export function ServerConfig() {
+  const { t } = useTranslation()
   const [config, setConfig] = useState<ServerConfig>({
     port: 3000,
     model: 'gpt-4o-mini',
@@ -158,8 +160,8 @@ export function ServerConfig() {
     <Stack gap="lg">
       <Group justify="space-between">
         <div>
-          <Title order={1}>Server Configuration</Title>
-          <Text c="dimmed">Manage proxy server settings</Text>
+          <Title order={1}>{t('config.title')}</Title>
+          <Text c="dimmed">{t('config.subtitle')}</Text>
         </div>
         {hasChanges && (
           <Group gap="xs">
@@ -172,10 +174,10 @@ export function ServerConfig() {
               }}
             >
               <AlertCircle size={14} />
-              <Text size="sm">Unsaved changes</Text>
+              <Text size="sm">{t('common.unsavedChanges')}</Text>
             </Group>
             <Button onClick={handleSave} loading={isSaving} leftSection={<Save size={16} />}>
-              Save Changes
+              {t('config.buttons.saveChanges')}
             </Button>
           </Group>
         )}
@@ -187,48 +189,48 @@ export function ServerConfig() {
           <Paper shadow="sm" p="md" withBorder>
             <Stack gap="md">
               <div>
-                <Title order={3}>Server Settings</Title>
+                <Title order={3}>{t('config.serverSettings.title')}</Title>
                 <Text size="sm" c="dimmed">
-                  Basic server configuration
+                  {t('config.serverSettings.subtitle')}
                 </Text>
               </div>
 
               <NumberInput
-                label="Port"
-                description="The port the server listens on"
+                label={t('config.serverSettings.port')}
+                description={t('config.serverSettings.portDescription')}
                 value={config.port}
                 onChange={value => handleChange('port', Number(value))}
               />
 
               <Select
-                label="Log Level"
-                description="Verbosity of server logs"
+                label={t('config.serverSettings.logLevel')}
+                description={t('config.serverSettings.logLevelDescription')}
                 value={config.logLevel}
                 onChange={value => value && handleChange('logLevel', value)}
                 data={[
-                  { value: 'error', label: 'Error' },
-                  { value: 'warn', label: 'Warning' },
-                  { value: 'info', label: 'Info' },
-                  { value: 'debug', label: 'Debug' },
+                  { value: 'error', label: t('config.logLevels.error') },
+                  { value: 'warn', label: t('config.logLevels.warn') },
+                  { value: 'info', label: t('config.logLevels.info') },
+                  { value: 'debug', label: t('config.logLevels.debug') },
                 ]}
               />
 
               <Select
-                label="Response Language"
-                description="Language for assistant responses"
+                label={t('config.serverSettings.language')}
+                description={t('config.serverSettings.languageDescription')}
                 value={config.language}
                 onChange={value => value && handleChange('language', value)}
                 data={[
-                  { value: 'en', label: 'English' },
-                  { value: 'fr', label: 'Français (French)' },
-                  { value: 'es', label: 'Español (Spanish)' },
-                  { value: 'de', label: 'Deutsch (German)' },
-                  { value: 'it', label: 'Italiano (Italian)' },
-                  { value: 'pt', label: 'Português (Portuguese)' },
-                  { value: 'ru', label: 'Русский (Russian)' },
-                  { value: 'ja', label: '日本語 (Japanese)' },
-                  { value: 'zh', label: '中文 (Chinese)' },
-                  { value: 'ko', label: '한국어 (Korean)' },
+                  { value: 'en', label: t('languages.en') },
+                  { value: 'fr', label: t('languages.fr') },
+                  { value: 'es', label: t('languages.es') },
+                  { value: 'de', label: t('languages.de') },
+                  { value: 'it', label: t('languages.it') },
+                  { value: 'pt', label: t('languages.pt') },
+                  { value: 'ru', label: t('languages.ru') },
+                  { value: 'ja', label: t('languages.ja') },
+                  { value: 'zh', label: t('languages.zh') },
+                  { value: 'ko', label: t('languages.ko') },
                 ]}
               />
             </Stack>
@@ -240,29 +242,29 @@ export function ServerConfig() {
           <Paper shadow="sm" p="md" withBorder>
             <Stack gap="md">
               <Text size="sm" c="dimmed">
-                Configure the upstream LLM service
+                {t('config.llmProvider.subtitle')}
               </Text>
 
               <Select
-                label="Provider"
-                description="The LLM provider to use for chat completions"
+                label={t('config.llmProvider.providerLabel')}
+                description={t('config.llmProvider.providerDescription')}
                 value={provider}
                 onChange={handleProviderChange}
                 data={[
-                  { value: 'openai', label: 'OpenAI' },
-                  { value: 'anthropic', label: 'Anthropic' },
-                  { value: 'ollama', label: 'Ollama' },
+                  { value: 'openai', label: t('config.llmProvider.providerOpenai') },
+                  { value: 'anthropic', label: t('config.llmProvider.providerAnthropic') },
+                  { value: 'ollama', label: t('config.llmProvider.providerOllama') },
                 ]}
               />
 
               <TextInput
-                label="Default Model"
+                label={t('config.llmProvider.modelLabel')}
                 description={
                   provider === 'openai'
-                    ? 'e.g., gpt-4o-mini, gpt-4o'
+                    ? t('config.llmProvider.modelExampleOpenai')
                     : provider === 'anthropic'
-                      ? 'e.g., claude-3-5-sonnet-20241022, claude-3-5-haiku-20241022'
-                      : 'e.g., llama2, mistral, codellama'
+                      ? t('config.llmProvider.modelExampleAnthropic')
+                      : t('config.llmProvider.modelExampleOllama')
                 }
                 value={config.model}
                 onChange={e => handleChange('model', e.target.value)}
@@ -270,8 +272,14 @@ export function ServerConfig() {
               />
 
               <TextInput
-                label="API Base URL"
-                description={`The base URL for the ${provider} API`}
+                label={t('config.llmProvider.urlLabel')}
+                description={
+                  provider === 'openai'
+                    ? t('config.llmProvider.urlDescriptionOpenai')
+                    : provider === 'anthropic'
+                      ? t('config.llmProvider.urlDescriptionAnthropic')
+                      : t('config.llmProvider.urlDescriptionOllama')
+                }
                 value={config.targetBaseUrl}
                 onChange={e => handleChange('targetBaseUrl', e.target.value)}
                 placeholder={PROVIDER_DEFAULTS[provider].url}
@@ -279,8 +287,8 @@ export function ServerConfig() {
 
               {provider !== 'ollama' && (
                 <TextInput
-                  label="API Key"
-                  description="Your API key is stored securely"
+                  label={t('config.llmProvider.apiKeyLabel')}
+                  description={t('config.llmProvider.apiKeyDescription')}
                   type="password"
                   value={config.targetApiKey}
                   onChange={e => handleChange('targetApiKey', e.target.value)}
@@ -296,22 +304,22 @@ export function ServerConfig() {
           <Paper shadow="sm" p="md" withBorder>
             <Stack gap="md">
               <div>
-                <Title order={3}>Performance</Title>
+                <Title order={3}>{t('config.performance.title')}</Title>
                 <Text size="sm" c="dimmed">
-                  Optimize server performance
+                  {t('config.performance.subtitle')}
                 </Text>
               </div>
 
               <NumberInput
-                label="Max Tokens"
-                description="Maximum tokens per request"
+                label={t('config.performance.maxTokens')}
+                description={t('config.performance.maxTokensDescription')}
                 value={config.maxTokens}
                 onChange={value => handleChange('maxTokens', Number(value))}
               />
 
               <Switch
-                label="Enable Caching"
-                description="Cache responses for better performance"
+                label={t('config.performance.caching')}
+                description={t('config.performance.cachingDescription')}
                 checked={config.cacheEnabled}
                 onChange={e => handleChange('cacheEnabled', e.currentTarget.checked)}
               />
@@ -330,15 +338,15 @@ export function ServerConfig() {
             <Stack gap="md">
               <div>
                 <Title order={3} c="red">
-                  Danger Zone
+                  {t('config.dangerZone.title')}
                 </Title>
                 <Text size="sm" c="dimmed">
-                  Irreversible actions
+                  {t('config.dangerZone.subtitle')}
                 </Text>
               </div>
 
               <Button color="red" leftSection={<RotateCcw size={16} />} onClick={handleReset}>
-                Reset to Defaults
+                {t('config.dangerZone.resetButton')}
               </Button>
             </Stack>
           </Paper>
