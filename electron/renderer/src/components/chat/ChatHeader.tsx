@@ -1,5 +1,6 @@
 import { ActionIcon, Text } from '@mantine/core'
 import { Settings } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { StatusIndicator } from '@/components/StatusIndicator'
 
 interface ChatHeaderProps {
@@ -8,6 +9,7 @@ interface ChatHeaderProps {
 }
 
 export function ChatHeader({ isConnected, onNavigate }: ChatHeaderProps) {
+  const { t } = useTranslation()
   return (
     <header
       style={{
@@ -22,23 +24,23 @@ export function ChatHeader({ isConnected, onNavigate }: ChatHeaderProps) {
     >
       <img
         src="./assets/MeSame_icon.png"
-        alt="MeSame"
+        alt={t('chat.header.appName')}
         style={{ width: '32px', height: '32px', borderRadius: '8px' }}
         onError={e => {
           e.currentTarget.style.display = 'none'
         }}
       />
       <Text size="lg" fw={600} c="white">
-        MeSame
+        {t('chat.header.appName')}
       </Text>
       <Text size="xs" c="dimmed" ml={8}>
-        Your personal style proxy
+        {t('chat.header.tagline')}
       </Text>
       <div style={{ flex: 1 }} />
       <ActionIcon
         variant="subtle"
         onClick={() => onNavigate('dashboard')}
-        title="Open Dashboard"
+        title={t('chat.header.openDashboard')}
         size="lg"
       >
         <Settings size={20} />

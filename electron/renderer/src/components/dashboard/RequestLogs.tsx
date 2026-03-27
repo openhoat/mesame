@@ -12,6 +12,7 @@ import {
 } from '@mantine/core'
 import { Activity, Download, RefreshCw, Search } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface RequestLog {
   id: string
@@ -25,6 +26,7 @@ interface RequestLog {
 }
 
 export function RequestLogs() {
+  const { t } = useTranslation()
   const [logs, setLogs] = useState<RequestLog[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [autoRefresh, setAutoRefresh] = useState(false)
@@ -90,9 +92,10 @@ export function RequestLogs() {
   )
 
   const getStatusBadge = (code: number) => {
-    if (code >= 200 && code < 300) return <Badge color="green">Success</Badge>
-    if (code >= 400 && code < 500) return <Badge color="orange">Client Error</Badge>
-    if (code >= 500) return <Badge color="red">Server Error</Badge>
+    if (code >= 200 && code < 300) return <Badge color="green">{t('logs.status.success')}</Badge>
+    if (code >= 400 && code < 500)
+      return <Badge color="orange">{t('logs.status.clientError')}</Badge>
+    if (code >= 500) return <Badge color="red">{t('logs.status.serverError')}</Badge>
     return <Badge color="gray">{code}</Badge>
   }
 
@@ -114,8 +117,8 @@ export function RequestLogs() {
     <Stack gap="lg">
       <Group justify="space-between">
         <div>
-          <Title order={1}>Request Logs</Title>
-          <Text c="dimmed">Monitor API requests and responses</Text>
+          <Title order={1}>{t('logs.title')}</Title>
+          <Text c="dimmed">{t('logs.subtitle')}</Text>
         </div>
         <Group gap="xs">
           <Button
@@ -123,10 +126,10 @@ export function RequestLogs() {
             leftSection={<RefreshCw size={16} className={autoRefresh ? 'animate-spin' : ''} />}
             onClick={() => setAutoRefresh(!autoRefresh)}
           >
-            {autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
+            {autoRefresh ? t('logs.autoRefreshOn') : t('logs.autoRefreshOff')}
           </Button>
           <Button variant="default" leftSection={<Download size={16} />}>
-            Export
+            {t('logs.export')}
           </Button>
         </Group>
       </Group>
@@ -135,10 +138,10 @@ export function RequestLogs() {
       <Paper shadow="sm" p="md" withBorder>
         <Stack gap="md">
           <Title order={3} size="h4">
-            Filters
+            {t('logs.filters')}
           </Title>
           <TextInput
-            placeholder="Search by endpoint, method, or model..."
+            placeholder={t('logs.searchPlaceholder')}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             leftSection={<Search size={16} />}
@@ -150,9 +153,9 @@ export function RequestLogs() {
       <Paper shadow="sm" p="md" withBorder>
         <Stack gap="md">
           <div>
-            <Title order={3}>Recent Requests</Title>
+            <Title order={3}>{t('logs.recentRequests')}</Title>
             <Text size="sm" c="dimmed">
-              {filteredLogs.length} request{filteredLogs.length !== 1 ? 's' : ''} found
+              {t('logs.requestsFound', { count: filteredLogs.length })}
             </Text>
           </div>
 
@@ -160,7 +163,7 @@ export function RequestLogs() {
             <Stack align="center" gap="md" py="xl">
               <Activity size={48} opacity={0.5} />
               <Text size="sm" c="dimmed">
-                No requests found
+                {t('logs.noRequests')}
               </Text>
             </Stack>
           ) : (
@@ -184,12 +187,12 @@ export function RequestLogs() {
                         </Text>
                         {log.model && (
                           <Text size="xs" c="dimmed">
-                            Model: {log.model}
+                            {t('logs.model', { model: log.model })}
                           </Text>
                         )}
                         {log.tokens && (
                           <Text size="xs" c="dimmed">
-                            {log.tokens.toLocaleString()} tokens
+                            {t('logs.tokens', { count: log.tokens })}
                           </Text>
                         )}
                       </Group>

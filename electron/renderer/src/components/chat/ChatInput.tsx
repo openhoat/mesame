@@ -1,4 +1,5 @@
 import { type KeyboardEvent, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAutoResize } from '@/hooks/use-auto-resize'
 
 interface ChatInputProps {
@@ -7,6 +8,7 @@ interface ChatInputProps {
 }
 
 export function ChatInput({ onSend, disabled }: ChatInputProps) {
+  const { t } = useTranslation()
   const [value, setValue] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { resize } = useAutoResize(textareaRef)
@@ -41,7 +43,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             resize()
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Type a message..."
+          placeholder={t('chat.placeholder')}
           rows={1}
           className="flex-1 bg-white/[0.06] border border-white/[0.12] rounded-xl px-4 py-3 text-slate-200 text-sm resize-none outline-none leading-relaxed max-h-[200px] min-h-[44px] transition-colors focus:border-accent/50 placeholder:text-slate-600 font-[inherit]"
         />
@@ -61,7 +63,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             strokeLinejoin="round"
             className="w-5 h-5"
             role="img"
-            aria-label="Send message"
+            aria-label={t('chat.sendAriaLabel')}
           >
             <line x1="22" y1="2" x2="11" y2="13" />
             <polygon points="22 2 15 22 11 13 2 9 22 2" />
@@ -69,7 +71,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         </button>
       </div>
       <p className="text-center text-[0.7rem] text-slate-600 mt-1.5">
-        Press Enter to send, Shift+Enter for new line
+        {t('chat.sendInstructions')}
       </p>
     </div>
   )
