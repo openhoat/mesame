@@ -187,7 +187,11 @@ test.describe('Sources Page Tests', () => {
         } catch (error) {
           clearTimeout(timeoutId)
           const isAbortError = error instanceof Error && error.name === 'AbortError'
-          return { success: false, isAborted: isAbortError, errorName: error instanceof Error ? error.name : 'Unknown' }
+          return {
+            success: false,
+            isAborted: isAbortError,
+            errorName: error instanceof Error ? error.name : 'Unknown',
+          }
         }
       })
 
