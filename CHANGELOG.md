@@ -1,7 +1,13 @@
 # Changelog
 
+## 27/03/2026
+
+- **[08:27:41] 🐛 [FIX]** sync UI language with config language selector
+- **[08:23:33] ✨ [FEAT]** complete i18n coverage for all UI strings
+
 ## 26/03/2026
 
+- **[19:07:37] ♻️ [REFACTOR]** remove 'start task' commits from workflow
 - **[18:42:34] ✨ [FEAT]** enhance CLI --help output with descriptions and examples
 - **[18:39:31] ✨ [FEAT]** add .editorconfig for consistent formatting across editors
 - **[17:16:02] ♻️ [REFACTOR]** remove duplicate WORKFLOW.md and README.md from ai-specs

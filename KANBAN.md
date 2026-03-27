@@ -8,7 +8,6 @@
 - [ ] **[SECURITY]** Restrict CORS to localhost only (P1)
 - [ ] **[SECURITY]** Add startup validation for API keys (P1)
 - [ ] **[SECURITY]** Redact API keys and secrets in logs (P1)
-- [ ] **[DEVOPS]** Add CODE_OF_CONDUCT.md for community guidelines (P1)
 
 <!-- Security & Validation -->
 - [ ] **[SECURITY]** Add request validation with Zod schema (P1)
@@ -36,6 +35,7 @@
 - [ ] **[TEST]** Add test coverage thresholds in vitest.config.ts (P2)
 
 <!-- User Experience -->
+- [ ] **[UX]** Create Sources management UI component in admin dashboard with file upload, list, delete, and profile generation features (P1)
 - [ ] **[UX]** Add interactive CLI setup wizard (P2)
 - [ ] **[UX]** Implement dark mode support in admin dashboard (P2)
 - [ ] **[UX]** Add export functionality for chat history and style profile (P2)
@@ -45,7 +45,6 @@
 - [ ] **[UX]** Add conversation history to chat interface (P2)
 
 <!-- Accessibility & i18n -->
-- [ ] **[I18N]** Complete i18n coverage for all UI strings (P2)
 - [ ] **[UX]** Add ARIA labels to chat and dashboard components (P2)
 - [ ] **[UX]** Audit color contrast against WCAG AA/AAA standards (P2)
 - [ ] **[UX]** Document keyboard navigation for accessibility (P2)
@@ -62,8 +61,6 @@
 - [ ] **[DEVOPS]** Implement real-time logging system with WebSocket (P3)
 - [ ] **[UX]** Add multi-profile style management support (P3)
 - [ ] **[CONFIG]** Add support for config file (mesame.config.json) (P3)
-- [ ] **[DEVOPS]** Add GOVERNANCE.md with decision-making process (P3)
-- [ ] **[DEVOPS]** Add AUTHORS.md / CONTRIBUTORS.md for attribution (P3)
 - [ ] **[DEVOPS]** Add artifact signing for release binaries (P3)
 - [ ] **[DEVOPS]** Publish Docker images to Docker Hub in release workflow (P3)
 
