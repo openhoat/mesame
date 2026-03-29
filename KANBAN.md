@@ -23,6 +23,7 @@
 - [ ] **[DEVOPS]** Add backup/restore documentation for SQLite database (P2)
 
 <!-- Development Experience -->
+- [ ] **[CONFIG]** Implement server configuration persistence in SQLite database (P2)
 - [ ] **[CONFIG]** Add VSCode launch.json for debugging setup (P2)
 - [ ] **[DEVOPS]** Create dev container / Docker setup for contributors (P2)
 - [ ] **[CONFIG]** Add environment-specific configs (dev/prod/staging) (P3)

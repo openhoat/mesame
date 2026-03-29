@@ -2,9 +2,13 @@ import { resolve } from 'node:path'
 import { PrismaClient } from '@prisma/client'
 import { logger } from './logger.js'
 
-// Resolve database path relative to project root (where src/db.ts is located)
-// This ensures the database path works regardless of the current working directory
-const projectRoot = resolve(import.meta.dirname, '..')
+// Resolve database path relative to project root
+// When running compiled code: import.meta.dirname is dist/server, so go up 2 levels
+// When running with tsx: import.meta.dirname is src, so go up 1 level
+const projectRoot = resolve(
+  import.meta.dirname,
+  import.meta.filename.includes('/dist/') ? '../..' : '..'
+)
 const databaseUrl = process.env.DATABASE_URL
 
 // If DATABASE_URL is a relative file path, resolve it relative to project root

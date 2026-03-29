@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { defineConfig } from '@playwright/test'
 
 /**
@@ -10,6 +11,9 @@ import { defineConfig } from '@playwright/test'
  * - Debug mode for interactive debugging
  * - Automatic server startup via webServer config
  */
+
+// Resolve absolute path for test database (Prisma creates it relative to schema.prisma)
+const testDbPath = resolve(process.cwd(), 'prisma', 'test.db')
 
 // noinspection JSUnusedGlobalSymbols
 export default defineConfig({
@@ -37,8 +41,13 @@ export default defineConfig({
     command: 'npm run start',
     port: 3000,
     timeout: 30000,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     stdout: 'ignore',
     stderr: 'pipe',
+    env: {
+      ...process.env,
+      // Use absolute path for test database
+      DATABASE_URL: `file:${testDbPath}`,
+    },
   },
 })
