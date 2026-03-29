@@ -10,8 +10,8 @@ import { StyleProfiles } from '@/components/dashboard/StyleProfiles'
 export function App() {
   return (
     <Routes>
-      <Route path="/" element={<ChatLayout />} />
-      <Route path="/chat" element={<Navigate to="/" replace />} />
+      <Route path="/" element={<Navigate to="/chat" replace />} />
+      <Route path="/chat" element={<ChatLayout />} />
       <Route
         path="/dashboard"
         element={

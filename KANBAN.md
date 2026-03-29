@@ -42,6 +42,8 @@
 - [ ] **[UX]** Add drag-and-drop file upload support (P2)
 - [ ] **[UX]** Implement keyboard shortcuts in chat interface (P2)
 - [ ] **[UX]** Add conversation history to chat interface (P2)
+- [ ] **[UX]** Add interactive questionnaire for building user's digital twin profile (P2)
+- [ ] **[UX]** Add voice discussion as alternative questionnaire experience (P2)
 
 <!-- Accessibility & i18n -->
 - [ ] **[UX]** Add ARIA labels to chat and dashboard components (P2)
