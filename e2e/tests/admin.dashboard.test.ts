@@ -79,13 +79,15 @@ test.describe('Admin Dashboard Tests', () => {
   test.describe('Logs API', () => {
     test('should return request logs', async ({ page, port }) => {
       const request = page.context().request
-      const response = await apiRequest<Array<{ id: string }>>(
+      const response = await apiRequest<{ logs: Array<{ id: string }>; count: number }>(
         request,
         `http://localhost:${port}/api/logs`
       )
 
       expect(response.status).toBe(200)
-      expect(Array.isArray(response.body)).toBe(true)
+      expect(response.body).toHaveProperty('logs')
+      expect(response.body).toHaveProperty('count')
+      expect(Array.isArray(response.body.logs)).toBe(true)
     })
   })
 })
