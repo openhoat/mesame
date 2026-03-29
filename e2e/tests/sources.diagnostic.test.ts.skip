@@ -37,7 +37,7 @@ test.describe('Sources Diagnostic Tests', () => {
 
     // Go to dashboard
     const dashboardButton = page
-      .locator('button:has-text("tableau de bord"), button:has-text("dashboard")')
+      .locator('[data-testid="open-dashboard"]')
       .first()
     if (await dashboardButton.isVisible().catch(() => false)) {
       await dashboardButton.click()
@@ -48,7 +48,7 @@ test.describe('Sources Diagnostic Tests', () => {
     try {
       const sourcesLink = page
         .locator(
-          '[role="button"]:has-text("Sources"), a:has-text("Sources"), button:has-text("Sources")'
+          '[data-testid="nav-sources"]'
         )
         .first()
       await sourcesLink.waitFor({ state: 'visible', timeout: 5000 })
@@ -101,7 +101,7 @@ test.describe('Sources Diagnostic Tests', () => {
 
     // Go to dashboard
     const dashboardButton = page
-      .locator('button:has-text("tableau de bord"), button:has-text("dashboard")')
+      .locator('[data-testid="open-dashboard"]')
       .first()
     if (await dashboardButton.isVisible().catch(() => false)) {
       await dashboardButton.click()
@@ -112,7 +112,7 @@ test.describe('Sources Diagnostic Tests', () => {
     try {
       const sourcesLink = page
         .locator(
-          '[role="button"]:has-text("Sources"), a:has-text("Sources"), button:has-text("Sources")'
+          '[data-testid="nav-sources"]'
         )
         .first()
       await sourcesLink.waitFor({ state: 'visible', timeout: 5000 })

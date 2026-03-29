@@ -62,6 +62,7 @@ export function DashboardLayout({ currentPage, onNavigate, children }: Dashboard
           {navItems.map(item => (
             <NavLink
               key={item.id}
+              data-testid={`nav-${item.id}`}
               active={currentPage === item.id}
               label={sidebarOpen ? t(item.labelKey) : undefined}
               leftSection={item.icon}

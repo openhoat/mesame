@@ -39,6 +39,7 @@ export function ChatHeader({ isConnected, onNavigate }: ChatHeaderProps) {
       <div style={{ flex: 1 }} />
       <ActionIcon
         variant="subtle"
+        data-testid="open-dashboard"
         onClick={() => onNavigate('dashboard')}
         title={t('chat.header.openDashboard')}
         size="lg"
