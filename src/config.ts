@@ -96,7 +96,7 @@ export function loadConfig(): AppConfig {
 
   return {
     port: Number(process.env.MESAME_PORT) || 3000,
-    host: process.env.MESAME_HOST ?? 'localhost',
+    host: process.env.MESAME_HOST ?? '0.0.0.0',
     provider,
     targetBaseUrl: process.env.MESAME_TARGET_BASE_URL ?? providerConfig.defaultBaseUrl,
     targetApiKey: getProviderApiKey(provider),
