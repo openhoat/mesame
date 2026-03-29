@@ -53,7 +53,10 @@ export async function buildApp(): Promise<FastifyInstance> {
   const { logger: appLogger } = await import('./logger.js')
 
   appLogger.info('Registering routes...')
-  await app.register(cors)
+  await app.register(cors, {
+    origin: true, // Allow all origins
+    credentials: true, // Allow credentials (cookies, auth headers)
+  })
   await app.register(configRoute)
   await app.register(healthRoute)
   await app.register(logsRoute)

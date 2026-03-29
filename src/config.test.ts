@@ -29,7 +29,7 @@ describe('config', () => {
     const cfg = loadConfig()
 
     expect(cfg.port).toBe(3000)
-    expect(cfg.host).toBe('localhost')
+    expect(cfg.host).toBe('0.0.0.0')
     expect(cfg.provider).toBe('ollama')
     expect(cfg.targetBaseUrl).toBe('http://localhost:11434')
     expect(cfg.targetApiKey).toBeUndefined()
