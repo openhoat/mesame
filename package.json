@@ -24,6 +24,7 @@
     "build:all": "wireit",
     "build:electron": "wireit",
     "build:renderer": "wireit",
+    "build:web": "wireit",
     "changelog": "bash scripts/changelog.sh",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
@@ -32,6 +33,7 @@
     "dev": "tsx watch src/server.ts",
     "dev:electron": "npm run build:renderer && npm run build:electron && electron . --ozone-platform=x11 --disable-vulkan",
     "dev:renderer": "vite --config electron/renderer/vite.config.ts",
+    "dev:web": "vite --config web/vite.config.ts",
     "dist": "wireit",
     "docs:build": "vitepress build docs",
     "docs:dev": "vitepress dev docs",
@@ -192,7 +194,8 @@
       "dependencies": [
         "build",
         "build:electron",
-        "build:renderer"
+        "build:renderer",
+        "build:web"
       ]
     },
     "build:electron": {
@@ -218,6 +221,18 @@
       ],
       "output": [
         "dist/renderer/**/*"
+      ]
+    },
+    "build:web": {
+      "command": "vite build --config web/vite.config.ts",
+      "files": [
+        "web/src/**/*",
+        "web/vite.config.ts",
+        "web/index.html",
+        "web/tsconfig.json"
+      ],
+      "output": [
+        "dist/web/**/*"
       ]
     },
     "dist": {
