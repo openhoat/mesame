@@ -12,30 +12,30 @@ const __dirname = path.dirname(__filename)
 function findProjectPaths(): { rendererPath: string; assetsPath: string } {
   // Define all possible path combinations to try, in priority order
   const pathConfigurations = [
-    // Priority 1: New consolidated structure from src/routes/ (dev with tsx)
+    // Priority 1: Web build from src/routes/ (dev with tsx)
+    {
+      renderer: path.join(__dirname, '../../dist/web'),
+      assets: path.join(__dirname, '../../assets'),
+    },
+    // Priority 2: Web build from dist/server/routes/ (server-only build)
+    {
+      renderer: path.join(__dirname, '../../web'),
+      assets: path.join(__dirname, '../../../assets'),
+    },
+    // Priority 3: Electron renderer from src/routes/ (dev with tsx, backward compat)
     {
       renderer: path.join(__dirname, '../../dist/renderer'),
       assets: path.join(__dirname, '../../assets'),
     },
-    // Priority 2: New consolidated structure from dist/electron/src/routes/ (Electron build)
+    // Priority 4: Electron renderer from dist/electron/src/routes/ (Electron build)
     {
       renderer: path.join(__dirname, '../../../renderer'),
       assets: path.join(__dirname, '../../../../assets'),
     },
-    // Priority 3: New consolidated structure from dist/server/routes/ (server-only build)
+    // Priority 5: Electron renderer from dist/server/routes/ (server-only build)
     {
       renderer: path.join(__dirname, '../../renderer'),
       assets: path.join(__dirname, '../../../assets'),
-    },
-    // Priority 4: Old structure from src/routes/ (dev with tsx, backward compat)
-    {
-      renderer: path.join(__dirname, '../../electron/renderer/dist'),
-      assets: path.join(__dirname, '../../assets'),
-    },
-    // Priority 5: Old structure from dist/electron/src/routes/ (Electron build, backward compat)
-    {
-      renderer: path.join(__dirname, '../../../../electron/renderer/dist'),
-      assets: path.join(__dirname, '../../../../assets'),
     },
     // Fallback: Old structure source directory
     {

@@ -1,0 +1,217 @@
+{
+  "common": {
+    "appName": "MeSame",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "back": "Retour",
+    "close": "Fermer",
+    "reset": "Réinitialiser",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "confirm": "Confirmer",
+    "unsavedChanges": "Modifications non enregistrées"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "chat": "Discussion",
+    "profiles": "Profils de style",
+    "config": "Configuration",
+    "logs": "Journaux",
+    "sources": "Sources"
+  },
+  "chat": {
+    "title": "Discussion",
+    "placeholder": "Tapez votre message ici...",
+    "send": "Envoyer",
+    "sendAriaLabel": "Envoyer le message",
+    "sendInstructions": "Appuyez sur Entrée pour envoyer, Shift+Entrée pour une nouvelle ligne",
+    "clear": "Effacer la discussion",
+    "header": {
+      "appName": "MeSame",
+      "tagline": "Votre proxy de style personnel",
+      "openDashboard": "Ouvrir le tableau de bord"
+    },
+    "welcome": {
+      "title": "Bienvenue sur MeSame",
+      "pageTitle": "Discussion MeSame",
+      "subtitle": "Votre assistant IA personnalisé",
+      "description": "Commencez à discuter ou créez un profil de style pour personnaliser les réponses",
+      "longDescription": "Commencez une conversation avec votre jumeau numérique. Votre style d'écriture est automatiquement injecté dans chaque message.",
+      "startChatting": "Commencer à discuter"
+    },
+    "streaming": "En cours de frappe...",
+    "errorSending": "Erreur lors de l'envoi du message",
+    "retryMessage": "Réessayer"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "subtitle": "Surveillez les performances et l'utilisation de votre serveur proxy MeSame",
+    "serverStatus": "État du serveur",
+    "running": "En cours d'exécution",
+    "stopped": "Arrêté",
+    "activeProfile": "Profil actif",
+    "noProfile": "Aucun profil actif",
+    "quickActions": "Actions rapides",
+    "viewLogs": "Voir les journaux",
+    "createProfile": "Créer un profil",
+    "configure": "Configurer le serveur",
+    "stats": {
+      "totalRequests": "Nombre total de requêtes",
+      "totalRequestsChange": "+12% depuis la dernière heure",
+      "activeProfiles": "Profils actifs",
+      "activeProfilesDescription": "Profils de style configurés",
+      "avgResponseTime": "Temps de réponse moyen",
+      "avgResponseTimeChange": "-23ms depuis hier",
+      "serverUptime": "Temps de fonctionnement",
+      "uptimeStatus": "Système fonctionnant normalement"
+    },
+    "recentActivity": {
+      "title": "Activité récente",
+      "subtitle": "Dernières requêtes et événements système",
+      "chatCompletion": "Complétion de discussion",
+      "styleProfileUpdated": "Profil de style mis à jour"
+    }
+  },
+  "config": {
+    "title": "Configuration du serveur",
+    "subtitle": "Gérer les paramètres du serveur proxy",
+    "buttons": {
+      "saveChanges": "Enregistrer les modifications"
+    },
+    "logLevels": {
+      "error": "Erreur",
+      "warn": "Avertissement",
+      "info": "Info",
+      "debug": "Débogage"
+    },
+    "serverSettings": {
+      "title": "Paramètres du serveur",
+      "subtitle": "Configuration de base du serveur",
+      "port": "Port",
+      "portDescription": "Le port sur lequel le serveur écoute",
+      "logLevel": "Niveau de journalisation",
+      "logLevelDescription": "Verbosité des journaux du serveur",
+      "language": "Langue des réponses",
+      "languageDescription": "Langue pour les réponses de l'assistant"
+    },
+    "llmProvider": {
+      "title": "Paramètres du fournisseur LLM",
+      "subtitle": "Configurer le service LLM en amont",
+      "providerLabel": "Fournisseur",
+      "providerDescription": "Le fournisseur LLM à utiliser pour les complétions de discussion",
+      "providerOpenai": "OpenAI",
+      "providerAnthropic": "Anthropic",
+      "providerOllama": "Ollama",
+      "modelLabel": "Modèle par défaut",
+      "modelExampleOpenai": "ex: gpt-4o-mini, gpt-4o",
+      "modelExampleAnthropic": "ex: claude-3-5-sonnet-20241022, claude-3-5-haiku-20241022",
+      "modelExampleOllama": "ex: llama2, mistral, codellama",
+      "urlLabel": "URL de base de l'API",
+      "urlDescriptionOpenai": "L'URL de base pour l'API OpenAI",
+      "urlDescriptionAnthropic": "L'URL de base pour l'API Anthropic",
+      "urlDescriptionOllama": "L'URL de base pour l'API Ollama",
+      "apiKeyLabel": "Clé API",
+      "apiKeyDescription": "Votre clé API est stockée en toute sécurité"
+    },
+    "performance": {
+      "title": "Performance",
+      "subtitle": "Optimiser les performances du serveur",
+      "maxTokens": "Tokens maximum",
+      "maxTokensDescription": "Nombre maximum de tokens par requête",
+      "caching": "Activer la mise en cache",
+      "cachingDescription": "Mettre en cache les réponses pour de meilleures performances"
+    },
+    "dangerZone": {
+      "title": "Zone dangereuse",
+      "subtitle": "Actions irréversibles",
+      "resetButton": "Réinitialiser aux valeurs par défaut"
+    }
+  },
+  "sources": {
+    "title": "Sources",
+    "subtitle": "Gérer les documents pour la génération de profils de style",
+    "loading": "Chargement des sources...",
+    "emptyState": "Aucune source pour le moment. Téléchargez ou créez-en une pour commencer.",
+    "buttons": {
+      "upload": "Télécharger un fichier",
+      "create": "Créer une source",
+      "view": "Voir",
+      "generateProfile": "Générer un profil"
+    },
+    "modal": {
+      "createTitle": "Créer une nouvelle source",
+      "viewTitle": "Voir la source: {{title}}",
+      "titleLabel": "Titre",
+      "titlePlaceholder": "Entrez le titre de la source",
+      "contentLabel": "Contenu",
+      "contentPlaceholder": "Entrez ou collez le contenu de la source..."
+    }
+  },
+  "profiles": {
+    "title": "Profils de style",
+    "subtitle": "Gérer vos personas de style d'écriture",
+    "newProfile": "Nouveau profil",
+    "createNewProfile": "Créer un nouveau profil",
+    "editProfile": "Modifier le profil",
+    "defineStyle": "Définissez votre style d'écriture et votre persona",
+    "nameLabel": "Nom du profil",
+    "namePlaceholder": "ex: Rédacteur technique, Blogueur décontracté",
+    "promptLabel": "Prompt de persona",
+    "promptPlaceholder": "Décrivez le style d'écriture, le ton et la structure...",
+    "emptyState": "Aucun profil de style pour le moment. Créez-en un pour commencer.",
+    "unnamedProfile": "Profil sans nom",
+    "noDescription": "Aucune description",
+    "active": "Actif",
+    "generatedFromSources": "Généré depuis vos sources",
+    "activeDescription": "Ce profil est utilisé pour tous vos chats",
+    "buttons": {
+      "activate": "Activer",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "generateProfile": "Générer un profil",
+      "regenerate": "Régénérer"
+    }
+  },
+  "logs": {
+    "title": "Journaux de requêtes",
+    "subtitle": "Surveiller les requêtes et réponses de l'API",
+    "autoRefreshOn": "Rafraîchissement auto ACTIVÉ",
+    "autoRefreshOff": "Rafraîchissement auto DÉSACTIVÉ",
+    "export": "Exporter",
+    "filters": "Filtres",
+    "searchPlaceholder": "Rechercher par endpoint, méthode ou modèle...",
+    "recentRequests": "Requêtes récentes",
+    "requestsFound": "{{count}} requête trouvée",
+    "requestsFound_other": "{{count}} requêtes trouvées",
+    "noRequests": "Aucune requête trouvée",
+    "model": "Modèle: {{model}}",
+    "tokens": "{{count}} tokens",
+    "status": {
+      "success": "Succès",
+      "clientError": "Erreur client",
+      "serverError": "Erreur serveur"
+    }
+  },
+  "status": {
+    "connected": "Connecté",
+    "disconnected": "Déconnecté"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français (French)",
+    "es": "Español (Spanish)",
+    "de": "Deutsch (German)",
+    "it": "Italiano (Italian)",
+    "pt": "Português (Portuguese)",
+    "ru": "Русский (Russian)",
+    "ja": "日本語 (Japanese)",
+    "zh": "中文 (Chinese)",
+    "ko": "한국어 (Korean)"
+  }
+}
