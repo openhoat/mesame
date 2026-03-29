@@ -113,6 +113,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: dist-artifacts
+          path: dist
 
       - name: Generate Prisma client
         run: npm run db:generate
