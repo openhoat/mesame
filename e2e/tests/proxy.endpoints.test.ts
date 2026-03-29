@@ -49,7 +49,7 @@ test.describe('Proxy Endpoint Tests', () => {
         provider?: string
         model?: string
         logLevel?: string
-      }>(request, `http://localhost:${port}/v1/config`)
+      }>(request, `http://localhost:${port}/api/config`)
 
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('provider')

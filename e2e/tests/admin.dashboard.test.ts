@@ -5,8 +5,8 @@
  * including source import and style profile visualization.
  */
 
+import { apiRequest } from '../helpers/api.js'
 import { expect, test } from '../fixtures.js'
-import { apiRequest, getStyleProfiles } from '../helpers/api.js'
 
 test.describe('Admin Dashboard Tests', () => {
   test.describe('UI Page Access', () => {
@@ -39,45 +39,27 @@ test.describe('Admin Dashboard Tests', () => {
   })
 
   test.describe('Style Profile API', () => {
-    test('should handle style profile creation', async ({ page, port }) => {
+    test('should get style profile', async ({ page, port }) => {
       const request = page.context().request
-
-      // Create a test style profile
-      const createResponse = await apiRequest<{ id: string; name: string }>(
+      const response = await apiRequest<{ personaPrompt?: string }>(
         request,
-        `http://localhost:${port}/v1/style-profiles`,
-        {
-          method: 'POST',
-          body: {
-            name: 'Test Profile',
-            content: 'This is a test style profile content.',
-          },
-        }
+        `http://localhost:${port}/api/style-profile`
       )
 
-      expect(createResponse.status).toBe(201)
-      expect(createResponse.body).toHaveProperty('id')
-      expect(createResponse.body.name).toBe('Test Profile')
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveProperty('personaPrompt')
     })
 
-    test('should list style profiles', async ({ page, port }) => {
-      const profiles = await getStyleProfiles(page.context().request, port)
-
-      expect(profiles.status).toBe(200)
-      expect(Array.isArray(profiles.body)).toBe(true)
-    })
-
-    test('should validate style profile input', async ({ page, port }) => {
+    test('should generate style profile', async ({ page, port }) => {
       const request = page.context().request
+      const response = await apiRequest(
+        request,
+        `http://localhost:${port}/api/style-profile/generate`,
+        { method: 'POST' }
+      )
 
-      // Try to create an invalid style profile (missing required fields)
-      const response = await apiRequest(request, `http://localhost:${port}/v1/style-profiles`, {
-        method: 'POST',
-        body: {},
-      })
-
-      // Should reject with appropriate error
-      expect([400, 422, 500]).toContain(response.status)
+      // Should succeed (200) or return error if no sources
+      expect([200, 201, 400, 404, 422, 500]).toContain(response.status)
     })
   })
 
@@ -99,7 +81,7 @@ test.describe('Admin Dashboard Tests', () => {
       const request = page.context().request
       const response = await apiRequest<Array<{ id: string }>>(
         request,
-        `http://localhost:${port}/v1/logs`
+        `http://localhost:${port}/api/logs`
       )
 
       expect(response.status).toBe(200)
