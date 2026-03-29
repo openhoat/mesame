@@ -10,5 +10,8 @@ dotenv.config = ((options?: Parameters<typeof dotenv.config>[0]) => {
   return originalConfig({ ...options, quiet: true })
 }) as typeof dotenv.config
 
+// Use SQLite in-memory database for tests (faster, isolated, no cleanup needed)
+process.env.DATABASE_URL = 'file::memory:?cache=shared'
+
 // Disable logging in test environment
 process.env.MESAME_LOG_LEVEL = 'silent'
