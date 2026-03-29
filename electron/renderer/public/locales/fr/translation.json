@@ -166,12 +166,16 @@
     "unnamedProfile": "Profil sans nom",
     "noDescription": "Aucune description",
     "active": "Actif",
+    "generatedFromSources": "Généré depuis vos sources",
+    "activeDescription": "Ce profil est utilisé pour tous vos chats",
     "buttons": {
       "activate": "Activer",
       "edit": "Modifier",
       "delete": "Supprimer",
       "save": "Enregistrer",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "generateProfile": "Générer un profil",
+      "regenerate": "Régénérer"
     }
   },
   "logs": {

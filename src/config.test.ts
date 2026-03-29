@@ -69,6 +69,7 @@ describe('config', () => {
         MESAME_PROVIDER: 'openai',
         OPENAI_API_KEY: 'sk-openai-key',
       }
+      delete process.env.MESAME_TARGET_BASE_URL
 
       const { loadConfig } = await import('./config.js')
       const cfg = loadConfig()
@@ -84,6 +85,7 @@ describe('config', () => {
         MESAME_PROVIDER: 'anthropic',
         ANTHROPIC_API_KEY: 'sk-ant-key',
       }
+      delete process.env.MESAME_TARGET_BASE_URL
 
       const { loadConfig } = await import('./config.js')
       const cfg = loadConfig()
@@ -99,6 +101,7 @@ describe('config', () => {
         MESAME_PROVIDER: 'google',
         GOOGLE_API_KEY: 'google-api-key',
       }
+      delete process.env.MESAME_TARGET_BASE_URL
 
       const { loadConfig } = await import('./config.js')
       const cfg = loadConfig()
@@ -113,6 +116,7 @@ describe('config', () => {
         ...originalEnv,
         MESAME_PROVIDER: 'ollama',
       }
+      delete process.env.MESAME_TARGET_BASE_URL
 
       const { loadConfig } = await import('./config.js')
       const cfg = loadConfig()

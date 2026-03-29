@@ -1,0 +1,148 @@
+/**
+ * Diagnostic test to identify Sources page freeze issue
+ */
+
+import { expect, test } from '../fixtures.js'
+import { apiRequest } from '../helpers/api.js'
+
+test.describe('Sources Diagnostic Tests', () => {
+  test('backend API should respond quickly', async ({ page, port }) => {
+    const startTime = Date.now()
+    const response = await apiRequest(page, `http://localhost:${port}/v1/sources`)
+    const duration = Date.now() - startTime
+
+    console.log(`✓ API responded in ${duration}ms`)
+    expect(response.status).toBe(200)
+    expect(duration).toBeLessThan(5000) // Should respond in less than 5s
+  })
+
+  test('frontend should receive response from /v1/sources', async ({ page, port }) => {
+    await page.goto(`http://localhost:${port}/`)
+
+    // Capture network requests
+    const requests: Array<{ url: string; status: number; duration: number }> = []
+
+    page.on('response', async response => {
+      if (response.url().includes('/v1/sources')) {
+        const _request = response.request()
+        const timing = response.request().timing()
+        requests.push({
+          url: response.url(),
+          status: response.status(),
+          duration: timing ? timing.responseEnd : 0,
+        })
+        console.log(`[Network] /v1/sources -> ${response.status()} (${timing?.responseEnd}ms)`)
+      }
+    })
+
+    // Go to dashboard
+    const dashboardButton = page
+      .locator('button:has-text("tableau de bord"), button:has-text("dashboard")')
+      .first()
+    if (await dashboardButton.isVisible().catch(() => false)) {
+      await dashboardButton.click()
+      await page.waitForTimeout(1000)
+    }
+
+    // Navigate to Sources with timeout protection
+    try {
+      const sourcesLink = page
+        .locator(
+          '[role="button"]:has-text("Sources"), a:has-text("Sources"), button:has-text("Sources")'
+        )
+        .first()
+      await sourcesLink.waitFor({ state: 'visible', timeout: 5000 })
+      await sourcesLink.click()
+
+      // Wait for network request to complete
+      await page.waitForTimeout(8000)
+
+      console.log(`Captured ${requests.length} requests to /v1/sources`)
+
+      // Check if request was made
+      if (requests.length === 0) {
+        console.log('❌ NO REQUEST TO /v1/sources WAS MADE')
+        throw new Error('Frontend did not send request to /v1/sources')
+      }
+
+      // Check response
+      const lastRequest = requests[requests.length - 1]
+      console.log(`✓ Request completed: ${lastRequest.status} in ${lastRequest.duration}ms`)
+
+      expect(lastRequest.status).toBe(200)
+    } catch (error) {
+      console.error('Error during navigation:', error)
+      const screenshot = await page.screenshot()
+      console.log(`Screenshot saved (${screenshot.length} bytes)`)
+      throw error
+    }
+  })
+
+  test('check console for errors on Sources page', async ({ page, port }) => {
+    const consoleMessages: Array<{ type: string; text: string }> = []
+    const errors: string[] = []
+
+    page.on('console', msg => {
+      consoleMessages.push({ type: msg.type(), text: msg.text() })
+      if (msg.type() === 'error') {
+        errors.push(msg.text())
+        console.error(`[Browser Console] ${msg.text()}`)
+      } else if (msg.text().includes('[Sources Frontend]')) {
+        console.log(`[Browser Console] ${msg.text()}`)
+      }
+    })
+
+    page.on('pageerror', error => {
+      errors.push(error.message)
+      console.error(`[Page Error] ${error.message}`)
+    })
+
+    await page.goto(`http://localhost:${port}/`)
+
+    // Go to dashboard
+    const dashboardButton = page
+      .locator('button:has-text("tableau de bord"), button:has-text("dashboard")')
+      .first()
+    if (await dashboardButton.isVisible().catch(() => false)) {
+      await dashboardButton.click()
+      await page.waitForTimeout(1000)
+    }
+
+    // Navigate to Sources
+    try {
+      const sourcesLink = page
+        .locator(
+          '[role="button"]:has-text("Sources"), a:has-text("Sources"), button:has-text("Sources")'
+        )
+        .first()
+      await sourcesLink.waitFor({ state: 'visible', timeout: 5000 })
+      await sourcesLink.click()
+
+      // Wait and collect console messages
+      await page.waitForTimeout(6000)
+
+      console.log(`\nCollected ${consoleMessages.length} console messages`)
+      console.log(`Found ${errors.length} errors\n`)
+
+      // Print all Sources-related logs
+      const sourcesLogs = consoleMessages.filter(m => m.text.includes('[Sources Frontend]'))
+      console.log('Sources Frontend logs:')
+      for (const log of sourcesLogs) {
+        console.log(`  ${log.text}`)
+      }
+
+      // Should have no JavaScript errors
+      expect(errors.length).toBe(0)
+
+      // Should have console logs showing fetch was attempted
+      expect(sourcesLogs.length).toBeGreaterThan(0)
+    } catch (error) {
+      console.error('\n❌ Test failed:', error)
+      console.log('\nAll console messages:')
+      for (const msg of consoleMessages) {
+        console.log(`  [${msg.type}] ${msg.text}`)
+      }
+      throw error
+    }
+  })
+})

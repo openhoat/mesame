@@ -45,7 +45,7 @@ describe('personaPromptGenerator', () => {
     const prompt = generatePersonaPrompt(createAnalysis())
 
     expect(prompt).toContain('MeSame')
-    expect(prompt).toContain('writing style')
+    expect(prompt).toContain('style preferences')
   })
 
   describe('sentence style', () => {
@@ -76,7 +76,7 @@ describe('personaPromptGenerator', () => {
         })
       )
 
-      expect(prompt).toContain('longer')
+      expect(prompt).toContain('develop ideas more fully')
     })
   })
 
@@ -88,7 +88,7 @@ describe('personaPromptGenerator', () => {
         })
       )
 
-      expect(prompt).toContain('rich')
+      expect(prompt).toContain('varied')
     })
 
     test('should recommend balanced vocabulary for moderate richness', () => {
@@ -108,7 +108,7 @@ describe('personaPromptGenerator', () => {
         })
       )
 
-      expect(prompt).toContain('simple')
+      expect(prompt).toContain('straightforward')
     })
   })
 
@@ -174,47 +174,26 @@ describe('personaPromptGenerator', () => {
     })
   })
 
-  describe('key vocabulary', () => {
-    test('should include top terms from TF-IDF analysis', () => {
+  describe('style priority and context constraints', () => {
+    test('should include subtle style priority instructions', () => {
       const prompt = generatePersonaPrompt(createAnalysis())
 
-      expect(prompt).toContain('typescript')
-      expect(prompt).toContain('programming')
+      expect(prompt).toContain('light touches')
+      expect(prompt).toContain('natural and helpful')
     })
 
-    test('should limit to 5 key terms', () => {
+    test('should present style as preferences not strict rules', () => {
       const prompt = generatePersonaPrompt(createAnalysis())
 
-      expect(prompt).toContain('features')
-      expect(prompt).not.toContain('code')
+      expect(prompt).toContain('subtle style preferences')
+      expect(prompt).toContain('prioritize clarity and accuracy')
     })
 
-    test('should handle empty TF-IDF results', () => {
-      const prompt = generatePersonaPrompt(createAnalysis({ tfidf: [] }))
-
-      expect(prompt).not.toContain('key terms')
-    })
-  })
-
-  describe('signature phrases', () => {
-    test('should include top bigrams as signature phrases', () => {
+    test('should include language matching instruction', () => {
       const prompt = generatePersonaPrompt(createAnalysis())
 
-      expect(prompt).toContain('object oriented')
-      expect(prompt).toContain('type checking')
-    })
-
-    test('should limit to 3 signature phrases', () => {
-      const prompt = generatePersonaPrompt(createAnalysis())
-
-      expect(prompt).toContain('static typing')
-      expect(prompt).not.toContain('large applications')
-    })
-
-    test('should handle empty bigrams', () => {
-      const prompt = generatePersonaPrompt(createAnalysis({ bigrams: [] }))
-
-      expect(prompt).not.toContain('characteristic expressions')
+      expect(prompt).toContain('always match the language')
+      expect(prompt).toContain("user's current message")
     })
   })
 })

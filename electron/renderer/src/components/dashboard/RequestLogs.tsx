@@ -1,78 +1,30 @@
-import {
-  Badge,
-  Button,
-  Code,
-  Divider,
-  Group,
-  Paper,
-  Stack,
-  Text,
-  TextInput,
-  Title,
-} from '@mantine/core'
+import { Badge, Button, Group, Paper, Stack, Text, TextInput, Title } from '@mantine/core'
 import { Activity, Download, RefreshCw, Search } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-interface RequestLog {
-  id: string
+interface LogEntry {
   timestamp: string
-  method: string
-  endpoint: string
-  statusCode: number
-  duration: number
-  model?: string
-  tokens?: number
+  level: string
+  message: string
 }
 
 export function RequestLogs() {
   const { t } = useTranslation()
-  const [logs, setLogs] = useState<RequestLog[]>([])
+  const [logs, setLogs] = useState<LogEntry[]>([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [autoRefresh, setAutoRefresh] = useState(false)
+  const [autoRefresh, setAutoRefresh] = useState(true)
 
-  const fetchLogs = useCallback(() => {
-    // Mock data - replace with actual API call
-    const mockLogs: RequestLog[] = [
-      {
-        id: '1',
-        timestamp: new Date(Date.now() - 120000).toISOString(),
-        method: 'POST',
-        endpoint: '/v1/chat/completions',
-        statusCode: 200,
-        duration: 1245,
-        model: 'gpt-4o-mini',
-        tokens: 1523,
-      },
-      {
-        id: '2',
-        timestamp: new Date(Date.now() - 300000).toISOString(),
-        method: 'GET',
-        endpoint: '/v1/models',
-        statusCode: 200,
-        duration: 45,
-      },
-      {
-        id: '3',
-        timestamp: new Date(Date.now() - 450000).toISOString(),
-        method: 'POST',
-        endpoint: '/v1/chat/completions',
-        statusCode: 500,
-        duration: 234,
-        model: 'gpt-4o',
-      },
-      {
-        id: '4',
-        timestamp: new Date(Date.now() - 600000).toISOString(),
-        method: 'POST',
-        endpoint: '/v1/chat/completions',
-        statusCode: 200,
-        duration: 2150,
-        model: 'gpt-4o',
-        tokens: 3421,
-      },
-    ]
-    setLogs(mockLogs)
+  const fetchLogs = useCallback(async () => {
+    try {
+      const response = await fetch('/api/logs?limit=100')
+      if (response.ok) {
+        const data = await response.json()
+        setLogs(data.logs || [])
+      }
+    } catch (_error) {
+      // Silently fail to avoid disrupting the UI
+    }
   }, [])
 
   useEffect(() => {
@@ -84,24 +36,17 @@ export function RequestLogs() {
     }
   }, [autoRefresh, fetchLogs])
 
-  const filteredLogs = logs.filter(
-    log =>
-      log.endpoint.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.method.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.model?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredLogs = logs.filter(log =>
+    log.message.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const getStatusBadge = (code: number) => {
-    if (code >= 200 && code < 300) return <Badge color="green">{t('logs.status.success')}</Badge>
-    if (code >= 400 && code < 500)
-      return <Badge color="orange">{t('logs.status.clientError')}</Badge>
-    if (code >= 500) return <Badge color="red">{t('logs.status.serverError')}</Badge>
-    return <Badge color="gray">{code}</Badge>
-  }
-
-  const formatDuration = (ms: number) => {
-    if (ms < 1000) return `${ms}ms`
-    return `${(ms / 1000).toFixed(2)}s`
+  const getLevelBadge = (level: string) => {
+    const levelLower = level.toLowerCase()
+    if (levelLower === 'error') return <Badge color="red">ERROR</Badge>
+    if (levelLower === 'warn') return <Badge color="orange">WARN</Badge>
+    if (levelLower === 'info') return <Badge color="blue">INFO</Badge>
+    if (levelLower === 'debug') return <Badge color="gray">DEBUG</Badge>
+    return <Badge color="gray">{level.toUpperCase()}</Badge>
   }
 
   const formatTimestamp = (iso: string) => {
@@ -167,40 +112,24 @@ export function RequestLogs() {
               </Text>
             </Stack>
           ) : (
-            <Stack gap="md">
-              {filteredLogs.map((log, index, arr) => (
-                <div key={log.id}>
-                  <Group justify="space-between" align="flex-start">
-                    <Stack gap={4} style={{ flex: 1 }}>
-                      <Group gap="xs">
-                        <Badge variant="outline" tt="uppercase" ff="monospace">
-                          {log.method}
-                        </Badge>
-                        <Code>{log.endpoint}</Code>
-                      </Group>
-                      <Group gap="md">
-                        <Text size="xs" c="dimmed">
-                          {formatTimestamp(log.timestamp)}
-                        </Text>
-                        <Text size="xs" c="dimmed">
-                          {formatDuration(log.duration)}
-                        </Text>
-                        {log.model && (
-                          <Text size="xs" c="dimmed">
-                            {t('logs.model', { model: log.model })}
-                          </Text>
-                        )}
-                        {log.tokens && (
-                          <Text size="xs" c="dimmed">
-                            {t('logs.tokens', { count: log.tokens })}
-                          </Text>
-                        )}
-                      </Group>
-                    </Stack>
-                    {getStatusBadge(log.statusCode)}
+            <Stack gap="xs">
+              {filteredLogs.map(log => (
+                <Paper
+                  key={`${log.timestamp}-${log.level}-${log.message.substring(0, 50)}`}
+                  p="xs"
+                  withBorder
+                  style={{ fontFamily: 'monospace', fontSize: '12px' }}
+                >
+                  <Group gap="xs" wrap="nowrap">
+                    <Text size="xs" c="dimmed" style={{ minWidth: '140px' }}>
+                      {formatTimestamp(log.timestamp)}
+                    </Text>
+                    {getLevelBadge(log.level)}
+                    <Text size="xs" style={{ flex: 1, wordBreak: 'break-word' }}>
+                      {log.message}
+                    </Text>
                   </Group>
-                  {index < arr.length - 1 && <Divider my="sm" />}
-                </div>
+                </Paper>
               ))}
             </Stack>
           )}

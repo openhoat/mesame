@@ -5,12 +5,20 @@ import { config } from './config.js'
 import { prisma } from './db.js'
 import { configRoute } from './routes/config.js'
 import { healthRoute } from './routes/health.js'
+import { logsRoute } from './routes/logs.js'
 import { proxyRoute } from './routes/proxy.js'
 import { sourcesRoute } from './routes/sources.js'
 import { styleProfileRoute } from './routes/styleProfile.js'
 import { uiRoutes } from './routes/ui.js'
 
 export async function buildApp(): Promise<FastifyInstance> {
+  const { logger, logConfiguration } = await import('./logger.js')
+
+  logger.info('Building Fastify application...')
+
+  // Display configuration on startup
+  logConfiguration(config)
+
   const loggerConfig =
     config.logLevel === 'silent'
       ? false
@@ -42,17 +50,25 @@ export async function buildApp(): Promise<FastifyInstance> {
     reply.status(status).type('text/plain').send(`${status} - ${message}`)
   })
 
+  const { logger: appLogger } = await import('./logger.js')
+
+  appLogger.info('Registering routes...')
   await app.register(cors)
   await app.register(configRoute)
   await app.register(healthRoute)
+  await app.register(logsRoute)
   await app.register(proxyRoute)
   await app.register(sourcesRoute)
   await app.register(styleProfileRoute)
   await app.register(uiRoutes)
+  appLogger.info('✅ All routes registered')
 
   app.addHook('onClose', async () => {
+    appLogger.info('Closing Prisma connection...')
     await prisma.$disconnect()
+    appLogger.info('✅ Prisma disconnected')
   })
 
+  appLogger.info('✅ Application built successfully')
   return app
 }

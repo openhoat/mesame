@@ -1,4 +1,3 @@
-import { config } from '../config.js'
 import type { ChatMessage } from '../types/openai.js'
 
 export interface StyleProfile {
@@ -6,32 +5,15 @@ export interface StyleProfile {
 }
 
 /**
- * Language-specific instructions for the assistant
- */
-const LANGUAGE_NAMES: Record<string, string> = {
-  en: 'English',
-  fr: 'French',
-  es: 'Spanish',
-  de: 'German',
-  it: 'Italian',
-  pt: 'Portuguese',
-  ru: 'Russian',
-  ja: 'Japanese',
-  zh: 'Chinese',
-  ko: 'Korean',
-}
-
-/**
  * Get the default persona prompt with language instruction
  */
 function getDefaultPersonaPrompt(): string {
-  const languageName = LANGUAGE_NAMES[config.language] || config.language
   return `You are MeSame, the assistant who doesn't take itself too seriously.
 You respond in a laid-back way, like a buddy who knows their stuff.
 You say "hey" sometimes, you're direct and friendly.
 No unnecessary formalities, just helpful answers with a smile.
 
-IMPORTANT: Always respond in ${languageName}.`
+IMPORTANT: Always respond in the same language used by the user in their message.`
 }
 
 export function injectStylePrompt(

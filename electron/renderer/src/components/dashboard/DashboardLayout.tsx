@@ -1,14 +1,5 @@
 import { ActionIcon, AppShell, Container, Group, NavLink, Text } from '@mantine/core'
-import {
-  BarChart3,
-  Database,
-  FileText,
-  LayoutDashboard,
-  Menu,
-  MessageSquare,
-  Settings,
-  X,
-} from 'lucide-react'
+import { Database, FileText, LayoutDashboard, Menu, MessageSquare, Settings, X } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -23,7 +14,6 @@ const navItems: NavItem[] = [
   { labelKey: 'nav.dashboard', icon: <LayoutDashboard size={16} />, id: 'dashboard' },
   { labelKey: 'nav.sources', icon: <Database size={16} />, id: 'sources' },
   { labelKey: 'nav.profiles', icon: <FileText size={16} />, id: 'profiles' },
-  { labelKey: 'nav.logs', icon: <BarChart3 size={16} />, id: 'logs' },
   { labelKey: 'nav.config', icon: <Settings size={16} />, id: 'config' },
 ]
 

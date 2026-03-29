@@ -34,24 +34,52 @@ export function Sources() {
   const [modalMode, setModalMode] = useState<'create' | 'view'>('create')
   const [selectedSource, setSelectedSource] = useState<Source | null>(null)
   const [editForm, setEditForm] = useState({ title: '', content: '' })
+  const [fetchError, setFetchError] = useState<string | null>(null)
   const resetRef = useRef<() => void>(null)
 
   const fetchSources = useCallback(async () => {
+    setFetchError(null)
+
     try {
       setLoading(true)
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
 
-      const response = await fetch('/v1/sources', {
+      const healthController = new AbortController()
+      const healthTimeout = setTimeout(() => healthController.abort(), 2000)
+
+      const _healthCheck = await fetch('/health', {
+        signal: healthController.signal,
+      })
+        .catch(_err => {
+          throw new Error('Server not reachable')
+        })
+        .finally(() => clearTimeout(healthTimeout))
+
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => {
+        controller.abort()
+      }, 5000)
+
+      const fetchPromise = fetch('/v1/sources', {
         signal: controller.signal,
       })
+
+      const response = await fetchPromise
       clearTimeout(timeoutId)
 
       if (response.ok) {
         const data = await response.json()
+
         setSources(Array.isArray(data) ? data : [])
+        setFetchError(null)
+      } else {
+        const errorText = await response.text()
+
+        setFetchError(`Error ${response.status}: ${errorText}`)
       }
-    } catch (_error) {
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error)
+
+      setFetchError(errorMsg)
       setSources([])
     } finally {
       setLoading(false)
@@ -202,12 +230,27 @@ export function Sources() {
       </Group>
 
       {/* Sources List */}
+      {fetchError && (
+        <Paper shadow="sm" p="xl" withBorder bg="red.1">
+          <Stack align="center" gap="md">
+            <Text size="sm" c="red">
+              ❌ Error: {fetchError}
+            </Text>
+            <Button size="sm" onClick={fetchSources}>
+              Retry
+            </Button>
+          </Stack>
+        </Paper>
+      )}
       {loading && sources.length === 0 ? (
         <Paper shadow="sm" p="xl" withBorder>
           <Stack align="center" gap="md">
             <Loader size="md" />
             <Text size="sm" c="dimmed">
               {t('sources.loading')}
+            </Text>
+            <Text size="xs" c="dimmed">
+              Check console for debug logs...
             </Text>
           </Stack>
         </Paper>

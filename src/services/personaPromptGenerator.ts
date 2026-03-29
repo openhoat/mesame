@@ -1,21 +1,4 @@
-import { config } from '../config.js'
 import type { StyleAnalysis } from './styleAnalyzer.js'
-
-/**
- * Language-specific instructions for the assistant
- */
-const LANGUAGE_NAMES: Record<string, string> = {
-  en: 'English',
-  fr: 'French',
-  es: 'Spanish',
-  de: 'German',
-  it: 'Italian',
-  pt: 'Portuguese',
-  ru: 'Russian',
-  ja: 'Japanese',
-  zh: 'Chinese',
-  ko: 'Korean',
-}
 
 export function generatePersonaPrompt(analysis: StyleAnalysis): string {
   const sections = [
@@ -23,8 +6,7 @@ export function generatePersonaPrompt(analysis: StyleAnalysis): string {
     buildSentenceStyle(analysis.metrics.averageSentenceLength),
     buildVocabularyStyle(analysis.metrics.lexicalRichness),
     buildToneProfile(analysis.metrics),
-    buildKeyVocabulary(analysis.tfidf.map(t => t.term)),
-    buildSignaturePhrases(analysis.bigrams.map(b => b.gram)),
+    buildStylePriorityInstruction(),
     buildLanguageInstruction(),
   ]
 
@@ -32,32 +14,31 @@ export function generatePersonaPrompt(analysis: StyleAnalysis): string {
 }
 
 function buildLanguageInstruction(): string {
-  const languageName = LANGUAGE_NAMES[config.language] || config.language
-  return `IMPORTANT: Always respond in ${languageName}.`
+  return "Language: always match the language of the user's current message, regardless of the source material language."
 }
 
 function buildIntroduction(): string {
-  return 'You are MeSame, an AI assistant that mirrors the writing style of the user.'
+  return "You are MeSame, an AI assistant. The following are subtle style preferences derived from the user's writing. Feel free to incorporate them naturally when they fit, but prioritize clarity and accuracy above all."
 }
 
 function buildSentenceStyle(averageSentenceLength: number): string {
   if (averageSentenceLength <= 10) {
-    return 'Use short, punchy sentences. Be direct and concise.'
+    return 'Sentence preference: tend toward shorter, direct expressions when appropriate.'
   }
   if (averageSentenceLength <= 20) {
-    return 'Use sentences of moderate length. Balance clarity with detail.'
+    return 'Sentence preference: moderate length, balancing clarity with context.'
   }
-  return 'Use longer, elaborated sentences. Develop your ideas fully with nuance and detail.'
+  return 'Sentence preference: you may develop ideas more fully with detailed explanations when the topic benefits from it.'
 }
 
 function buildVocabularyStyle(lexicalRichness: number): string {
   if (lexicalRichness >= 0.7) {
-    return 'Employ a rich and varied vocabulary. Avoid repeating the same words — use synonyms and diverse expressions.'
+    return 'Vocabulary preference: varied expressions are appreciated, though clarity remains the priority.'
   }
   if (lexicalRichness >= 0.4) {
-    return 'Use a balanced vocabulary with a moderate variety of words.'
+    return 'Vocabulary preference: a balanced mix of variety and familiarity works well.'
   }
-  return 'Keep your vocabulary simple and consistent. Favor familiar, everyday words.'
+  return 'Vocabulary preference: straightforward, familiar language is often preferred.'
 }
 
 function buildToneProfile(metrics: StyleAnalysis['metrics']): string {
@@ -74,24 +55,12 @@ function buildToneProfile(metrics: StyleAnalysis['metrics']): string {
   }
 
   if (traits.length === 0) {
-    return 'Maintain a neutral, balanced tone.'
+    return 'Tone preference: neutral and balanced.'
   }
 
-  return `Adopt a tone that is ${traits.join(', ')}.`
+  return `Tone preference: responses that feel ${traits.join(', ')} may resonate well.`
 }
 
-function buildKeyVocabulary(terms: string[]): string {
-  const topTerms = terms.slice(0, 5)
-  if (topTerms.length === 0) {
-    return ''
-  }
-  return `Naturally incorporate these key terms when relevant: ${topTerms.join(', ')}.`
-}
-
-function buildSignaturePhrases(bigrams: string[]): string {
-  const topBigrams = bigrams.slice(0, 3)
-  if (topBigrams.length === 0) {
-    return ''
-  }
-  return `When appropriate, use these characteristic expressions: "${topBigrams.join('", "')}".`
+function buildStylePriorityInstruction(): string {
+  return 'Remember: these are light touches, not strict rules. Your response should feel natural and helpful first.'
 }
