@@ -31,20 +31,14 @@ test.describe('Sources Page Tests', () => {
       })
 
       // First, click on dashboard button if we're on chat page
-      const dashboardButton = page
-        .locator('[data-testid="open-dashboard"]')
-        .first()
+      const dashboardButton = page.locator('[data-testid="open-dashboard"]').first()
       if (await dashboardButton.isVisible().catch(() => false)) {
         await dashboardButton.click()
         await page.waitForTimeout(1000)
       }
 
       // Look for Sources navigation link in sidebar
-      const sourcesLink = page
-        .locator(
-          '[data-testid="nav-sources"]'
-        )
-        .first()
+      const sourcesLink = page.locator('[data-testid="nav-sources"]').first()
       await sourcesLink.waitFor({ state: 'visible', timeout: 5000 })
 
       // Click to navigate to Sources
@@ -67,20 +61,14 @@ test.describe('Sources Page Tests', () => {
       await page.waitForLoadState('domcontentloaded')
 
       // Open dashboard if on chat page
-      const dashboardButton = page
-        .locator('[data-testid="open-dashboard"]')
-        .first()
+      const dashboardButton = page.locator('[data-testid="open-dashboard"]').first()
       if (await dashboardButton.isVisible().catch(() => false)) {
         await dashboardButton.click()
         await page.waitForTimeout(1000)
       }
 
       // Navigate to Sources
-      const sourcesLink = page
-        .locator(
-          '[data-testid="nav-sources"]'
-        )
-        .first()
+      const sourcesLink = page.locator('[data-testid="nav-sources"]').first()
       await sourcesLink.click()
 
       // Wait for loading to complete (max 10s)
@@ -128,18 +116,12 @@ test.describe('Sources Page Tests', () => {
 
       // Navigate to Sources page
       await page.goto(`http://localhost:${port}/`)
-      const dashboardButton = page
-        .locator('[data-testid="open-dashboard"]')
-        .first()
+      const dashboardButton = page.locator('[data-testid="open-dashboard"]').first()
       if (await dashboardButton.isVisible().catch(() => false)) {
         await dashboardButton.click()
         await page.waitForTimeout(1000)
       }
-      const sourcesLink = page
-        .locator(
-          '[data-testid="nav-sources"]'
-        )
-        .first()
+      const sourcesLink = page.locator('[data-testid="nav-sources"]').first()
       await sourcesLink.click()
 
       // Wait for sources to load
@@ -165,18 +147,12 @@ test.describe('Sources Page Tests', () => {
 
       // Navigate to Sources page
       await page.goto(`http://localhost:${port}/`)
-      const dashboardButton = page
-        .locator('[data-testid="open-dashboard"]')
-        .first()
+      const dashboardButton = page.locator('[data-testid="open-dashboard"]').first()
       if (await dashboardButton.isVisible().catch(() => false)) {
         await dashboardButton.click()
         await page.waitForTimeout(1000)
       }
-      const sourcesLink = page
-        .locator(
-          '[data-testid="nav-sources"]'
-        )
-        .first()
+      const sourcesLink = page.locator('[data-testid="nav-sources"]').first()
       await sourcesLink.click()
 
       // Wait for page to load
@@ -233,20 +209,14 @@ test.describe('Sources Page Tests', () => {
       })
 
       // Open dashboard
-      const dashboardButton = page
-        .locator('[data-testid="open-dashboard"]')
-        .first()
+      const dashboardButton = page.locator('[data-testid="open-dashboard"]').first()
       if (await dashboardButton.isVisible().catch(() => false)) {
         await dashboardButton.click()
         await page.waitForTimeout(1000)
       }
 
       // Navigate to Sources
-      const sourcesLink = page
-        .locator(
-          '[data-testid="nav-sources"]'
-        )
-        .first()
+      const sourcesLink = page.locator('[data-testid="nav-sources"]').first()
       await sourcesLink.click()
 
       // Wait for error handling
