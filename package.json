@@ -202,7 +202,8 @@
       "files": [
         "src/**/*.ts",
         "tsconfig.json"
-      ]
+      ],
+      "service": true
     },
     "dev:front": {
       "command": "vite --config web/vite.config.ts",
@@ -211,7 +212,8 @@
         "web/vite.config.ts",
         "web/index.html",
         "web/tsconfig.json"
-      ]
+      ],
+      "service": true
     }
   }
 }
