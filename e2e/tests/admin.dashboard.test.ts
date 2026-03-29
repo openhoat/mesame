@@ -5,8 +5,8 @@
  * including source import and style profile visualization.
  */
 
-import { apiRequest } from '../helpers/api.js'
 import { expect, test } from '../fixtures.js'
+import { apiRequest } from '../helpers/api.js'
 
 test.describe('Admin Dashboard Tests', () => {
   test.describe('UI Page Access', () => {

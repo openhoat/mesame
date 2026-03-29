@@ -22,8 +22,9 @@ model StyleProfile {
 }
 
 model Config {
-  id          Int     @id @default(1)
-  provider    String  @default("openai") // openai, anthropic, ollama
-  targetModel String  @default("gpt-4o")
-  apiKey      String?
+  id                Int     @id @default(1)
+  provider          String  @default("openai") // openai, anthropic, ollama
+  targetModel       String  @default("gpt-4o")
+  apiKey            String?
+  preferredLanguage String  @default("en") // ISO 639-1 language code for responses
 }

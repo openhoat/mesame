@@ -1,14 +1,14 @@
 import { ActionIcon, Text } from '@mantine/core'
 import { Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { StatusIndicator } from '@/components/StatusIndicator'
 
 interface ChatHeaderProps {
   isConnected: boolean
-  onNavigate: (page: string) => void
 }
 
-export function ChatHeader({ isConnected, onNavigate }: ChatHeaderProps) {
+export function ChatHeader({ isConnected }: ChatHeaderProps) {
   const { t } = useTranslation()
   return (
     <header
@@ -38,9 +38,10 @@ export function ChatHeader({ isConnected, onNavigate }: ChatHeaderProps) {
       </Text>
       <div style={{ flex: 1 }} />
       <ActionIcon
+        component={Link}
+        to="/dashboard"
         variant="subtle"
         data-testid="open-dashboard"
-        onClick={() => onNavigate('dashboard')}
         title={t('chat.header.openDashboard')}
         size="lg"
       >

@@ -26,9 +26,9 @@ export const proxyRoute: FastifyPluginAsync = async app => {
   app.post<{ Body: ChatCompletionRequest }>('/v1/chat/completions', async (request, reply) => {
     const body = request.body
 
-    // Inject style persona into messages
+    // Inject style persona into messages with user's preferred language
     const styleProfile = await getActiveStyleProfile()
-    const modifiedMessages = injectStylePrompt(body.messages, styleProfile)
+    const modifiedMessages = injectStylePrompt(body.messages, styleProfile, config.language)
 
     // Convert OpenAI format to LangChain messages
     const langchainMessages = convertToLangChainMessages(modifiedMessages)

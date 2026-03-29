@@ -7,14 +7,9 @@ export function generatePersonaPrompt(analysis: StyleAnalysis): string {
     buildVocabularyStyle(analysis.metrics.lexicalRichness),
     buildToneProfile(analysis.metrics),
     buildStylePriorityInstruction(),
-    buildLanguageInstruction(),
   ]
 
   return sections.filter(Boolean).join('\n')
-}
-
-function buildLanguageInstruction(): string {
-  return "Language: always match the language of the user's current message, regardless of the source material language."
 }
 
 function buildIntroduction(): string {

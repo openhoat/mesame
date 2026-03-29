@@ -4,17 +4,13 @@ import { ChatHeader } from './ChatHeader'
 import { ChatInput } from './ChatInput'
 import { ChatMessages } from './ChatMessages'
 
-export interface ChatLayoutProps {
-  onNavigate: (page: string) => void
-}
-
-export function ChatLayout({ onNavigate }: ChatLayoutProps) {
+export function ChatLayout() {
   const { messages, isStreaming, sendMessage } = useChat()
   const { isConnected } = useHealthCheck()
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <ChatHeader isConnected={isConnected} onNavigate={onNavigate} />
+      <ChatHeader isConnected={isConnected} />
       <ChatMessages messages={messages} />
       <ChatInput onSend={sendMessage} disabled={isStreaming} />
     </div>

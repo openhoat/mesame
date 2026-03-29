@@ -2,30 +2,30 @@ import { ActionIcon, AppShell, Container, Group, NavLink, Text } from '@mantine/
 import { Database, FileText, LayoutDashboard, Menu, MessageSquare, Settings, X } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link, useLocation } from 'react-router-dom'
 
 interface NavItem {
   labelKey: string
   icon: ReactNode
-  id: string
+  path: string
 }
 
 const navItems: NavItem[] = [
-  { labelKey: 'nav.chat', icon: <MessageSquare size={16} />, id: 'chat' },
-  { labelKey: 'nav.dashboard', icon: <LayoutDashboard size={16} />, id: 'dashboard' },
-  { labelKey: 'nav.sources', icon: <Database size={16} />, id: 'sources' },
-  { labelKey: 'nav.profiles', icon: <FileText size={16} />, id: 'profiles' },
-  { labelKey: 'nav.config', icon: <Settings size={16} />, id: 'config' },
+  { labelKey: 'nav.chat', icon: <MessageSquare size={16} />, path: '/' },
+  { labelKey: 'nav.dashboard', icon: <LayoutDashboard size={16} />, path: '/dashboard' },
+  { labelKey: 'nav.sources', icon: <Database size={16} />, path: '/dashboard/sources' },
+  { labelKey: 'nav.profiles', icon: <FileText size={16} />, path: '/dashboard/profiles' },
+  { labelKey: 'nav.config', icon: <Settings size={16} />, path: '/dashboard/config' },
 ]
 
 export interface DashboardLayoutProps {
-  currentPage: string
-  onNavigate: (page: string) => void
   children: ReactNode
 }
 
-export function DashboardLayout({ currentPage, onNavigate, children }: DashboardLayoutProps) {
+export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { t } = useTranslation()
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const location = useLocation()
 
   return (
     <AppShell
@@ -61,12 +61,13 @@ export function DashboardLayout({ currentPage, onNavigate, children }: Dashboard
         <AppShell.Section grow>
           {navItems.map(item => (
             <NavLink
-              key={item.id}
-              data-testid={`nav-${item.id}`}
-              active={currentPage === item.id}
+              key={item.path}
+              data-testid={`nav-${item.path.replace('/', '').replace('/', '-')}`}
+              component={Link}
+              to={item.path}
+              active={location.pathname === item.path}
               label={sidebarOpen ? t(item.labelKey) : undefined}
               leftSection={item.icon}
-              onClick={() => onNavigate(item.id)}
               style={{ borderRadius: 'var(--mantine-radius-default)' }}
             />
           ))}

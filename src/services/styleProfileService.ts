@@ -45,7 +45,7 @@ export async function generateStyleProfile(): Promise<StyleProfile> {
   // Step 3: Analyze style
   const analysis = analyzeStyle(combinedContent)
 
-  // Step 4: Generate persona prompt
+  // Step 4: Generate persona prompt (style only, no language)
   const personaPrompt = generatePersonaPrompt(analysis)
 
   // Step 5: Save style profile

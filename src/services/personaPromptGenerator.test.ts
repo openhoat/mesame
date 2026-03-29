@@ -189,11 +189,12 @@ describe('personaPromptGenerator', () => {
       expect(prompt).toContain('prioritize clarity and accuracy')
     })
 
-    test('should include language matching instruction', () => {
+    test('should not include language instruction', () => {
       const prompt = generatePersonaPrompt(createAnalysis())
 
-      expect(prompt).toContain('always match the language')
-      expect(prompt).toContain("user's current message")
+      // Style profile should NOT contain language instruction
+      expect(prompt).not.toContain('Language:')
+      expect(prompt).not.toContain('MUST respond')
     })
   })
 })

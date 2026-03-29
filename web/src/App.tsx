@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { ChatLayout } from '@/components/chat/ChatLayout'
 import { DashboardHome } from '@/components/dashboard/DashboardHome'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
@@ -8,46 +8,51 @@ import { Sources } from '@/components/dashboard/Sources'
 import { StyleProfiles } from '@/components/dashboard/StyleProfiles'
 
 export function App() {
-  const [currentPage, setCurrentPage] = useState('chat')
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'chat':
-        return <ChatLayout onNavigate={setCurrentPage} />
-      case 'dashboard':
-        return (
-          <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
+  return (
+    <Routes>
+      <Route path="/" element={<ChatLayout />} />
+      <Route path="/chat" element={<Navigate to="/" replace />} />
+      <Route
+        path="/dashboard"
+        element={
+          <DashboardLayout>
             <DashboardHome />
           </DashboardLayout>
-        )
-      case 'sources':
-        return (
-          <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
+        }
+      />
+      <Route
+        path="/dashboard/sources"
+        element={
+          <DashboardLayout>
             <Sources />
           </DashboardLayout>
-        )
-      case 'profiles':
-        return (
-          <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
+        }
+      />
+      <Route
+        path="/dashboard/profiles"
+        element={
+          <DashboardLayout>
             <StyleProfiles />
           </DashboardLayout>
-        )
-      case 'logs':
-        return (
-          <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
+        }
+      />
+      <Route
+        path="/dashboard/logs"
+        element={
+          <DashboardLayout>
             <RequestLogs />
           </DashboardLayout>
-        )
-      case 'config':
-        return (
-          <DashboardLayout currentPage={currentPage} onNavigate={setCurrentPage}>
+        }
+      />
+      <Route
+        path="/dashboard/config"
+        element={
+          <DashboardLayout>
             <ServerConfig />
           </DashboardLayout>
-        )
-      default:
-        return <ChatLayout onNavigate={setCurrentPage} />
-    }
-  }
-
-  return renderPage()
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
 }
