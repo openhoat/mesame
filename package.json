@@ -28,9 +28,9 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "dev": "npm run dev:back & npm run dev:front",
-    "dev:back": "tsx watch src/server.ts",
-    "dev:front": "vite --config web/vite.config.ts",
+    "dev": "wireit",
+    "dev:back": "wireit",
+    "dev:front": "wireit",
     "docs:build": "vitepress build docs",
     "docs:dev": "vitepress dev docs",
     "docs:preview": "vitepress preview docs",
@@ -186,6 +186,31 @@
         "qa",
         "typecheck",
         "test:coverage"
+      ]
+    },
+    "dev": {
+      "dependencies": [
+        "dev:back",
+        "dev:front"
+      ]
+    },
+    "dev:back": {
+      "command": "tsx watch src/server.ts",
+      "dependencies": [
+        "db:generate"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json"
+      ]
+    },
+    "dev:front": {
+      "command": "vite --config web/vite.config.ts",
+      "files": [
+        "web/src/**/*",
+        "web/vite.config.ts",
+        "web/index.html",
+        "web/tsconfig.json"
       ]
     }
   }
