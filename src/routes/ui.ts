@@ -114,6 +114,18 @@ async function uiRoutes(fastify: FastifyInstance): Promise<void> {
   // Client-side routes (chat, dashboard, etc.)
   fastify.get('/chat', serveIndexHtml)
   fastify.get('/dashboard', serveIndexHtml)
+
+  // Serve favicon.ico
+  fastify.get('/favicon.ico', async (_request: FastifyRequest, reply: FastifyReply) => {
+    const faviconPath = path.join(rendererPath, 'favicon.ico')
+    try {
+      const favicon = fs.readFileSync(faviconPath)
+      return reply.type('image/x-icon').send(favicon)
+    } catch {
+      // Favicon doesn't exist, return 204 No Content
+      return reply.code(204).send()
+    }
+  })
 }
 
 export { uiRoutes }
