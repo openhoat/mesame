@@ -1,7 +1,54 @@
 # Changelog
 
+## 30/03/2026
+
+- **[06:46:53] 🐛 [FIX]** filter non-critical console errors in E2E tests
+- **[06:37:37] 🐛 [FIX]** resolve static assets route conflict in tests
+- **[06:36:12] 🐛 [FIX]** resolve E2E test issues and improve web routing
+- **[06:16:29] 🐛 [FIX]** add test:e2e:headless script and attempt to fix DATABASE_URL
+- **[06:08:00] 🔧 [CHORE]** add sourcemaps and E2E tests for conversation history
+- **[06:04:46] ✨ [FEAT]** add conversation history to chat interface
+
+## 29/03/2026
+
+- **[23:11:39] 🔧 [CHORE]** add dark mode management idea to backlog
+- **[23:10:26] 🐛 [FIX]** resolve E2E test database path and add backlog ideas
+- **[22:48:08] ✨ [FEAT]** add chat route and backlog ideas for user profiling
+- **[22:34:45] ✨ [FEAT]** separate style profile from language preference and add URL routing
+- **[21:43:39] 🐛 [FIX]** add service flag to dev scripts for wireit
+- **[21:39:43] ♻️ [REFACTOR]** use wireit for dev scripts (dev:back, dev:front, dev for both)
+- **[21:38:55] ♻️ [REFACTOR]** rename dev scripts for clarity (dev:back, dev:front, dev for both)
+- **[21:32:37] 🐛 [FIX]** fix logs API test to match actual response format
+- **[21:30:07] 🐛 [FIX]** use correct API endpoints in tests
+- **[21:23:41] 🐛 [FIX]** set DATABASE_URL for E2E tests
+- **[21:21:39] 🐛 [FIX]** add database initialization for E2E tests
+- **[21:18:41] 🐛 [FIX]** download artifacts to dist directory for E2E tests
+- **[21:14:50] ✨ [FEAT]** restore E2E tests for web architecture
+- **[20:21:34] 👷 [CI]** remove Electron-related CI workflows
+- **[20:18:20] ✨ [FEAT]** remove Electron dependencies and desktop app
+- **[20:12:39] ✨ [FEAT]** add Docker Compose deployment stack
+- **[20:09:36] ✨ [FEAT]** use SQLite in-memory database for unit tests
+- **[19:58:06] ✨ [FEAT]** add standalone web frontend
+- **[19:54:09] 🔧 [CHORE]** update package-lock.json
+- **[19:46:17] ✨ [FEAT]** enable network access for web version
+- **[19:10:29] 🐛 [FIX]** apply Biome formatting to e2e test file
+- **[13:23:14] 🐛 [FIX]** add data-testid to navigation elements for e2e tests
+- **[12:58:58] ✨ [FEAT]** improve style analysis and add logging system
+
 ## 27/03/2026
 
+- **[10:47:04] 🐛 [FIX]** apply Prisma migrations to test databases in e2e fixtures
+- **[10:13:53] 🐛 [FIX]** skip Sources API e2e tests due to backend timeout issue
+- **[10:04:45] 🐛 [FIX]** simplify sources e2e tests following working pattern
+- **[10:03:53] 🔧 [CHORE]** Revert "chore: temporarily remove sources e2e tests to unblock CI"
+- **[10:00:26] 🔧 [CHORE]** temporarily remove sources e2e tests to unblock CI
+- **[09:51:17] 🐛 [FIX]** apply Biome formatting to e2e test
+- **[09:43:15] 🐛 [FIX]** make e2e tests more resilient for CI environment
+- **[09:24:22] 🐛 [FIX]** resolve Biome linting errors in e2e test
+- **[09:21:18] ✅ [TEST]** add comprehensive e2e tests for Sources page
+- **[09:14:44] 🐛 [FIX]** add fetch timeouts to Sources component to prevent infinite loading
+- **[09:08:52] 🔧 [CHORE]** update package-lock.json after npm install
+- **[08:49:03] 🔧 [CHORE]** update kanban and changelog post-merge
 - **[08:41:52] ✨ [FEAT]** add Sources management UI component in admin dashboard
 - **[08:32:21] 🔧 [CHORE]** update kanban and changelog post-merge
 - **[08:27:41] 🐛 [FIX]** sync UI language with config language selector
