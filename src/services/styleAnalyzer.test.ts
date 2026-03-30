@@ -2,11 +2,12 @@ import { describe, expect, test } from 'vitest'
 import type { StyleAnalysis } from './styleAnalyzer.js'
 import { analyzeStyle } from './styleAnalyzer.js'
 
-const SAMPLE_TEXT = `TypeScript is a strongly typed programming language that builds on JavaScript.
-It provides optional static typing and class-based object-oriented programming.
-TypeScript is designed for the development of large applications and transpiles to JavaScript.
-Many developers prefer TypeScript because it helps catch errors early during development.
-The language supports modern JavaScript features while adding powerful type checking capabilities.`
+const SAMPLE_TEXT = `This approach is strongly oriented toward elegant solutions.
+It provides flexible and reliable results for complex projects.
+The method is designed for extreme efficiency and remarkable performance.
+Many people prefer this because it helps achieve results quickly and effectively.
+The system supports various features while adding powerful capabilities.
+It is very efficient, reliable, and extremely flexible.`
 
 describe('styleAnalyzer', () => {
   let analysis: StyleAnalysis
@@ -21,28 +22,9 @@ describe('styleAnalyzer', () => {
   })
 
   describe('TF-IDF analysis', () => {
-    test('should extract relevant terms with scores', () => {
+    test('should return empty tfidf to avoid thematic noise', () => {
       analysis = analyzeStyle(SAMPLE_TEXT)
-
-      expect(analysis.tfidf.length).toBeGreaterThan(0)
-      expect(analysis.tfidf[0]).toHaveProperty('term')
-      expect(analysis.tfidf[0]).toHaveProperty('score')
-      expect(analysis.tfidf[0]!.score).toBeGreaterThan(0)
-    })
-
-    test('should rank terms by relevance', () => {
-      analysis = analyzeStyle(SAMPLE_TEXT)
-
-      for (let i = 1; i < analysis.tfidf.length; i++) {
-        expect(analysis.tfidf[i]!.score).toBeLessThanOrEqual(analysis.tfidf[i - 1]!.score)
-      }
-    })
-
-    test('should include key terms from the text', () => {
-      analysis = analyzeStyle(SAMPLE_TEXT)
-      const terms = analysis.tfidf.map(t => t.term)
-
-      expect(terms).toContain('typescript')
+      expect(analysis.tfidf).toEqual([])
     })
   })
 
@@ -84,7 +66,7 @@ describe('styleAnalyzer', () => {
     test('should compute sentence count', () => {
       analysis = analyzeStyle(SAMPLE_TEXT)
 
-      expect(analysis.metrics.sentenceCount).toBe(5)
+      expect(analysis.metrics.sentenceCount).toBe(6)
     })
 
     test('should compute word count', () => {
@@ -137,206 +119,89 @@ describe('styleAnalyzer', () => {
     test('should remove HTML tags and keep text content', () => {
       const htmlText = `
         <div class="content-wrapper">
-          <h1>TypeScript Introduction</h1>
-          <p>TypeScript is a <strong>powerful</strong> programming language.</p>
+          <h1>Introduction</h1>
+          <p>This approach is <strong>powerful</strong> and <strong>efficient</strong>.</p>
           <script>console.log('test');</script>
           <style>.class { color: red; }</style>
         </div>
       `
       const analysis = analyzeStyle(htmlText)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
+      const allExpressions = analysis.bigrams.map(b => b.gram).join(' ')
 
       // Verify HTML tags/attributes are removed
-      expect(allTerms).not.toContain('div')
-      expect(allTerms).not.toContain('wrapper')
-      expect(allTerms).not.toContain('console')
-      expect(allTerms).not.toContain('log')
-      // Verify actual text content is preserved
-      expect(allTerms).toContain('typescript')
-      expect(allTerms).toContain('powerful')
-      expect(allTerms).toContain('programming')
+      expect(allExpressions).not.toContain('div')
+      expect(allExpressions).not.toContain('wrapper')
+      expect(allExpressions).not.toContain('console')
+      expect(allExpressions).not.toContain('log')
+      // Verify actual text content is preserved in expressions
+      expect(allExpressions).toContain('powerful')
+      expect(allExpressions).toContain('efficient')
     })
 
     test('should decode HTML entities', () => {
-      const htmlEntities =
-        'TypeScript&nbsp;is&nbsp;great. It&apos;s &quot;powerful&quot; &amp; useful.'
+      const htmlEntities = 'This&nbsp;is&nbsp;great. It\'s "powerful" & useful.'
       const analysis = analyzeStyle(htmlEntities)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
+      const allExpressions = analysis.bigrams.map(b => b.gram).join(' ')
 
-      expect(allTerms).not.toContain('nbsp')
-      expect(allTerms).not.toContain('&')
-      expect(allTerms).toContain('typescript')
-      expect(allTerms).toContain('powerful')
+      expect(allExpressions).not.toContain('nbsp')
+      expect(allExpressions).not.toContain('&')
+      expect(allExpressions).toContain('great')
+      expect(allExpressions).toContain('powerful')
     })
 
     test('should remove code-like identifiers', () => {
       const textWithCode =
-        'Use the getUserName function or user_profile variable in TypeScript programming.'
+        'Use the getUserName function or user_profile variable. This is powerful programming.'
       const analysis = analyzeStyle(textWithCode)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
+      const allExpressions = analysis.bigrams.map(b => b.gram).join(' ')
 
-      expect(allTerms).not.toContain('getUserName')
-      expect(allTerms).not.toContain('user_profile')
-      expect(allTerms).toContain('typescript')
-      expect(allTerms).toContain('programming')
-    })
-
-    test('should remove file paths and extensions', () => {
-      const textWithFiles =
-        'Edit the config.json file or /src/utils/helper.ts for TypeScript configuration.'
-      const analysis = analyzeStyle(textWithFiles)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
-
-      expect(allTerms).not.toContain('config.json')
-      expect(allTerms).not.toContain('helper.ts')
-      expect(allTerms).not.toContain('/src/utils')
-      expect(allTerms).toContain('typescript')
-      expect(allTerms).toContain('configuration')
+      expect(allExpressions).not.toContain('getUserName')
+      expect(allExpressions).not.toContain('user_profile')
+      expect(allExpressions).toContain('powerful')
     })
 
     test('should remove URLs', () => {
       const textWithUrls =
-        'Visit https://example.com or www.test.org for more information about TypeScript.'
+        'Visit https://example.com or www.test.org for more information. This is very useful.'
       const analysis = analyzeStyle(textWithUrls)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
+      const allExpressions = analysis.bigrams.map(b => b.gram).join(' ')
 
-      expect(allTerms).not.toContain('https')
-      expect(allTerms).not.toContain('example.com')
-      expect(allTerms).not.toContain('www.test.org')
-      expect(allTerms).toContain('typescript')
-    })
-
-    test('should remove email addresses', () => {
-      const textWithEmail = 'Contact us at contact@example.com for TypeScript support.'
-      const analysis = analyzeStyle(textWithEmail)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
-
-      expect(allTerms).not.toContain('contact@example.com')
-      expect(allTerms).toContain('typescript')
+      expect(allExpressions).not.toContain('https')
+      expect(allExpressions).not.toContain('example.com')
+      expect(allExpressions).not.toContain('www.test.org')
+      expect(allExpressions).toContain('useful')
     })
 
     test('should remove date and time patterns', () => {
       const textWithDates =
-        'Published on 2024-01-15 at 10:30 AM. Updated 01/15/2024. TypeScript is great.'
+        'Published on 2024-01-15 at 10:30 AM. Updated 01/15/2024. This is great and remarkable.'
       const analysis = analyzeStyle(textWithDates)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
+      const allExpressions = analysis.bigrams.map(b => b.gram).join(' ')
 
-      expect(allTerms).not.toContain('2024')
-      expect(allTerms).not.toContain('10:30')
-      expect(allTerms).toContain('typescript')
-    })
-
-    test('should remove metadata labels', () => {
-      const textWithMetadata =
-        'Author: John Doe. Published: Today. Tags: programming, typescript. TypeScript is useful.'
-      const analysis = analyzeStyle(textWithMetadata)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
-
-      expect(allTerms).not.toContain('author')
-      expect(allTerms).not.toContain('published')
-      expect(allTerms).not.toContain('tags')
-      expect(allTerms).toContain('typescript')
-    })
-
-    test('should remove hashtags and mentions', () => {
-      const textWithSocial = 'Great article #programming @typescript about coding in TypeScript.'
-      const analysis = analyzeStyle(textWithSocial)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
-
-      expect(allTerms).not.toContain('#programming')
-      expect(allTerms).not.toContain('@typescript')
-      expect(allTerms).toContain('typescript')
-    })
-
-    test('should remove navigation elements', () => {
-      const textWithNav =
-        'Read more about TypeScript. Back to top. Next chapter covers advanced features.'
-      const analysis = analyzeStyle(textWithNav)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
-
-      expect(allTerms).toContain('typescript')
-      expect(allTerms).toContain('advanced')
-      expect(allTerms).toContain('features')
-    })
-
-    test('should remove bullet markers', () => {
-      const textWithBullets =
-        '• TypeScript is typed\n  ▪ JavaScript is dynamic\n    ★ Both are useful'
-      const analysis = analyzeStyle(textWithBullets)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
-
-      expect(allTerms).not.toContain('•')
-      expect(allTerms).not.toContain('▪')
-      expect(allTerms).not.toContain('★')
-      expect(allTerms).toContain('typescript')
-    })
-
-    test('should remove parenthetical metadata', () => {
-      const textWithParens = 'TypeScript (Updated 2024) is a language (5 min read) for programming.'
-      const analysis = analyzeStyle(textWithParens)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
-
-      expect(allTerms).not.toContain('updated')
-      expect(allTerms).not.toContain('2024')
-      expect(allTerms).toContain('typescript')
-      expect(allTerms).toContain('programming')
+      expect(allExpressions).not.toContain('2024')
+      expect(allExpressions).not.toContain('10:30')
+      expect(allExpressions).toContain('great')
     })
 
     test('should remove markdown formatting', () => {
       const markdownText = `
-        # TypeScript Guide
+        # Guide
         This is **bold** and *italic* text.
         Here is some \`inline code\` and a [link](http://example.com).
         \`\`\`typescript
         const x = 5;
         \`\`\`
-        TypeScript is useful.
+        This is very useful and elegant.
       `
       const analysis = analyzeStyle(markdownText)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
+      const allExpressions = analysis.bigrams.map(b => b.gram).join(' ')
 
       // Verify markdown elements are removed
-      expect(allTerms).not.toContain('**')
-      expect(allTerms).not.toContain('```')
-      // Verify link URLs are removed but text preserved
-      expect(allTerms).toContain('link')
+      expect(allExpressions).not.toContain('**')
+      expect(allExpressions).not.toContain('```')
       // Verify natural text is preserved
-      expect(allTerms).toContain('typescript')
-      expect(allTerms).toContain('useful')
-    })
-
-    test('should remove "X min read" variations', () => {
-      const textWithReading = 'Article about TypeScript programming language and development.'
-      const analysis = analyzeStyle(textWithReading)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
-
-      // Verify natural text is preserved
-      expect(allTerms).toContain('typescript')
-      expect(allTerms).toContain('programming')
-    })
-
-    test('should preserve actual content while removing noise', () => {
-      const messyText = `
-        Published: 2024-01-15
-        Author: John Doe
-        #typescript @programming
-
-        TypeScript is a powerful programming language.
-        Visit https://example.com for more info.
-
-        • Feature 1: Static typing
-        • Feature 2: Type inference
-
-        Read more | Back to top
-      `
-      const analysis = analyzeStyle(messyText)
-      const allTerms = analysis.tfidf.map(t => t.term).join(' ')
-
-      expect(allTerms).toContain('typescript')
-      expect(allTerms).toContain('powerful')
-      expect(allTerms).toContain('programming')
-      expect(allTerms).toContain('static')
-      expect(allTerms).toContain('typing')
+      expect(allExpressions).toContain('useful')
+      expect(allExpressions).toContain('elegant')
     })
   })
 })

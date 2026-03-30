@@ -1,11 +1,6 @@
 import nlp from 'compromise'
 import natural from 'natural'
 
-export interface TfIdfTerm {
-  term: string
-  score: number
-}
-
 export interface NGramEntry {
   gram: string
   count: number
@@ -20,13 +15,18 @@ export interface LinguisticMetrics {
   nounRatio: number
   verbRatio: number
   adjectiveRatio: number
+  pronounFirstPersonRatio: number // I, me, my, we, us, our
+  pronounSecondPersonRatio: number // You, your
+  questionRatio: number // Sentences ending with ?
+  exclamationRatio: number // Sentences ending with !
 }
 
 export interface StyleAnalysis {
-  tfidf: TfIdfTerm[]
+  tfidf: never[] // Kept for API compatibility but empty
   bigrams: NGramEntry[]
   trigrams: NGramEntry[]
   metrics: LinguisticMetrics
+  transitions: NGramEntry[]
 }
 
 /**
@@ -67,6 +67,14 @@ function preprocessText(text: string): string {
       // Remove standalone numbers (page numbers, IDs, etc.) but keep numbers in context
       .replace(/\b\d+\s*$/gm, '')
       .replace(/^\s*\d+\b/gm, '')
+      // Remove any 4-digit numbers (likely years)
+      .replace(/\b\d{4}\b/g, '')
+      // Remove month names and years (e.g., "feb 2026", "October 17")
+      .replace(
+        /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,4}\b/gi,
+        ''
+      )
+      .replace(/\b\d{1,4}\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/gi, '')
       // Remove common metadata labels
       .replace(/\b(updated|published|posted|created|modified|edited)[\s:]+[\w\s,]+/gi, '')
       .replace(/\b(author|written by|by|posted by|created by|editor)[\s:]+[\w\s]+/gi, '')
@@ -89,6 +97,12 @@ function preprocessText(text: string): string {
       // Remove markdown code blocks FIRST (before other markdown)
       .replace(/```[\s\S]*?```/g, ' ')
       .replace(/`[^`\n]+`/g, ' ')
+      // Remove common programming keywords that might appear in plain text
+      .replace(
+        /\b(const|let|var|function|export|import|from|return|async|await|console|log)\b/g,
+        ''
+      )
+      .replace(/\b(void|interface|type|class|private|public|protected|implements|extends)\b/g, '')
       // Remove "X min/minute read" patterns (more patterns)
       .replace(/\d+[\s-]*(?:min|mins|minute|minutes)[\s-]*(?:read|reading|to read|time)?/gi, ' ')
       .replace(/(?:read|reading|time)[\s-]*\d+[\s-]*(?:min|mins|minute|minutes)/gi, ' ')
@@ -113,28 +127,228 @@ function preprocessText(text: string): string {
   )
 }
 
+const TRANSITION_WORDS = [
+  'donc',
+  'ainsi',
+  'cependant',
+  'pourtant',
+  'toutefois',
+  'alors',
+  'ensuite',
+  'enfin',
+  'pourtant',
+  'parce que',
+  'car',
+  'mais',
+  'donc',
+  'or',
+  'ni',
+  'car',
+  'en gros',
+  'du coup',
+  'en effet',
+  'par exemple',
+  'notamment',
+  'finalement',
+]
+
+function extractTransitions(text: string): NGramEntry[] {
+  const lowerText = text.toLowerCase()
+  const found: NGramEntry[] = []
+
+  for (const word of TRANSITION_WORDS) {
+    const regex = new RegExp(`\\b${word}\\b`, 'g')
+    const count = (lowerText.match(regex) || []).length
+    if (count > 0) {
+      found.push({ gram: word, count })
+    }
+  }
+
+  return found.sort((a, b) => b.count - a.count).slice(0, 10)
+}
+
 export function analyzeStyle(text: string): StyleAnalysis {
   const cleanedText = preprocessText(text)
 
   return {
-    tfidf: extractTfIdf(cleanedText),
+    tfidf: [], // TF-IDF is no longer used to avoid thematic noise
     bigrams: extractNGrams(cleanedText, 2),
     trigrams: extractNGrams(cleanedText, 3),
     metrics: computeLinguisticMetrics(cleanedText),
+    transitions: extractTransitions(cleanedText),
   }
 }
 
-function extractTfIdf(text: string, topN = 20): TfIdfTerm[] {
-  const tfidf = new natural.TfIdf()
-  tfidf.addDocument(text)
-
-  const terms: TfIdfTerm[] = []
-  for (const item of tfidf.listTerms(0)) {
-    terms.push({ term: item.term, score: item.tfidf })
-  }
-
-  return terms.slice(0, topN)
-}
+const STOP_WORDS = new Set([
+  // French
+  'le',
+  'la',
+  'les',
+  'un',
+  'une',
+  'des',
+  'de',
+  'du',
+  'd’',
+  'l’',
+  'et',
+  'ou',
+  'où',
+  'mais',
+  'donc',
+  'car',
+  'ni',
+  'si',
+  'se',
+  'ce',
+  'cette',
+  'ces',
+  'mon',
+  'ma',
+  'mes',
+  'ton',
+  'ta',
+  'tes',
+  'son',
+  'sa',
+  'ses',
+  'notre',
+  'nos',
+  'votre',
+  'vos',
+  'leur',
+  'leurs',
+  'qui',
+  'que',
+  'quoi',
+  'dont',
+  'dans',
+  'sur',
+  'pour',
+  'par',
+  'avec',
+  'sans',
+  'sous',
+  'chez',
+  'entre',
+  'depuis',
+  'pendant',
+  'vers',
+  'avant',
+  'après',
+  'pourtant',
+  'pendant',
+  'parce',
+  'quand',
+  'comme',
+  'si',
+  'alors',
+  'ici',
+  'tout',
+  'toute',
+  'tous',
+  'toutes',
+  'bien',
+  'très',
+  'assez',
+  'peu',
+  'plus',
+  'moins',
+  'trop',
+  'jamais',
+  'toujours',
+  'déjà',
+  'encore',
+  'aussi',
+  'maintenant',
+  'après',
+  'comment',
+  'pourquoi',
+  'être',
+  'avoir',
+  'est',
+  'sont',
+  'était',
+  'été',
+  'suis',
+  'avez',
+  'notamment',
+  // English
+  'the',
+  'and',
+  'for',
+  'with',
+  'from',
+  'that',
+  'this',
+  'they',
+  'their',
+  'which',
+  // Tech noise (thematic instead of stylistic)
+  'code',
+  'tech',
+  'web',
+  'mobile',
+  'app',
+  'apps',
+  'server',
+  'serveur',
+  'backend',
+  'frontend',
+  'api',
+  'apis',
+  'framework',
+  'library',
+  'librairie',
+  'module',
+  'package',
+  'route',
+  'routes',
+  'data',
+  'données',
+  'user',
+  'utilisateur',
+  'users',
+  'utilisateurs',
+  'client',
+  'service',
+  'services',
+  'cloud',
+  'docker',
+  'node',
+  'nodejs',
+  'deno',
+  'fastify',
+  'svelte',
+  'react',
+  'vue',
+  'angular',
+  'typescript',
+  'javascript',
+  'python',
+  'rust',
+  'golang',
+  'netlify',
+  'kubernetes',
+  'cluster',
+  'design',
+  'base',
+  'hello',
+  'niji',
+  'ensemble',
+  'name',
+  'forms',
+  'simple',
+  'serve',
+  'signal',
+  'express',
+  'plan',
+  'post',
+  'star',
+  'wars',
+  'method',
+  'get',
+])
 
 function extractNGrams(text: string, n: number, topN = 15): NGramEntry[] {
   const tokenizer = new natural.WordTokenizer()
@@ -142,10 +356,22 @@ function extractNGrams(text: string, n: number, topN = 15): NGramEntry[] {
     .tokenize(text)
     ?.map(w => w.toLowerCase())
     .filter(w => w.length > 2)
+    .filter(w => !STOP_WORDS.has(w))
 
   if (!words || words.length < n) return []
 
-  const grams = n === 2 ? natural.NGrams.bigrams(words) : natural.NGrams.trigrams(words)
+  // Function to check if a bigram/trigram has stylistic value
+  const hasStylisticValue = (gram: string[]): boolean => {
+    const doc = nlp(gram.join(' '))
+    // It must contain at least one adjective or adverb to be considered truly "stylistic"
+    // We exclude verbs here to avoid tech actions like "process data"
+    return doc.match('(#Adjective|#Adverb)').found
+  }
+
+  const rawGrams = n === 2 ? natural.NGrams.bigrams(words) : natural.NGrams.trigrams(words)
+
+  // Filter grams: keep only those with stylistic markers
+  const grams = rawGrams.filter(hasStylisticValue)
 
   // Count occurrences
   const counts = new Map<string, number>()
@@ -176,6 +402,18 @@ function computeLinguisticMetrics(text: string): LinguisticMetrics {
   const verbs = (doc.verbs().out('array') as string[]).length
   const adjectives = (doc.adjectives().out('array') as string[]).length
 
+  // Pronoun analysis (French/English mix for safety, though corpus is French)
+  const firstPerson = doc
+    .match('(je|me|moi|mon|ma|mes|nous|notre|nos|i|me|my|mine|we|us|our|ours)')
+    .out('array').length
+  const secondPerson = doc
+    .match('(tu|te|toi|ton|ta|tes|vous|votre|vos|you|your|yours)')
+    .out('array').length
+
+  // Punctuation analysis
+  const questions = (text.match(/\?/g) || []).length
+  const exclamations = (text.match(/!/g) || []).length
+
   return {
     sentenceCount,
     wordCount,
@@ -185,5 +423,9 @@ function computeLinguisticMetrics(text: string): LinguisticMetrics {
     nounRatio: Math.round((nouns / wordCount) * 100) / 100,
     verbRatio: Math.round((verbs / wordCount) * 100) / 100,
     adjectiveRatio: Math.round((adjectives / wordCount) * 100) / 100,
+    pronounFirstPersonRatio: Math.round((firstPerson / wordCount) * 100) / 100,
+    pronounSecondPersonRatio: Math.round((secondPerson / wordCount) * 100) / 100,
+    questionRatio: Math.round((questions / sentenceCount) * 100) / 100,
+    exclamationRatio: Math.round((exclamations / sentenceCount) * 100) / 100,
   }
 }

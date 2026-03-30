@@ -4,14 +4,7 @@ import type { StyleAnalysis } from './styleAnalyzer.js'
 
 function createAnalysis(overrides: Partial<StyleAnalysis> = {}): StyleAnalysis {
   return {
-    tfidf: [
-      { term: 'typescript', score: 5 },
-      { term: 'programming', score: 4 },
-      { term: 'development', score: 3 },
-      { term: 'language', score: 2.5 },
-      { term: 'features', score: 2 },
-      { term: 'code', score: 1.5 },
-    ],
+    tfidf: [],
     bigrams: [
       { gram: 'object oriented', count: 3 },
       { gram: 'type checking', count: 2 },
@@ -28,7 +21,12 @@ function createAnalysis(overrides: Partial<StyleAnalysis> = {}): StyleAnalysis {
       nounRatio: 0.25,
       verbRatio: 0.15,
       adjectiveRatio: 0.08,
+      pronounFirstPersonRatio: 0.01,
+      pronounSecondPersonRatio: 0.01,
+      questionRatio: 0.05,
+      exclamationRatio: 0.05,
     },
+    transitions: [],
     ...overrides,
   }
 }
@@ -45,7 +43,15 @@ describe('personaPromptGenerator', () => {
     const prompt = generatePersonaPrompt(createAnalysis())
 
     expect(prompt).toContain('MeSame')
-    expect(prompt).toContain('style preferences')
+    expect(prompt).toContain('mirror the user')
+  })
+
+  test('should include signature expressions but no key vocabulary', () => {
+    const prompt = generatePersonaPrompt(createAnalysis())
+
+    expect(prompt).not.toContain('Key vocabulary')
+    expect(prompt).toContain('Signature Phrasing & Expressions')
+    expect(prompt).toContain('object oriented')
   })
 
   describe('sentence style', () => {
@@ -175,18 +181,18 @@ describe('personaPromptGenerator', () => {
   })
 
   describe('style priority and context constraints', () => {
-    test('should include subtle style priority instructions', () => {
+    test('should include core directive instructions', () => {
       const prompt = generatePersonaPrompt(createAnalysis())
 
-      expect(prompt).toContain('light touches')
-      expect(prompt).toContain('natural and helpful')
+      expect(prompt).toContain('Core Directive')
+      expect(prompt).toContain('embody them')
     })
 
-    test('should present style as preferences not strict rules', () => {
+    test('should present style as signature not strict rules', () => {
       const prompt = generatePersonaPrompt(createAnalysis())
 
-      expect(prompt).toContain('subtle style preferences')
-      expect(prompt).toContain('prioritize clarity and accuracy')
+      expect(prompt).toContain('linguistic signature')
+      expect(prompt).not.toContain('rules')
     })
 
     test('should not include language instruction', () => {

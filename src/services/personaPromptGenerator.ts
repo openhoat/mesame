@@ -6,6 +6,9 @@ export function generatePersonaPrompt(analysis: StyleAnalysis): string {
     buildSentenceStyle(analysis.metrics.averageSentenceLength),
     buildVocabularyStyle(analysis.metrics.lexicalRichness),
     buildToneProfile(analysis.metrics),
+    buildLexiconSection(analysis),
+    buildTransitionSection(analysis.transitions),
+    buildVoiceSection(analysis.metrics),
     buildStylePriorityInstruction(),
   ]
 
@@ -13,7 +16,7 @@ export function generatePersonaPrompt(analysis: StyleAnalysis): string {
 }
 
 function buildIntroduction(): string {
-  return "You are MeSame, an AI assistant. The following are subtle style preferences derived from the user's writing. Feel free to incorporate them naturally when they fit, but prioritize clarity and accuracy above all."
+  return "You are MeSame, an AI assistant. Your goal is to mirror the user's unique writing style, voice, and reasoning patterns. Use the following stylistic guidelines to shape your responses, ensuring they feel authentic and familiar to the user."
 }
 
 function buildSentenceStyle(averageSentenceLength: number): string {
@@ -49,13 +52,47 @@ function buildToneProfile(metrics: StyleAnalysis['metrics']): string {
     traits.push('action-oriented and dynamic')
   }
 
-  if (traits.length === 0) {
-    return 'Tone preference: neutral and balanced.'
+  let tone =
+    traits.length === 0
+      ? 'Tone preference: neutral and balanced.'
+      : `Tone preference: responses that feel ${traits.join(', ')} may resonate well.`
+
+  if (metrics.questionRatio > 0.1) {
+    tone += ' You often use rhetorical or engaging questions to guide the reader.'
+  }
+  if (metrics.exclamationRatio > 0.05) {
+    tone += ' Your tone is enthusiastic, using exclamations for emphasis.'
   }
 
-  return `Tone preference: responses that feel ${traits.join(', ')} may resonate well.`
+  return tone
+}
+
+function buildLexiconSection(analysis: StyleAnalysis): string {
+  const topBigrams = analysis.bigrams.slice(0, 8).map(b => b.gram)
+
+  if (topBigrams.length === 0) return ''
+
+  let section = 'Signature Phrasing & Expressions:\n'
+  section += `Naturally incorporate these recurring expressions when appropriate: ${topBigrams.join(', ')}.`
+  return section
+}
+
+function buildTransitionSection(transitions: StyleAnalysis['transitions']): string {
+  if (transitions.length === 0) return ''
+  const list = transitions.map(t => t.gram).join(', ')
+  return `Transitions & Connectors: You naturally use these words to link ideas: ${list}.`
+}
+
+function buildVoiceSection(metrics: StyleAnalysis['metrics']): string {
+  if (metrics.pronounFirstPersonRatio > 0.02) {
+    return 'Voice: Use a personal "I" or "We" perspective, as the user frequently writes from a direct, first-person standpoint.'
+  }
+  if (metrics.pronounSecondPersonRatio > 0.01) {
+    return 'Voice: Engage the reader directly using "You", mirroring the user\'s interactive writing style.'
+  }
+  return 'Voice: Maintain a professional, objective distance (impersonal style).'
 }
 
 function buildStylePriorityInstruction(): string {
-  return 'Remember: these are light touches, not strict rules. Your response should feel natural and helpful first.'
+  return 'Core Directive: Do not explicitly mention these guidelines. Simply embody them. Prioritize helpfulness while maintaining this specific linguistic signature.'
 }
