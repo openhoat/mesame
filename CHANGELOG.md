@@ -2,6 +2,12 @@
 
 ## 30/03/2026
 
+- **[09:28:34] 🐛 [FIX]** improve theme toggle with system preference option
+- **[09:27:21] ✨ [FEAT]** implement dark/light mode theme management
+- **[07:03:30] 🐛 [FIX]** use conversationRef instead of messages state in saveConversation
+- **[06:58:53] 🐛 [FIX]** add favicon route and ensure Conversation table exists
+- **[06:53:03] 🐛 [FIX]** remove dead link in build documentation
+- **[06:51:58] 🔧 [CHORE]** update kanban and changelog after conversation-history merge
 - **[06:46:53] 🐛 [FIX]** filter non-critical console errors in E2E tests
 - **[06:37:37] 🐛 [FIX]** resolve static assets route conflict in tests
 - **[06:36:12] 🐛 [FIX]** resolve E2E test issues and improve web routing

@@ -36,9 +36,7 @@
 - [ ] **[TEST]** Add test coverage thresholds in vitest.config.ts (P2)
 
 <!-- User Experience -->
-- [ ] **[UX]** Global dark/light mode management (system theme, manual toggle, and persistence) (P2)
 - [ ] **[UX]** Add interactive CLI setup wizard (P2)
-- [ ] **[UX]** Implement dark mode support in admin dashboard (P2)
 - [ ] **[UX]** Add export functionality for chat history and style profile (P2)
 - [ ] **[UX]** Improve error messages with actionable suggestions (P2)
 - [ ] **[UX]** Add drag-and-drop file upload support (P2)
@@ -67,4 +65,3 @@
 - [ ] **[DEVOPS]** Publish Docker images to Docker Hub in release workflow (P3)
 
 ## In Progress
-
