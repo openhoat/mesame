@@ -25,7 +25,7 @@
     "build:all": "wireit",
     "build:web": "wireit",
     "changelog": "bash scripts/changelog.sh",
-    "db:generate": "prisma generate",
+    "db:generate": "prisma generate && tsx scripts/fix-prisma-imports.ts",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
