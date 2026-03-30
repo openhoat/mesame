@@ -4,6 +4,7 @@ import Fastify from 'fastify'
 import { config } from './config.js'
 import { prisma } from './db.js'
 import { configRoute } from './routes/config.js'
+import { conversationsRoute } from './routes/conversations.js'
 import { healthRoute } from './routes/health.js'
 import { logsRoute } from './routes/logs.js'
 import { proxyRoute } from './routes/proxy.js'
@@ -58,6 +59,7 @@ export async function buildApp(): Promise<FastifyInstance> {
     credentials: true, // Allow credentials (cookies, auth headers)
   })
   await app.register(configRoute)
+  await app.register(conversationsRoute)
   await app.register(healthRoute)
   await app.register(logsRoute)
   await app.register(proxyRoute)

@@ -1,14 +1,16 @@
 import { ActionIcon, Text } from '@mantine/core'
-import { Settings } from 'lucide-react'
+import { History, Plus, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { StatusIndicator } from '@/components/StatusIndicator'
 
 interface ChatHeaderProps {
   isConnected: boolean
+  onOpenHistory?: () => void
+  onNewConversation?: () => void
 }
 
-export function ChatHeader({ isConnected }: ChatHeaderProps) {
+export function ChatHeader({ isConnected, onOpenHistory, onNewConversation }: ChatHeaderProps) {
   const { t } = useTranslation()
   return (
     <header
@@ -37,6 +39,16 @@ export function ChatHeader({ isConnected }: ChatHeaderProps) {
         {t('chat.header.tagline')}
       </Text>
       <div style={{ flex: 1 }} />
+      {onNewConversation && (
+        <ActionIcon onClick={onNewConversation} variant="subtle" title="New conversation" size="lg">
+          <Plus size={20} />
+        </ActionIcon>
+      )}
+      {onOpenHistory && (
+        <ActionIcon onClick={onOpenHistory} variant="subtle" title="Conversation history" size="lg">
+          <History size={20} />
+        </ActionIcon>
+      )}
       <ActionIcon
         component={Link}
         to="/dashboard"

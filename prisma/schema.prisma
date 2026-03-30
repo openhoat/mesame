@@ -28,3 +28,11 @@ model Config {
   apiKey            String?
   preferredLanguage String  @default("en") // ISO 639-1 language code for responses
 }
+
+model Conversation {
+  id        String   @id @default(uuid())
+  title     String
+  messages  String // JSON array of ChatMessage objects
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
