@@ -66,15 +66,16 @@ function findProjectPaths(): { rendererPath: string; assetsPath: string } {
 const { rendererPath, assetsPath } = findProjectPaths()
 
 async function uiRoutes(fastify: FastifyInstance): Promise<void> {
-  // Serve app images from /assets/ (e.g., MeSame_icon.png)
+  // Serve app images (e.g., MeSame_icon.png)
   if (fs.existsSync(assetsPath)) {
     await fastify.register(fastifyStatic, {
       root: assetsPath,
-      prefix: '/assets/',
+      prefix: '/app-images/',
+      decorateReply: false,
     })
   }
 
-  // Serve Vite-built JS/CSS bundles from renderer dist
+  // Serve Vite-built JS/CSS bundles
   const rendererDistPath = path.join(rendererPath, 'assets')
   if (fs.existsSync(rendererDistPath)) {
     await fastify.register(fastifyStatic, {

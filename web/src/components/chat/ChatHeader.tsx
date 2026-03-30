@@ -25,7 +25,7 @@ export function ChatHeader({ isConnected, onOpenHistory, onNewConversation }: Ch
       }}
     >
       <img
-        src="./assets/MeSame_icon.png"
+        src="/app-images/MeSame_icon.png"
         alt={t('chat.header.appName')}
         style={{ width: '32px', height: '32px', borderRadius: '8px' }}
         onError={e => {
