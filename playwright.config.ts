@@ -1,4 +1,3 @@
-import { resolve } from 'node:path'
 import { defineConfig } from '@playwright/test'
 
 /**
@@ -10,10 +9,8 @@ import { defineConfig } from '@playwright/test'
  * - Headless mode for CI environments
  * - Debug mode for interactive debugging
  * - Automatic server startup via webServer config
+ * - Test environment configuration via .env.test
  */
-
-// Resolve absolute path for test database (Prisma creates it relative to schema.prisma)
-const testDbPath = resolve(process.cwd(), 'prisma', 'test.db')
 
 // noinspection JSUnusedGlobalSymbols
 export default defineConfig({
@@ -38,7 +35,7 @@ export default defineConfig({
   },
   // Configure web server for E2E tests
   webServer: {
-    command: `DATABASE_URL=file:${testDbPath} npm run start`,
+    command: 'NODE_ENV=test npm run start',
     port: 3000,
     timeout: 30000,
     reuseExistingServer: false,

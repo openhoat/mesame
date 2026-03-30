@@ -301,6 +301,30 @@ Before submitting your PR, ensure:
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
 
+## Internationalization (i18n)
+
+MeSame supports multiple languages (English and French).
+
+### Adding a New Language
+
+1. Create a new directory in `web/public/locales/` (e.g., `es/` for Spanish).
+2. Copy `translation.json` from `en/` to the new directory.
+3. Translate all values in the JSON file.
+4. Update the language switcher/configuration to include the new language.
+
+### Usage in Components
+
+Use the `useTranslation` hook from `react-i18next`:
+
+```typescript
+import { useTranslation } from 'react-i18next';
+
+const MyComponent = () => {
+  const { t } = useTranslation();
+  return <div>{t('common.appName')}</div>;
+};
+```
+
 ## Recognition
 
 All contributors will be recognized in the project README and release notes.

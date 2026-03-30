@@ -79,18 +79,16 @@ async function uiRoutes(fastify: FastifyInstance): Promise<void> {
   if (fs.existsSync(rendererDistPath)) {
     await fastify.register(fastifyStatic, {
       root: rendererDistPath,
-      prefix: '/renderer-assets/',
+      prefix: '/assets/',
       decorateReply: false,
     })
   }
 
-  // Serve index.html for root route
-  fastify.get('/', async (_request: FastifyRequest, reply: FastifyReply) => {
+  // Serve index.html for root route and client-side routes
+  const serveIndexHtml = async (_request: FastifyRequest, reply: FastifyReply) => {
     const indexPath = path.join(rendererPath, 'index.html')
     try {
-      let html = fs.readFileSync(indexPath, 'utf-8')
-      // Rewrite Vite asset paths from ./assets/ to /renderer-assets/
-      html = html.replaceAll('./assets/', '/renderer-assets/')
+      const html = fs.readFileSync(indexPath, 'utf-8')
       return reply.type('text/html').send(html)
     } catch {
       return reply.type('text/html').send(`
@@ -107,7 +105,14 @@ async function uiRoutes(fastify: FastifyInstance): Promise<void> {
         </html>
       `)
     }
-  })
+  }
+
+  // Root route
+  fastify.get('/', serveIndexHtml)
+
+  // Client-side routes (chat, dashboard, etc.)
+  fastify.get('/chat', serveIndexHtml)
+  fastify.get('/dashboard', serveIndexHtml)
 }
 
 export { uiRoutes }

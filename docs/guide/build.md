@@ -351,3 +351,64 @@ Then rebuild:
 ```bash
 npm run dist
 ```
+
+## Docker Deployment
+
+Deploy MeSame as a web application using Docker Compose.
+
+### Quick Start
+
+```bash
+# Start MeSame
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# Stop MeSame
+docker compose down
+```
+
+Visit http://localhost:3000
+
+### Configuration
+
+Edit `docker-compose.yml` to configure environment variables.
+
+#### LLM Provider
+
+```yaml
+environment:
+  # Use local Ollama (default)
+  - MESAME_PROVIDER=ollama
+  - MESAME_MODEL=gemma3:1b
+  - MESAME_TARGET_BASE_URL=http://host.docker.internal:11434
+
+  # Or use OpenAI
+  # - MESAME_PROVIDER=openai
+  # - MESAME_MODEL=gpt-4o
+  # - OPENAI_API_KEY=sk-...
+```
+
+#### Server Settings
+
+```yaml
+environment:
+  - MESAME_HOST=0.0.0.0         # Listen on all interfaces
+  - MESAME_PORT=3000            # Port to bind
+  - MESAME_LOG_LEVEL=info       # Logging level
+  - MESAME_LANGUAGE=en          # UI language
+```
+
+### Data Persistence
+
+The SQLite database is stored in a Docker volume:
+
+```bash
+# Backup database
+docker compose exec mesame cat /app/data/mesame.db > mesame-backup.db
+
+# Restore database
+docker compose cp mesame-backup.db mesame:/app/data/mesame.db
+docker compose restart
+```

@@ -180,13 +180,17 @@ CLI options override environment variables. If no CLI option is provided, MeSame
 - [Contributing](https://openhoat.github.io/mesame/guide/contributing) — How to contribute to the project
 - [Changelog](https://github.com/openhoat/mesame/blob/main/CHANGELOG.md) — Version history and release notes
 
-## 🔒 Security
+## 🔒 Security & Privacy
 
-- **Zero-Cloud Analysis**: Document parsing and style analysis run entirely on your machine
-- **Local-First**: Proxy server binds to `127.0.0.1` only — no external access
-- **Anonymization Rules**: Optional regex-based masking to remove sensitive data before LLM calls
-- **No Data Retention**: Only stores your style profile locally (SQLite database)
-- **API Keys**: Stored securely in local environment files or Electron secure storage
+MeSame is designed with a local-first philosophy to protect your data.
+
+- **Zero-Cloud Analysis**: Document parsing and style analysis run entirely on your machine.
+- **Local-First**: The proxy server binds to `127.0.0.1` by default, ensuring no external network access.
+- **Data Protection**: Your style profiles are stored in a local SQLite database. No telemetry or usage data is collected.
+- **Anonymization**: Optional regex-based rules allow you to mask sensitive information before it's sent to any LLM provider.
+- **API Keys**: Keys are stored locally in environment files or via Electron's secure storage.
+
+For security vulnerabilities, please contact: openhoat@gmail.com
 
 ## 📄 License
 
