@@ -2,6 +2,15 @@
 
 ## 30/03/2026
 
+- **[09:54:21] ✨ [FEAT]** migrate LangChain to v1 and Vitest to v4
+- **[09:50:04] ✨ [FEAT]** migrate to Prisma 7 with libSQL adapter
+- **[06:23:37] 📦 [DEPS]** bump i18next from 25.10.9 to 26.0.1
+- **[06:22:39] 📦 [DEPS]** bump lucide-react from 0.577.0 to 1.7.0
+- **[06:22:24] 📦 [DEPS]** bump @biomejs/biome in the minor-and-patch group
+- **[06:21:49] 👷 [CI]** bump actions/configure-pages from 5 to 6
+- **[06:21:46] 👷 [CI]** bump codecov/codecov-action from 5 to 6
+- **[06:21:43] 👷 [CI]** bump actions/deploy-pages from 4 to 5
+- **[09:39:06] 🔧 [CHORE]** update kanban and changelog after dark-mode merge
 - **[09:28:34] 🐛 [FIX]** improve theme toggle with system preference option
 - **[09:27:21] ✨ [FEAT]** implement dark/light mode theme management
 - **[07:03:30] 🐛 [FIX]** use conversationRef instead of messages state in saveConversation
