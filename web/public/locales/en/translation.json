@@ -198,6 +198,13 @@
     "connected": "Connected",
     "disconnected": "Disconnected"
   },
+  "theme": {
+    "toggle": "Toggle theme",
+    "selectTheme": "Select theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
   "languages": {
     "en": "English",
     "fr": "Français (French)",
