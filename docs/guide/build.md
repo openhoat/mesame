@@ -369,7 +369,7 @@ docker compose logs -f
 docker compose down
 ```
 
-Visit http://localhost:3000
+The application will be available at `http://localhost:3000`
 
 ### Configuration
 
