@@ -38,16 +38,11 @@ export default defineConfig({
   },
   // Configure web server for E2E tests
   webServer: {
-    command: 'npm run start',
+    command: `DATABASE_URL=file:${testDbPath} npm run start`,
     port: 3000,
     timeout: 30000,
     reuseExistingServer: false,
     stdout: 'ignore',
     stderr: 'pipe',
-    env: {
-      ...process.env,
-      // Use absolute path for test database
-      DATABASE_URL: `file:${testDbPath}`,
-    },
   },
 })
