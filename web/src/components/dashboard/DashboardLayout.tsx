@@ -3,6 +3,7 @@ import { Database, FileText, LayoutDashboard, Menu, MessageSquare, Settings, X }
 import { type ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 interface NavItem {
   labelKey: string
@@ -71,6 +72,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               style={{ borderRadius: 'var(--mantine-radius-default)' }}
             />
           ))}
+        </AppShell.Section>
+
+        {/* Theme toggle */}
+        <AppShell.Section>
+          <Group justify={sidebarOpen ? 'flex-end' : 'center'}>
+            <ThemeToggle />
+          </Group>
         </AppShell.Section>
       </AppShell.Navbar>
 

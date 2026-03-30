@@ -4,6 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MeSame</title>
+  <!-- Mantine Color Scheme Script - prevents flash of wrong theme -->
+  <script>
+    // Try to get the saved color scheme from localStorage
+    try {
+      const savedScheme = localStorage.getItem('mantine-color-scheme');
+      if (savedScheme === 'light' || savedScheme === 'dark') {
+        document.documentElement.setAttribute('data-mantine-color-scheme', savedScheme);
+      } else {
+        // Default to dark theme
+        document.documentElement.setAttribute('data-mantine-color-scheme', 'dark');
+      }
+    } catch {
+      document.documentElement.setAttribute('data-mantine-color-scheme', 'dark');
+    }
+  </script>
 </head>
 <body>
   <div id="root"></div>

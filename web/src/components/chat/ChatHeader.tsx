@@ -3,6 +3,7 @@ import { History, Plus, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { StatusIndicator } from '@/components/StatusIndicator'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 interface ChatHeaderProps {
   isConnected: boolean
@@ -59,6 +60,7 @@ export function ChatHeader({ isConnected, onOpenHistory, onNewConversation }: Ch
       >
         <Settings size={20} />
       </ActionIcon>
+      <ThemeToggle />
       <StatusIndicator isConnected={isConnected} />
     </header>
   )
