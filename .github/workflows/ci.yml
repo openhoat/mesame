@@ -137,7 +137,7 @@ jobs:
       - name: Run E2E tests
         run: npm run test:e2e
         env:
-          DATABASE_URL: file:./prisma/test.db
+          DATABASE_URL: file:./test.db
           MESAME_LOG_LEVEL: silent
           CI: true
 
