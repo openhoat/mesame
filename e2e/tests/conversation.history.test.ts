@@ -10,15 +10,17 @@ import { expect, test } from '../fixtures.js'
 test.describe('Conversation History', () => {
   test.describe('API Endpoints', () => {
     test('should create a conversation via API', async ({ page, port }) => {
-      const response = await page.context().request.post(`http://localhost:${port}/v1/conversations`, {
-        data: {
-          title: 'Test Conversation',
-          messages: [
-            { role: 'user', content: 'Hello' },
-            { role: 'assistant', content: 'Hi there!' },
-          ],
-        },
-      })
+      const response = await page
+        .context()
+        .request.post(`http://localhost:${port}/v1/conversations`, {
+          data: {
+            title: 'Test Conversation',
+            messages: [
+              { role: 'user', content: 'Hello' },
+              { role: 'assistant', content: 'Hi there!' },
+            ],
+          },
+        })
 
       expect(response.status()).toBe(201)
       const data = await response.json()
@@ -37,21 +39,20 @@ test.describe('Conversation History', () => {
 
     test('should delete a conversation via API', async ({ page, port }) => {
       // Create a conversation first
-      const createResponse = await page.context().request.post(
-        `http://localhost:${port}/v1/conversations`,
-        {
+      const createResponse = await page
+        .context()
+        .request.post(`http://localhost:${port}/v1/conversations`, {
           data: {
             title: 'To Delete',
             messages: [{ role: 'user', content: 'test' }],
           },
-        }
-      )
+        })
       const { id } = await createResponse.json()
 
       // Delete it
-      const deleteResponse = await page.context().request.delete(
-        `http://localhost:${port}/v1/conversations/${id}`
-      )
+      const deleteResponse = await page
+        .context()
+        .request.delete(`http://localhost:${port}/v1/conversations/${id}`)
 
       expect(deleteResponse.status()).toBe(204)
     })
@@ -113,9 +114,9 @@ test.describe('Conversation History', () => {
   test.describe('Conversation Workflow', () => {
     test('should display empty state when no conversations exist', async ({ page, port }) => {
       // Clean up any existing conversations first
-      const listResponse = await page.context().request.get(
-        `http://localhost:${port}/v1/conversations`
-      )
+      const listResponse = await page
+        .context()
+        .request.get(`http://localhost:${port}/v1/conversations`)
       const conversations = await listResponse.json()
       for (const conv of conversations) {
         await page.context().request.delete(`http://localhost:${port}/v1/conversations/${conv.id}`)

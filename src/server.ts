@@ -1,7 +1,19 @@
 import { buildApp } from './app.js'
 import { config } from './config.js'
 
+async function loadEnvIfNeeded(): Promise<void> {
+  // Load environment variables from .env.test if in test mode
+  // MUST be done before Prisma connects
+  if (process.env.NODE_ENV === 'test') {
+    const { config: dotenvConfig } = await import('dotenv')
+    dotenvConfig({ path: '.env.test' })
+  }
+}
+
 export const startServer = async (): Promise<void> => {
+  // Load environment variables first
+  await loadEnvIfNeeded()
+
   const app = await buildApp()
 
   // Temporarily disable logger for listen to avoid duplicate logs
@@ -17,7 +29,7 @@ export const startServer = async (): Promise<void> => {
 }
 
 // Only start server if this file is run directly (not imported)
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === import.meta.filename) {
   startServer().catch(err => {
     process.stderr.write(`${String(err)}\n`)
     process.exit(1)
