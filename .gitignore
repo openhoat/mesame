@@ -31,6 +31,9 @@ build/
 out/
 tsconfig.tsbuildinfo
 
+# Generated code
+src/generated/
+
 # Electron
 dist-electron-app/
 *.dmg
