@@ -7,10 +7,12 @@ import {
 } from './fileParser.js'
 
 vi.mock('pdf-parse', () => ({
-  PDFParse: vi.fn().mockImplementation(() => ({
-    getText: vi.fn().mockResolvedValue({ text: 'Extracted PDF content\n' }),
-    destroy: vi.fn().mockResolvedValue(undefined),
-  })),
+  PDFParse: vi.fn().mockImplementation(function () {
+    return {
+      getText: vi.fn().mockResolvedValue({ text: 'Extracted PDF content\n' }),
+      destroy: vi.fn().mockResolvedValue(undefined),
+    }
+  }),
 }))
 
 describe('fileParser', () => {
