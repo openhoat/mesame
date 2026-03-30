@@ -23,10 +23,12 @@ export function ChatMessage({ message }: ChatMessageProps) {
       <div
         className={cn(
           'w-8 h-8 rounded-lg shrink-0 flex items-center justify-center text-sm font-semibold',
-          isUser && 'bg-white/[0.12] text-slate-300',
+          isUser &&
+            'bg-[hsl(var(--color-primary))] text-[hsl(var(--color-primary-foreground))] dark:bg-white/[0.12] dark:text-slate-300',
           message.role === 'assistant' &&
             'bg-gradient-to-br from-accent to-accent-secondary text-white',
-          isError && 'bg-red-500/20 text-red-300'
+          isError &&
+            'bg-[hsl(var(--color-destructive))]/20 text-[hsl(var(--color-destructive-foreground))]'
         )}
       >
         {isUser ? 'U' : isError ? '!' : 'M'}
@@ -34,10 +36,12 @@ export function ChatMessage({ message }: ChatMessageProps) {
       <div
         className={cn(
           'message-content px-4 py-3 rounded-xl leading-relaxed text-sm whitespace-pre-wrap break-words',
-          isUser && 'bg-accent/20 border border-accent/30 rounded-tr-sm text-slate-200',
+          isUser &&
+            'bg-[hsl(var(--color-primary))]/10 border border-[hsl(var(--color-primary))]/30 rounded-tr-sm',
           message.role === 'assistant' &&
-            'bg-white/[0.06] border border-white/[0.08] rounded-tl-sm',
-          isError && 'bg-red-500/[0.15] border border-red-500/30 text-red-300'
+            'bg-[hsl(var(--color-card))] border border-[hsl(var(--color-border))] rounded-tl-sm',
+          isError &&
+            'bg-[hsl(var(--color-destructive))]/[0.15] border border-[hsl(var(--color-destructive))]/30'
         )}
       >
         {message.content}

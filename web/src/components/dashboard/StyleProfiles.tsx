@@ -91,16 +91,7 @@ export function StyleProfiles() {
           </Stack>
         </Paper>
       ) : (
-        <Paper
-          shadow="sm"
-          p="lg"
-          withBorder
-          style={{
-            borderColor: 'var(--mantine-color-blue-6)',
-            borderWidth: '2px',
-            backgroundColor: 'var(--mantine-color-blue-0)',
-          }}
-        >
+        <Paper shadow="sm" p="lg" withBorder>
           <Stack gap="md">
             <Group justify="space-between">
               <div>
@@ -127,7 +118,7 @@ export function StyleProfiles() {
               </Button>
             </Group>
 
-            <Paper p="md" withBorder bg="gray.0">
+            <Paper p="md" withBorder>
               <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
                 {profile.personaPrompt}
               </Text>
