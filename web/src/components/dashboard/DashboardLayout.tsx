@@ -77,7 +77,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Theme toggle */}
         <AppShell.Section>
           <Group justify={sidebarOpen ? 'flex-end' : 'center'}>
-            <ThemeToggle />
+            <ThemeToggle variant="menu" />
           </Group>
         </AppShell.Section>
       </AppShell.Navbar>

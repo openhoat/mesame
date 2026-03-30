@@ -1,7 +1,7 @@
 import { ActionIcon, Group, Menu, Text } from '@mantine/core'
-import { Moon, Sun } from 'lucide-react'
+import { Computer, Moon, Sun } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useTheme } from '@/hooks/use-theme'
+import { type ColorSchemeValue, useTheme } from '@/hooks/use-theme'
 
 interface ThemeToggleProps {
   /** Toggle variant: simple icon or dropdown menu */
@@ -13,9 +13,12 @@ interface ThemeToggleProps {
  */
 export function ThemeToggle({ variant = 'icon' }: ThemeToggleProps) {
   const { t } = useTranslation()
-  const { colorScheme, toggleColorScheme } = useTheme()
+  const { colorScheme, setColorScheme, toggleColorScheme } = useTheme()
 
-  const icon = colorScheme === 'dark' ? <Moon size={18} /> : <Sun size={18} />
+  // Determine the icon based on current color scheme
+  // When 'auto', show sun during day (light system) or moon during night (dark system)
+  const isDark = colorScheme === 'dark'
+  const icon = isDark ? <Moon size={18} /> : <Sun size={18} />
 
   if (variant === 'icon') {
     return (
@@ -23,6 +26,10 @@ export function ThemeToggle({ variant = 'icon' }: ThemeToggleProps) {
         {icon}
       </ActionIcon>
     )
+  }
+
+  const handleSelect = (value: ColorSchemeValue) => {
+    setColorScheme(value)
   }
 
   return (
@@ -37,7 +44,7 @@ export function ThemeToggle({ variant = 'icon' }: ThemeToggleProps) {
         <Menu.Label>{t('theme.selectTheme')}</Menu.Label>
         <Menu.Item
           leftSection={<Sun size={16} />}
-          onClick={() => toggleColorScheme()}
+          onClick={() => handleSelect('light')}
           color={colorScheme === 'light' ? 'blue' : undefined}
         >
           <Group justify="space-between">
@@ -47,7 +54,7 @@ export function ThemeToggle({ variant = 'icon' }: ThemeToggleProps) {
         </Menu.Item>
         <Menu.Item
           leftSection={<Moon size={16} />}
-          onClick={() => toggleColorScheme()}
+          onClick={() => handleSelect('dark')}
           color={colorScheme === 'dark' ? 'blue' : undefined}
         >
           <Group justify="space-between">
@@ -55,19 +62,17 @@ export function ThemeToggle({ variant = 'icon' }: ThemeToggleProps) {
             {colorScheme === 'dark' && <Text size="xs">✓</Text>}
           </Group>
         </Menu.Item>
+        <Menu.Item
+          leftSection={<Computer size={16} />}
+          onClick={() => handleSelect('auto')}
+          color={colorScheme === 'auto' ? 'blue' : undefined}
+        >
+          <Group justify="space-between">
+            <Text>{t('theme.system')}</Text>
+            {colorScheme === 'auto' && <Text size="xs">✓</Text>}
+          </Group>
+        </Menu.Item>
       </Menu.Dropdown>
     </Menu>
   )
-}
-
-/**
- * Get the icon for a color scheme
- */
-export function getColorSchemeIcon(colorScheme: 'light' | 'dark') {
-  switch (colorScheme) {
-    case 'light':
-      return <Sun size={18} />
-    case 'dark':
-      return <Moon size={18} />
-  }
 }

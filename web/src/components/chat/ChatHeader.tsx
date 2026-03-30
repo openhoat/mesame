@@ -60,7 +60,7 @@ export function ChatHeader({ isConnected, onOpenHistory, onNewConversation }: Ch
       >
         <Settings size={20} />
       </ActionIcon>
-      <ThemeToggle />
+      <ThemeToggle variant="menu" />
       <StatusIndicator isConnected={isConnected} />
     </header>
   )
