@@ -21,6 +21,49 @@ export function useChat() {
   const conversationRef = useRef<ConversationMessage[]>([])
   const streamingContentRef = useRef('')
 
+  const saveConversation = useCallback(async () => {
+    // Use conversationRef.current instead of messages state
+    // because state updates are asynchronous and may not be applied yet
+    const currentMessages = conversationRef.current
+
+    if (currentMessages.length === 0) return
+
+    const title = generateConversationTitle(
+      currentMessages.map(msg => ({
+        id: `msg-${Date.now()}`,
+        role: msg.role,
+        content: msg.content,
+      }))
+    )
+
+    try {
+      if (currentConversationId) {
+        // Update existing conversation
+        await updateConversation(currentConversationId, {
+          messages: currentMessages.map(msg => ({
+            id: `msg-${Date.now()}-${Math.random()}`,
+            role: msg.role,
+            content: msg.content,
+          })),
+          title,
+        })
+      } else {
+        // Create new conversation
+        const conversation = await createConversation({
+          title,
+          messages: currentMessages.map(msg => ({
+            id: `msg-${Date.now()}-${Math.random()}`,
+            role: msg.role,
+            content: msg.content,
+          })),
+        })
+        setCurrentConversationId(conversation.id)
+      }
+    } catch {
+      // Silently fail - conversation saving is a convenience feature
+    }
+  }, [currentConversationId])
+
   const sendMessage = useCallback(
     async (text: string) => {
       if (!text.trim() || isStreaming) return
@@ -82,36 +125,8 @@ export function useChat() {
         setIsStreaming(false)
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isStreaming]
+    [isStreaming, saveConversation]
   )
-
-  const saveConversation = useCallback(async () => {
-    const currentMessages = messages.filter(msg => msg.role !== 'error' && !msg.isStreaming)
-
-    if (currentMessages.length === 0) return
-
-    const title = generateConversationTitle(currentMessages)
-
-    try {
-      if (currentConversationId) {
-        // Update existing conversation
-        await updateConversation(currentConversationId, {
-          messages: currentMessages,
-          title,
-        })
-      } else {
-        // Create new conversation
-        const conversation = await createConversation({
-          title,
-          messages: currentMessages,
-        })
-        setCurrentConversationId(conversation.id)
-      }
-    } catch {
-      // Silently fail - conversation saving is a convenience feature
-    }
-  }, [messages, currentConversationId])
 
   const loadConversation = useCallback((conversation: Conversation) => {
     setMessages(conversation.messages)
