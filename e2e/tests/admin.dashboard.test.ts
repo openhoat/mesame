@@ -39,27 +39,64 @@ test.describe('Admin Dashboard Tests', () => {
   })
 
   test.describe('Style Profile API', () => {
-    test('should get style profile', async ({ page, port }) => {
+    test('should get all profiles', async ({ page, port }) => {
       const request = page.context().request
-      const response = await apiRequest<{ personaPrompt?: string }>(
-        request,
-        `http://localhost:${port}/api/style-profile`
-      )
+      const response = await apiRequest<
+        Array<{
+          id: string
+          name: string
+          personaPrompt: string
+          isActive: boolean
+          sources: Array<{ id: string; title: string }>
+        }>
+      >(request, `http://localhost:${port}/api/style-profile`)
 
       expect(response.status).toBe(200)
-      expect(response.body).toHaveProperty('personaPrompt')
+      expect(Array.isArray(response.body)).toBe(true)
     })
 
-    test('should generate style profile', async ({ page, port }) => {
+    test('should create and activate a style profile', async ({ page, port }) => {
       const request = page.context().request
-      const response = await apiRequest(
+
+      // First create a source
+      const sourceResponse = await apiRequest(request, `http://localhost:${port}/api/sources`, {
+        method: 'POST',
+        body: {
+          title: 'Test Source',
+          content: 'This is a test source for profile generation.',
+        },
+      })
+      expect(sourceResponse.status).toBe(200)
+      const sourceId = (sourceResponse.body as { id: string }).id
+
+      // Create a profile from the source
+      const createResponse = await apiRequest<{
+        id: string
+        name: string
+        personaPrompt: string
+        isActive: boolean
+      }>(request, `http://localhost:${port}/api/style-profile`, {
+        method: 'POST',
+        body: {
+          name: 'Test Profile',
+          sourceIds: [sourceId],
+        },
+      })
+
+      expect(createResponse.status).toBe(200)
+      expect(createResponse.body).toHaveProperty('personaPrompt')
+      expect(createResponse.body.name).toBe('Test Profile')
+
+      // Activate the profile
+      const profileId = createResponse.body.id
+      const activateResponse = await apiRequest(
         request,
-        `http://localhost:${port}/api/style-profile/generate`,
+        `http://localhost:${port}/api/style-profile/${profileId}/activate`,
         { method: 'POST' }
       )
 
-      // Should succeed (200) or return error if no sources
-      expect([200, 201, 400, 404, 422, 500]).toContain(response.status)
+      expect(activateResponse.status).toBe(200)
+      expect((activateResponse.body as { isActive: boolean }).isActive).toBe(true)
     })
   })
 
