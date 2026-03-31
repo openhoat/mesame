@@ -19,9 +19,21 @@ describe('style profile route', () => {
   })
 
   describe('GET /api/style-profile', () => {
-    test('should return active style profile', async () => {
-      const mockProfile = { personaPrompt: 'You are MeSame' }
-      vi.mocked(styleProfileService.getActiveStyleProfile).mockResolvedValueOnce(mockProfile)
+    test('should return all profiles', async () => {
+      const now = new Date()
+      const mockProfiles = [
+        {
+          id: 'profile-1',
+          name: 'Profile 1',
+          personaPrompt: 'Prompt 1',
+          metrics: '{}',
+          isActive: true,
+          createdAt: now,
+          updatedAt: now,
+          sources: [],
+        },
+      ]
+      vi.mocked(styleProfileService.getAllProfiles).mockResolvedValueOnce(mockProfiles)
 
       const response = await app.inject({
         method: 'GET',
@@ -29,48 +41,166 @@ describe('style profile route', () => {
       })
 
       expect(response.statusCode).toBe(200)
-      expect(response.json()).toEqual(mockProfile)
-    })
-
-    test('should return empty prompt when no profile exists', async () => {
-      vi.mocked(styleProfileService.getActiveStyleProfile).mockResolvedValueOnce(null)
-
-      const response = await app.inject({
-        method: 'GET',
-        url: '/api/style-profile',
+      const result = response.json()
+      expect(result).toHaveLength(1)
+      expect(result[0]).toMatchObject({
+        id: 'profile-1',
+        name: 'Profile 1',
+        personaPrompt: 'Prompt 1',
+        isActive: true,
       })
-
-      expect(response.statusCode).toBe(200)
-      expect(response.json()).toEqual({ personaPrompt: '' })
     })
   })
 
-  describe('POST /api/style-profile/generate', () => {
-    test('should generate and return new style profile', async () => {
-      const mockProfile = { personaPrompt: 'You are MeSame with a formal tone' }
-      vi.mocked(styleProfileService.generateStyleProfile).mockResolvedValueOnce(mockProfile)
+  describe('GET /api/style-profile/:id', () => {
+    test('should return profile by id', async () => {
+      const mockProfile = {
+        id: 'profile-1',
+        name: 'Profile 1',
+        personaPrompt: 'Prompt 1',
+        metrics: '{}',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        sources: [],
+      }
+      vi.mocked(styleProfileService.getProfileById).mockResolvedValueOnce(mockProfile)
 
       const response = await app.inject({
-        method: 'POST',
-        url: '/api/style-profile/generate',
+        method: 'GET',
+        url: '/api/style-profile/profile-1',
       })
 
       expect(response.statusCode).toBe(200)
-      expect(response.json()).toEqual(mockProfile)
-      expect(styleProfileService.generateStyleProfile).toHaveBeenCalled()
+      expect(response.json()).toMatchObject({ id: 'profile-1', name: 'Profile 1' })
     })
 
-    test('should handle errors when no sources available', async () => {
-      vi.mocked(styleProfileService.generateStyleProfile).mockRejectedValueOnce(
-        new Error('No sources available for style analysis')
-      )
+    test('should return 500 when profile not found', async () => {
+      vi.mocked(styleProfileService.getProfileById).mockResolvedValueOnce(null)
 
       const response = await app.inject({
-        method: 'POST',
-        url: '/api/style-profile/generate',
+        method: 'GET',
+        url: '/api/style-profile/nonexistent',
       })
 
       expect(response.statusCode).toBe(500)
+    })
+  })
+
+  describe('POST /api/style-profile', () => {
+    test('should create new profile', async () => {
+      const mockProfile = {
+        id: 'profile-1',
+        name: 'New Profile',
+        personaPrompt: 'Prompt',
+        metrics: '{}',
+        isActive: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        sources: [],
+      }
+      vi.mocked(styleProfileService.createProfile).mockResolvedValueOnce(mockProfile)
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/style-profile',
+        payload: {
+          name: 'New Profile',
+          sourceIds: ['source-1'],
+        },
+      })
+
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toMatchObject({ name: 'New Profile' })
+    })
+  })
+
+  describe('PUT /api/style-profile/:id', () => {
+    test('should update profile', async () => {
+      const mockProfile = {
+        id: 'profile-1',
+        name: 'Updated Profile',
+        personaPrompt: 'Prompt',
+        metrics: '{}',
+        isActive: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        sources: [],
+      }
+      vi.mocked(styleProfileService.updateProfile).mockResolvedValueOnce(mockProfile)
+
+      const response = await app.inject({
+        method: 'PUT',
+        url: '/api/style-profile/profile-1',
+        payload: {
+          name: 'Updated Profile',
+        },
+      })
+
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toMatchObject({ name: 'Updated Profile' })
+    })
+  })
+
+  describe('DELETE /api/style-profile/:id', () => {
+    test('should delete profile', async () => {
+      vi.mocked(styleProfileService.deleteProfile).mockResolvedValueOnce()
+
+      const response = await app.inject({
+        method: 'DELETE',
+        url: '/api/style-profile/profile-1',
+      })
+
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toEqual({ success: true })
+    })
+  })
+
+  describe('POST /api/style-profile/:id/activate', () => {
+    test('should activate profile', async () => {
+      const mockProfile = {
+        id: 'profile-1',
+        name: 'Profile 1',
+        personaPrompt: 'Prompt',
+        metrics: '{}',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        sources: [],
+      }
+      vi.mocked(styleProfileService.activateProfile).mockResolvedValueOnce(mockProfile)
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/style-profile/profile-1/activate',
+      })
+
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toMatchObject({ isActive: true })
+    })
+  })
+
+  describe('POST /api/style-profile/:id/regenerate', () => {
+    test('should regenerate profile', async () => {
+      const mockProfile = {
+        id: 'profile-1',
+        name: 'Profile 1',
+        personaPrompt: 'New Prompt',
+        metrics: '{}',
+        isActive: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        sources: [],
+      }
+      vi.mocked(styleProfileService.regenerateProfile).mockResolvedValueOnce(mockProfile)
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/style-profile/profile-1/regenerate',
+      })
+
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toMatchObject({ personaPrompt: 'New Prompt' })
     })
   })
 })

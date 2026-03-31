@@ -8,17 +8,33 @@ generator client {
 }
 
 model Source {
-  id        String   @id @default(uuid())
+  id        String          @id @default(uuid())
   title     String
   content   String
-  createdAt DateTime @default(now())
+  createdAt DateTime        @default(now())
+  profiles  ProfileSource[]
 }
 
 model StyleProfile {
-  id            Int      @id @default(1)
+  id            String          @id @default(uuid())
+  name          String
   personaPrompt String // The generated system prompt
   metrics       String // JSON of stats (avg sentence length, etc.)
-  updatedAt     DateTime @updatedAt
+  isActive      Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  sources       ProfileSource[]
+}
+
+model ProfileSource {
+  profileId String
+  sourceId  String
+  profile   StyleProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  source    Source       @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, sourceId])
+  @@index([profileId])
+  @@index([sourceId])
 }
 
 model Config {
