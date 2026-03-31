@@ -36,6 +36,7 @@
     "docs:dev": "vitepress dev docs",
     "docs:preview": "vitepress preview docs",
     "format": "biome format --write .",
+    "proxy": "wireit",
     "qa": "wireit",
     "qa:fix": "biome check --write .",
     "start": "node dist/server/server.js",
@@ -47,7 +48,8 @@
     "test:e2e:debug": "playwright test --debug",
     "test:watch": "vitest",
     "typecheck": "wireit",
-    "validate": "wireit"
+    "validate": "wireit",
+    "web": "wireit"
   },
   "dependencies": {
     "@fastify/cors": "11.2.0",
@@ -210,6 +212,44 @@
       "service": true
     },
     "dev:front": {
+      "command": "vite --config web/vite.config.ts",
+      "files": [
+        "web/src/**/*",
+        "web/vite.config.ts",
+        "web/index.html",
+        "web/tsconfig.json"
+      ],
+      "service": true
+    },
+    "proxy": {
+      "command": "tsx watch src/proxy-server.ts",
+      "dependencies": [
+        "db:generate"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json"
+      ],
+      "service": true
+    },
+    "web": {
+      "dependencies": [
+        "web:back",
+        "web:front"
+      ]
+    },
+    "web:back": {
+      "command": "tsx watch src/web-server.ts",
+      "dependencies": [
+        "db:generate"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json"
+      ],
+      "service": true
+    },
+    "web:front": {
       "command": "vite --config web/vite.config.ts",
       "files": [
         "web/src/**/*",
