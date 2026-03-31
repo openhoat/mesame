@@ -2,6 +2,12 @@
 
 ## 31/03/2026
 
+- **[09:46:57] 📝 [DOCS]** update README with LLM/Web server architecture
+- **[09:43:49] ♻️ [REFACTOR]** rename env vars from MESAME_HOST/PORT to MESAME_LLM_HOST/PORT
+- **[09:39:29] ♻️ [REFACTOR]** rename proxy to llm for clarity
+- **[09:34:24] 🔧 [CHORE]** remove PROXY_WEB_ARCHITECTURE.md documentation file
+- **[09:33:01] ✨ [FEAT]** split proxy and web servers into separate npm scripts
+- **[09:25:47] 🔧 [CHORE]** update kanban and changelog after multi-profile-management merge
 - **[07:30:57] 🐛 [FIX]** add empty body to activate profile POST request
 - **[07:27:18] 🐛 [FIX]** use correct /v1/sources endpoint and status code
 - **[07:23:02] 🐛 [FIX]** update admin dashboard tests for new multi-profile API
