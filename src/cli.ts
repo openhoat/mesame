@@ -1,7 +1,14 @@
 #!/usr/bin/env node
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { version } from '../package.json'
 import type { Provider } from './config.js'
+
+// Read package.json version from the correct location
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const packageJsonPath = join(__dirname, '..', '..', 'package.json')
+const { version } = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
 
 export interface CliOptions {
   port?: number
