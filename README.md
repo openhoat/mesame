@@ -91,6 +91,22 @@ Download the latest release for your platform:
 git clone https://github.com/openhoat/mesame.git
 cd mesame
 npm install
+```
+
+**Start the LLM API server:**
+```bash
+npm run llm
+# or use the CLI
+mesame --provider openai --model gpt-4o
+```
+
+**Start the web dashboard:**
+```bash
+npm run web
+```
+
+**Start both for development:**
+```bash
 npm run dev
 ```
 
@@ -100,7 +116,7 @@ npm run dev
 
 ## 💻 CLI Usage
 
-MeSame includes a command-line interface for starting the proxy server with custom options.
+MeSame includes a command-line interface for starting the LLM API server with custom options.
 
 ### Installation
 
@@ -158,13 +174,22 @@ mesame -p 8080 --provider anthropic -m claude-3-sonnet-20240229 -l info
 
 CLI options override environment variables. If no CLI option is provided, MeSame reads from:
 
-- `MESAME_PORT`: Server port
-- `MESAME_HOST`: Server host
-- `MESAME_PROVIDER`: LLM provider
-- `MESAME_MODEL`: Model name
+**LLM API Server:**
+- `MESAME_LLM_PORT`: LLM server port (default: `3000`)
+- `MESAME_LLM_HOST`: LLM server host (default: `0.0.0.0`)
+
+**Web Dashboard:**
+- `MESAME_WEB_PORT`: Web server port (default: `3001`)
+- `MESAME_WEB_HOST`: Web server host (default: `0.0.0.0`)
+
+**Common:**
+- `MESAME_PROVIDER`: LLM provider (default: `ollama`)
+- `MESAME_MODEL`: Model name (default: `gemma3:1b` or `gpt-4o`)
 - `MESAME_TARGET_BASE_URL`: Target API URL
-- `MESAME_LOG_LEVEL`: Logging level
-- `MESAME_LANGUAGE`: Interface language
+- `MESAME_LOG_LEVEL`: Logging level (default: `info`)
+- `MESAME_LANGUAGE`: Interface language (default: auto-detected)
+
+**API Keys:**
 - `OPENAI_API_KEY`: OpenAI API key
 - `ANTHROPIC_API_KEY`: Anthropic API key
 - `GOOGLE_API_KEY`: Google API key
