@@ -56,10 +56,10 @@ export function logConfiguration(config: AppConfig): void {
   logger.info(`╰${line}╯`)
   logger.info('')
 
-  logger.info('📡 Server:')
-  logger.info(`   • Host: ${config.host}`)
-  logger.info(`   • Port: ${config.port}`)
-  logger.info(`   • URL:  http://${config.host}:${config.port}`)
+  logger.info('📡 LLM Server:')
+  logger.info(`   • Host: ${config.llmHost}`)
+  logger.info(`   • Port: ${config.llmPort}`)
+  logger.info(`   • URL:  http://${config.llmHost}:${config.llmPort}`)
   logger.info('')
 
   logger.info('🤖 LLM Provider:')

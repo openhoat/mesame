@@ -14,8 +14,8 @@ describe('config', () => {
 
   test('should use default values when env vars are not set', async () => {
     process.env = { ...originalEnv }
-    delete process.env.MESAME_PORT
-    delete process.env.MESAME_HOST
+    delete process.env.MESAME_LLM_PORT
+    delete process.env.MESAME_LLM_HOST
     delete process.env.MESAME_PROVIDER
     delete process.env.MESAME_TARGET_BASE_URL
     delete process.env.OPENAI_API_KEY
@@ -28,8 +28,8 @@ describe('config', () => {
     const { loadConfig } = await import('./config.js')
     const cfg = loadConfig()
 
-    expect(cfg.port).toBe(3000)
-    expect(cfg.host).toBe('0.0.0.0')
+    expect(cfg.llmPort).toBe(3000)
+    expect(cfg.llmHost).toBe('0.0.0.0')
     expect(cfg.provider).toBe('ollama')
     expect(cfg.targetBaseUrl).toBe('http://localhost:11434')
     expect(cfg.targetApiKey).toBeUndefined()
@@ -41,8 +41,8 @@ describe('config', () => {
   test('should read values from environment variables', async () => {
     process.env = {
       ...originalEnv,
-      MESAME_PORT: '8080',
-      MESAME_HOST: '0.0.0.0',
+      MESAME_LLM_PORT: '8080',
+      MESAME_LLM_HOST: '0.0.0.0',
       MESAME_PROVIDER: 'openai',
       MESAME_TARGET_BASE_URL: 'https://custom.api.com',
       OPENAI_API_KEY: 'sk-test-key',
@@ -53,8 +53,8 @@ describe('config', () => {
     const { loadConfig } = await import('./config.js')
     const cfg = loadConfig()
 
-    expect(cfg.port).toBe(8080)
-    expect(cfg.host).toBe('0.0.0.0')
+    expect(cfg.llmPort).toBe(8080)
+    expect(cfg.llmHost).toBe('0.0.0.0')
     expect(cfg.provider).toBe('openai')
     expect(cfg.targetBaseUrl).toBe('https://custom.api.com')
     expect(cfg.targetApiKey).toBe('sk-test-key')

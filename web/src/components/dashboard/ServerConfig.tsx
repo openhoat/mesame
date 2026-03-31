@@ -19,7 +19,7 @@ import i18n from '../../i18n'
 type LLMProvider = 'openai' | 'anthropic' | 'ollama'
 
 interface ServerConfig {
-  port: number
+  llmPort: number
   model: string
   targetBaseUrl: string
   targetApiKey: string
@@ -51,7 +51,7 @@ function detectProvider(url: string): LLMProvider {
 export function ServerConfig() {
   const { t } = useTranslation()
   const [config, setConfig] = useState<ServerConfig>({
-    port: 3000,
+    llmPort: 3000,
     model: 'gpt-4o-mini',
     targetBaseUrl: 'https://api.openai.com',
     targetApiKey: '',
@@ -97,7 +97,7 @@ export function ServerConfig() {
         setConfig(prev => {
           const newConfig = {
             ...prev,
-            port: serverConfig.port as number,
+            llmPort: serverConfig.llmPort as number,
             model: serverConfig.model as string,
             targetBaseUrl: serverConfig.targetBaseUrl as string,
             logLevel: serverConfig.logLevel as string,
@@ -152,7 +152,7 @@ export function ServerConfig() {
   const handleReset = () => {
     // Reset to defaults
     setConfig({
-      port: 3000,
+      llmPort: 3000,
       model: 'gpt-4o-mini',
       targetBaseUrl: 'https://api.openai.com',
       targetApiKey: '',
@@ -206,8 +206,8 @@ export function ServerConfig() {
               <NumberInput
                 label={t('config.serverSettings.port')}
                 description={t('config.serverSettings.portDescription')}
-                value={config.port}
-                onChange={value => handleChange('port', Number(value))}
+                value={config.llmPort}
+                onChange={value => handleChange('llmPort', Number(value))}
               />
 
               <Select

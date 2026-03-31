@@ -138,10 +138,10 @@ export async function runCli(): Promise<void> {
 
     // Apply CLI options to environment variables (CLI options take precedence)
     if (cliOptions.port !== undefined) {
-      process.env.MESAME_PORT = String(cliOptions.port)
+      process.env.MESAME_LLM_PORT = String(cliOptions.port)
     }
     if (cliOptions.host) {
-      process.env.MESAME_HOST = cliOptions.host
+      process.env.MESAME_LLM_HOST = cliOptions.host
     }
     if (cliOptions.provider) {
       process.env.MESAME_PROVIDER = cliOptions.provider
