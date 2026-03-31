@@ -1,8 +1,8 @@
 import { prisma } from '../db.js'
-import { generatePersonaPrompt } from './personaPromptGenerator.js'
 import { getAllSources } from './sourceService.js'
 import { analyzeStyle } from './styleAnalyzer.js'
 import type { StyleProfile } from './styleInjector.js'
+import { refineStyleAnalysis } from './styleRefiner.js'
 
 export async function getActiveStyleProfile(): Promise<StyleProfile | null> {
   const profile = await prisma.styleProfile.findUnique({
@@ -45,8 +45,8 @@ export async function generateStyleProfile(): Promise<StyleProfile> {
   // Step 3: Analyze style
   const analysis = analyzeStyle(combinedContent)
 
-  // Step 4: Generate persona prompt (style only, no language)
-  const personaPrompt = generatePersonaPrompt(analysis)
+  // Step 4: Generate narrative persona prompt via IA
+  const personaPrompt = await refineStyleAnalysis(analysis)
 
   // Step 5: Save style profile
   const metricsJson = JSON.stringify(analysis.metrics)

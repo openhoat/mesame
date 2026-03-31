@@ -37,91 +37,27 @@ export interface StyleAnalysis {
 function preprocessText(text: string): string {
   return (
     text
-      // Remove HTML/XML comments
-      .replace(/<!--[\s\S]*?-->/g, '')
-      .replace(/<!\[CDATA\[[\s\S]*?\]\]>/g, '')
-      // Remove script and style tags with their content
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-      // Remove all HTML tags (including attributes)
+      // 1. Remove HTML/Script/Style tags and entities
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
+      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, ' ')
       .replace(/<[^>]+>/g, ' ')
-      // Decode common HTML entities
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&quot;/g, '"')
-      .replace(/&apos;/g, "'")
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&amp;/g, '&')
-      .replace(/&#?\w+;/g, '')
-      // Remove CSS class names and IDs (leftover from attribute stripping)
-      .replace(/\b(class|id|style|data-[\w-]+)[\s]*=[\s]*["'][^"']*["']/gi, '')
-      // Remove URLs (any protocol)
-      .replace(/\b(?:https?|ftp|file):\/\/[^\s]+/gi, '')
-      .replace(/\bwww\.[^\s]+/gi, '')
-      // Remove email addresses
-      .replace(/\b[\w.-]+@[\w.-]+\.\w+\b/g, '')
-      // Remove common date/time patterns
-      .replace(/\b\d{1,2}[/:.-]\d{1,2}[/:.-]\d{2,4}\b/g, '')
-      .replace(/\b\d{4}[/:.-]\d{1,2}[/:.-]\d{1,2}\b/g, '')
-      .replace(/\b\d{1,2}:\d{2}(:\d{2})?\s*(AM|PM|am|pm)?\b/gi, '')
-      // Remove standalone numbers (page numbers, IDs, etc.) but keep numbers in context
-      .replace(/\b\d+\s*$/gm, '')
-      .replace(/^\s*\d+\b/gm, '')
-      // Remove any 4-digit numbers (likely years)
-      .replace(/\b\d{4}\b/g, '')
-      // Remove month names and years (e.g., "feb 2026", "October 17")
-      .replace(
-        /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,4}\b/gi,
-        ''
-      )
-      .replace(/\b\d{1,4}\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/gi, '')
-      // Remove common metadata labels
-      .replace(/\b(updated|published|posted|created|modified|edited)[\s:]+[\w\s,]+/gi, '')
-      .replace(/\b(author|written by|by|posted by|created by|editor)[\s:]+[\w\s]+/gi, '')
-      .replace(/\b(tags?|categories|filed under|reading time)[\s:]+[\w\s,]+/gi, '')
-      // Remove hashtags and @mentions
-      .replace(/#\w+/g, '')
-      .replace(/@\w+/g, '')
-      // Remove repeated special characters (e.g., "---", "***", "===")
-      .replace(/([*_\-=~`]){3,}/g, '')
-      // Remove common navigation/structural elements
-      .replace(
-        /\b(next|previous|back to top|read more|continue reading|share|tweet|comment)\b/gi,
-        ''
-      )
-      // Remove bullet point markers at line starts
-      .replace(/^[\s]*[•·▪▫■□★☆→►▸◆◇○●◉◎⦿⦾]*[\s]*/gm, '')
-      // Remove parenthetical metadata (e.g., "(Updated 2024)", "(5 min)")
-      .replace(/\([^)]*\d{4}[^)]*\)/g, '')
-      .replace(/\([^)]*\d+\s*(min|minute|hour|page|chapter)[^)]*\)/gi, '')
-      // Remove markdown code blocks FIRST (before other markdown)
+      .replace(/&[a-z0-9#]+;/gi, ' ') // Clean HTML entities like &nbsp;
+      // 2. Remove URLs and Emails
+      .replace(/\b(?:https?|ftp|file):\/\/[^\s]+/gi, ' ')
+      .replace(/\b[\w.-]+@[\w.-]+\.\w+\b/g, ' ')
+      // 3. Remove Markdown code blocks and formatting but keep content
       .replace(/```[\s\S]*?```/g, ' ')
       .replace(/`[^`\n]+`/g, ' ')
-      // Remove common programming keywords that might appear in plain text
-      .replace(
-        /\b(const|let|var|function|export|import|from|return|async|await|console|log)\b/g,
-        ''
-      )
-      .replace(/\b(void|interface|type|class|private|public|protected|implements|extends)\b/g, '')
-      // Remove "X min/minute read" patterns (more patterns)
-      .replace(/\d+[\s-]*(?:min|mins|minute|minutes)[\s-]*(?:read|reading|to read|time)?/gi, ' ')
-      .replace(/(?:read|reading|time)[\s-]*\d+[\s-]*(?:min|mins|minute|minutes)/gi, ' ')
-      // Remove markdown formatting
-      .replace(/#{1,6}\s+/g, '') // Headers
-      .replace(/\*\*([^*]+)\*\*/g, '$1') // Bold
-      .replace(/\*([^*]+)\*/g, '$1') // Italic
-      .replace(/__([^_]+)__/g, '$1') // Bold alt
-      .replace(/_([^_]+)_/g, '$1') // Italic alt
-      .replace(/~~([^~]+)~~/g, '$1') // Strikethrough
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Links [text](url)
-      .replace(/!\[([^\]]*)\]\([^)]+\)/g, '') // Images
-      // Remove code-like patterns (camelCase, snake_case identifiers without spaces)
-      .replace(/\b[a-z]+([A-Z][a-z]*)+\b/g, '')
-      .replace(/\b[a-z]+_[a-z_]+\b/g, '')
-      // Remove file paths and extensions
-      .replace(/\b[\w-]+\.(js|ts|tsx|jsx|css|html|json|xml|yml|yaml|md|txt|pdf)\b/gi, '')
-      .replace(/\/[\w/-]+/g, '')
-      // Collapse multiple whitespaces/newlines
+      .replace(/#{1,6}\s+/g, ' ')
+      .replace(/[*_~]{1,3}/g, ' ') // Simplified markdown clean
+      // 4. Remove obvious metadata labels and dates
+      .replace(/\b(updated|published|author|tags|categories|reading time)[\s:]+[\w\s,]+/gi, ' ')
+      .replace(/\b\d{4}\b/g, ' ') // Years
+      .replace(/\b\d{1,2}[/:.-]\d{1,2}[/:.-]\d{2,4}\b/g, ' ')
+      // 5. Clean up non-word characters but KEEP French accents
+      // We use a safe character set to avoid breaking UTF-8
+      .replace(/[^\w\sàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ.!?]/g, ' ')
+      // 6. Collapse whitespaces
       .replace(/\s+/g, ' ')
       .trim()
   )
@@ -348,29 +284,219 @@ const STOP_WORDS = new Set([
   'wars',
   'method',
   'get',
+  'article',
+  'articles',
+  'premier',
+  'première',
+  'dernier',
+  'dernière',
+  'suivante',
+  'précédente',
+  'chapitre',
+  'section',
+  'contenu',
+  'exemple',
+  'exemples',
+  'usage',
+  'utiliser',
+  'utilisant',
+  'permet',
+  'permettent',
+  'moyen',
+  'partie',
+  'parties',
+  'objet',
+  'objets',
+  'cas',
+  'situations',
+  'ordre',
+  'niveau',
+  'content',
+  'type',
+  'blog',
+  'template',
+  'view',
+  'more',
+  'search',
+  'latest',
+  'recent',
+  'following',
+  'header',
+  'footer',
+])
+
+/**
+ * White list of words that are true stylistic markers.
+ * If an expression contains one of these, it's highly likely to be stylistic.
+ */
+const WEAK_EXPRESSIONS = new Set([
+  'nous avons',
+  'nous allons',
+  'il y a',
+  'faire un',
+  'faire une',
+  'dans ce',
+  'dans cette',
+  'pour le',
+  'pour la',
+  'avec le',
+  'avec la',
+  'est un',
+  'est une',
+  'sont des',
+  'cela permet',
+  'ceci permet',
+  'pouvez utiliser',
+  'va voir',
+  'allez voir',
+  'we have',
+  'we will',
+  'there is',
+  'there are',
+  'to be',
+  'can use',
+])
+
+const STYLE_MARKERS = new Set([
+  // Adverbs of manner/intensity
+  'vraiment',
+  'extrêmement',
+  'particulièrement',
+  'tellement',
+  'absolument',
+  'parfaitement',
+  'totalement',
+  'complètement',
+  'véritablement',
+  'clairement',
+  'simplement',
+  'juste',
+  'assez',
+  'trop',
+  'plutôt',
+  'très',
+  'encore',
+  'enfin',
+  'enfin',
+  'souvent',
+  'toujours',
+  'jamais',
+  'parfois',
+  'déjà',
+  'presque',
+  'évidemment',
+  'heureusement',
+  'malheureusement',
+  // Judgment adjectives
+  'intéressant',
+  'crucial',
+  'important',
+  'difficile',
+  'facile',
+  'simple',
+  'complexe',
+  'élégant',
+  'propre',
+  'sale',
+  'génial',
+  'super',
+  'top',
+  'dommage',
+  'incroyable',
+  'efficace',
+  'robuste',
+  'fragile',
+  'rapide',
+  'lent',
+  'utile',
+  'inutile',
+  'particulier',
+  'unique',
+  'rare',
+  'commun',
+  'classique',
+  'moderne',
+  'nouveau',
+  'ancien',
+  // Verbs of engagement/opinion
+  'penser',
+  'croire',
+  'sembler',
+  'paraître',
+  'trouver',
+  'aimer',
+  'adorer',
+  'détester',
+  'préférer',
+  'vouloir',
+  'pouvoir',
+  'devoir',
+  'savoir',
+  'comprendre',
+  'ignorer',
+  'espérer',
+  'craindre',
+  'noter',
+  'remarquer',
+  'oublier',
+  'essayer',
+  'tenter',
+  // English equivalents for mix
+  'actually',
+  'really',
+  'simply',
+  'basically',
+  'totally',
+  'perfectly',
+  'elegant',
+  'clean',
+  'dirty',
+  'useful',
+  'useless',
+  'easy',
+  'hard',
+  'complex',
+  'simple',
 ])
 
 function extractNGrams(text: string, n: number, topN = 15): NGramEntry[] {
-  const tokenizer = new natural.WordTokenizer()
-  const words = tokenizer
-    .tokenize(text)
-    ?.map(w => w.toLowerCase())
-    .filter(w => w.length > 2)
+  // Use a regex that preserves French accents for tokenization
+  const words = text
+    .toLowerCase()
+    .split(/[\s,;.:!?()[\]{}'"]+/)
+    .filter(w => w.length >= 4)
     .filter(w => !STOP_WORDS.has(w))
 
   if (!words || words.length < n) return []
 
   // Function to check if a bigram/trigram has stylistic value
   const hasStylisticValue = (gram: string[]): boolean => {
-    const doc = nlp(gram.join(' '))
-    // It must contain at least one adjective or adverb to be considered truly "stylistic"
-    // We exclude verbs here to avoid tech actions like "process data"
-    return doc.match('(#Adjective|#Adverb)').found
+    const combined = gram.join(' ')
+
+    // 0. Exclude weak/common filler expressions
+    if (WEAK_EXPRESSIONS.has(combined)) return false
+
+    // 1. Check if at least ONE word is in our stylistic white list
+    for (const word of gram) {
+      if (STYLE_MARKERS.has(word)) return true
+    }
+
+    // 2. Fallback: check if it contains a qualitative adjective or adverb via NLP
+    const doc = nlp(combined)
+
+    // Safety: exclude expressions that look like English tech terms
+    // (if they don't have a stylistic marker from the white list)
+    const hasEnglishTech = doc.match(
+      '(content|type|blog|post|page|user|data|code|api|server|app)'
+    ).found
+    if (hasEnglishTech) return false
+
+    return doc.match('(#Adjective|#Adverb)').found && !doc.match('#ProperNoun').found
   }
 
   const rawGrams = n === 2 ? natural.NGrams.bigrams(words) : natural.NGrams.trigrams(words)
 
-  // Filter grams: keep only those with stylistic markers
+  // Filter grams: keep only those with stylistic markers or qualitative NLP tags
   const grams = rawGrams.filter(hasStylisticValue)
 
   // Count occurrences

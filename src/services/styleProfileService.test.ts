@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { prisma } from '../db.js'
-import * as personaPromptGenerator from './personaPromptGenerator.js'
 import * as sourceService from './sourceService.js'
 import * as styleAnalyzer from './styleAnalyzer.js'
 import {
@@ -8,6 +7,7 @@ import {
   getActiveStyleProfile,
   saveStyleProfile,
 } from './styleProfileService.js'
+import * as styleRefiner from './styleRefiner.js'
 
 // Mock the dependencies
 vi.mock('../db.js', () => ({
@@ -21,7 +21,7 @@ vi.mock('../db.js', () => ({
 
 vi.mock('./sourceService.js')
 vi.mock('./styleAnalyzer.js')
-vi.mock('./personaPromptGenerator.js')
+vi.mock('./styleRefiner.js')
 
 describe('styleProfileService', () => {
   beforeEach(() => {
@@ -129,9 +129,10 @@ Tes réponses doivent être:
       ]
 
       const mockAnalysis = {
-        tfidf: [{ term: 'sample', score: 0.9 }],
+        tfidf: [],
         bigrams: [{ gram: 'sample text', count: 2 }],
         trigrams: [{ gram: 'sample text one', count: 1 }],
+        transitions: [],
         metrics: {
           sentenceCount: 2,
           wordCount: 6,
@@ -141,6 +142,10 @@ Tes réponses doivent être:
           nounRatio: 0.5,
           verbRatio: 0.3,
           adjectiveRatio: 0.2,
+          pronounFirstPersonRatio: 0.1,
+          pronounSecondPersonRatio: 0.1,
+          questionRatio: 0.1,
+          exclamationRatio: 0.1,
         },
       }
 
@@ -155,7 +160,7 @@ Tes réponses doivent être:
 
       vi.mocked(sourceService.getAllSources).mockResolvedValueOnce(mockSources)
       vi.mocked(styleAnalyzer.analyzeStyle).mockReturnValueOnce(mockAnalysis)
-      vi.mocked(personaPromptGenerator.generatePersonaPrompt).mockReturnValueOnce(mockPersonaPrompt)
+      vi.mocked(styleRefiner.refineStyleAnalysis).mockResolvedValueOnce(mockPersonaPrompt)
       vi.mocked(prisma.styleProfile.upsert).mockResolvedValueOnce(mockProfile)
 
       const result = await generateStyleProfile()
@@ -165,7 +170,7 @@ Tes réponses doivent être:
       expect(styleAnalyzer.analyzeStyle).toHaveBeenCalledWith(
         'Sample text one.\n\nSample text two.'
       )
-      expect(personaPromptGenerator.generatePersonaPrompt).toHaveBeenCalledWith(mockAnalysis)
+      expect(styleRefiner.refineStyleAnalysis).toHaveBeenCalledWith(mockAnalysis)
     })
 
     test('should throw error when no sources available', async () => {

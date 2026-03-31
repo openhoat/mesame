@@ -36,6 +36,7 @@
 - [ ] **[TEST]** Add test coverage thresholds in vitest.config.ts (P2)
 
 <!-- User Experience -->
+- [ ] **[UX]** Fix dashboard with real data and add logs access (P2)
 - [ ] **[UX]** Add interactive CLI setup wizard (P2)
 - [ ] **[UX]** Add export functionality for chat history and style profile (P2)
 - [ ] **[UX]** Improve error messages with actionable suggestions (P2)
@@ -65,3 +66,5 @@
 - [ ] **[DEVOPS]** Publish Docker images to Docker Hub in release workflow (P3)
 
 ## In Progress
+
+- [ ] **[FEAT]** Implement multi-profile management with source selection

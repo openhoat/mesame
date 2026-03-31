@@ -21,9 +21,28 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': 'http://localhost:3000',
-      '/v1': 'http://localhost:3000',
-      '/health': 'http://localhost:3000',
+      '/api': {
+        target: 'http://127.0.0.1:3000',
+        changeOrigin: true,
+        timeout: 120000, // 2 minutes for LLM processing
+        proxyTimeout: 120000,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            // Silence connection refused errors during startup
+            if ((err as any).code !== 'ECONNREFUSED') {
+              console.error('proxy error', err)
+            }
+          })
+        },
+      },
+      '/v1': {
+        target: 'http://127.0.0.1:3000',
+        changeOrigin: true,
+      },
+      '/health': {
+        target: 'http://127.0.0.1:3000',
+        changeOrigin: true,
+      },
     },
   },
 })
