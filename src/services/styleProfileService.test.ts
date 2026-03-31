@@ -1,12 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { prisma } from '../db.js'
-import * as sourceService from './sourceService.js'
 import * as styleAnalyzer from './styleAnalyzer.js'
-import {
-  generateStyleProfile,
-  getActiveStyleProfile,
-  saveStyleProfile,
-} from './styleProfileService.js'
+import { createProfile, getActiveStyleProfile, regenerateProfile } from './styleProfileService.js'
 import * as styleRefiner from './styleRefiner.js'
 
 // Mock the dependencies
@@ -19,6 +14,13 @@ vi.mock('../db.js', () => ({
       create: vi.fn(),
       update: vi.fn(),
       updateMany: vi.fn(),
+      findMany: vi.fn(),
+    },
+    profileSource: {
+      deleteMany: vi.fn(),
+      createMany: vi.fn(),
+    },
+    source: {
       findMany: vi.fn(),
     },
   },
@@ -66,94 +68,89 @@ describe('styleProfileService', () => {
     })
   })
 
-  describe('saveStyleProfile', () => {
-    test('should save a new style profile', async () => {
-      const personaPrompt = 'You are MeSame'
-      const metrics = '{"averageSentenceLength": 15}'
-      const mockProfile = {
-        id: '1',
-        name: 'Default',
-        personaPrompt,
-        metrics,
-        isActive: true,
-        updatedAt: new Date(),
-        createdAt: new Date(),
-      }
-
-      vi.mocked(prisma.styleProfile.upsert).mockResolvedValueOnce(mockProfile)
-
-      const result = await saveStyleProfile(personaPrompt, metrics)
-
-      expect(result).toEqual({ personaPrompt })
-      expect(prisma.styleProfile.upsert).toHaveBeenCalledWith({
-        where: { id: 1 },
-        create: { personaPrompt, metrics },
-        update: { personaPrompt, metrics },
-      })
-    })
-  })
-
-  describe('generateStyleProfile', () => {
-    test('should generate style profile from sources', async () => {
+  describe('createProfile', () => {
+    test('should create a new style profile from sources', async () => {
       const mockSources = [
-        { id: '1', title: 'Doc 1', content: 'Sample text one.', createdAt: new Date() },
-        { id: '2', title: 'Doc 2', content: 'Sample text two.', createdAt: new Date() },
+        { id: 's1', title: 'Doc 1', content: 'Sample text one.', createdAt: new Date() },
       ]
 
       const mockAnalysis = {
         tfidf: [],
         bigrams: [{ gram: 'sample text', count: 2 }],
-        trigrams: [{ gram: 'sample text one', count: 1 }],
+        trigrams: [],
         transitions: [],
         metrics: {
-          sentenceCount: 2,
-          wordCount: 6,
+          sentenceCount: 1,
+          wordCount: 3,
           averageSentenceLength: 3,
-          lexicalRichness: 0.8,
-          vocabularySize: 5,
-          nounRatio: 0.5,
+          lexicalRichness: 1,
+          vocabularySize: 3,
+          nounRatio: 0.3,
           verbRatio: 0.3,
-          adjectiveRatio: 0.2,
-          pronounFirstPersonRatio: 0.1,
-          pronounSecondPersonRatio: 0.1,
-          questionRatio: 0.1,
-          exclamationRatio: 0.1,
+          adjectiveRatio: 0.3,
+          pronounFirstPersonRatio: 0,
+          pronounSecondPersonRatio: 0,
+          questionRatio: 0,
+          exclamationRatio: 0,
         },
       }
 
-      const mockPersonaPrompt = 'You are MeSame, mirroring user style.'
-
+      const mockPersonaPrompt = 'Narrative style prompt'
       const mockProfile = {
-        id: '1',
-        name: 'Default',
+        id: 'p1',
+        name: 'My Profile',
         personaPrompt: mockPersonaPrompt,
         metrics: JSON.stringify(mockAnalysis.metrics),
-        isActive: true,
+        isActive: false,
         updatedAt: new Date(),
         createdAt: new Date(),
+        sources: [{ source: { id: 's1', title: 'Doc 1' } }],
       }
 
-      vi.mocked(sourceService.getAllSources).mockResolvedValueOnce(mockSources)
+      vi.mocked(prisma.source.findMany).mockResolvedValueOnce(mockSources)
       vi.mocked(styleAnalyzer.analyzeStyle).mockReturnValueOnce(mockAnalysis)
       vi.mocked(styleRefiner.refineStyleAnalysis).mockResolvedValueOnce(mockPersonaPrompt)
-      vi.mocked(prisma.styleProfile.upsert).mockResolvedValueOnce(mockProfile)
+      vi.mocked(prisma.styleProfile.create).mockResolvedValueOnce(mockProfile as any)
 
-      const result = await generateStyleProfile()
+      const result = await createProfile('My Profile', ['s1'])
 
-      expect(result).toEqual({ personaPrompt: mockPersonaPrompt })
-      expect(sourceService.getAllSources).toHaveBeenCalled()
-      expect(styleAnalyzer.analyzeStyle).toHaveBeenCalledWith(
-        'Sample text one.\n\nSample text two.'
-      )
+      expect(result.id).toBe('p1')
+      expect(result.personaPrompt).toBe(mockPersonaPrompt)
       expect(styleRefiner.refineStyleAnalysis).toHaveBeenCalledWith(mockAnalysis)
     })
+  })
 
-    test('should throw error when no sources available', async () => {
-      vi.mocked(sourceService.getAllSources).mockResolvedValueOnce([])
+  describe('regenerateProfile', () => {
+    test('should regenerate an existing profile', async () => {
+      const mockProfileWithSources = {
+        id: 'p1',
+        name: 'My Profile',
+        sources: [{ source: { id: 's1', content: 'Source content' } }],
+      }
 
-      await expect(generateStyleProfile()).rejects.toThrow(
-        'No sources available for style analysis'
-      )
+      const mockAnalysis = {
+        metrics: {},
+        bigrams: [],
+        trigrams: [],
+        transitions: [],
+      }
+
+      vi.mocked(prisma.styleProfile.findUnique).mockResolvedValueOnce(mockProfileWithSources as any)
+      vi.mocked(styleAnalyzer.analyzeStyle).mockReturnValueOnce(mockAnalysis as any)
+      vi.mocked(styleRefiner.refineStyleAnalysis).mockResolvedValueOnce('New Prompt')
+      vi.mocked(prisma.styleProfile.update).mockResolvedValueOnce({
+        id: 'p1',
+        name: 'My Profile',
+        personaPrompt: 'New Prompt',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        sources: [],
+      } as any)
+
+      const result = await regenerateProfile('p1')
+      expect(result.personaPrompt).toBe('New Prompt')
+      expect(styleRefiner.refineStyleAnalysis).toHaveBeenCalled()
     })
   })
 })

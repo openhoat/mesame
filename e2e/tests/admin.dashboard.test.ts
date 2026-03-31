@@ -92,7 +92,7 @@ test.describe('Admin Dashboard Tests', () => {
       const activateResponse = await apiRequest(
         request,
         `http://localhost:${port}/api/style-profile/${profileId}/activate`,
-        { method: 'POST' }
+        { method: 'POST', body: {} }
       )
 
       expect(activateResponse.status).toBe(200)

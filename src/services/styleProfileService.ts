@@ -104,7 +104,7 @@ export const createProfile = async (
   // Combine source content and analyze
   const combinedContent = sources.map(s => s.content).join('\n\n')
   const analysis = analyzeStyle(combinedContent)
-  
+
   // Generate narrative persona prompt via IA
   const personaPrompt = await refineStyleAnalysis(analysis)
   const metricsJson = JSON.stringify(analysis.metrics)
@@ -244,7 +244,7 @@ export const regenerateProfile = async (id: string): Promise<ProfileWithSources>
   // Combine source content and analyze
   const combinedContent = profile.sources.map(ps => ps.source.content).join('\n\n')
   const analysis = analyzeStyle(combinedContent)
-  
+
   // Generate narrative persona prompt via IA
   const personaPrompt = await refineStyleAnalysis(analysis)
   const metricsJson = JSON.stringify(analysis.metrics)
