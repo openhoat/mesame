@@ -59,14 +59,14 @@ test.describe('Admin Dashboard Tests', () => {
       const request = page.context().request
 
       // First create a source
-      const sourceResponse = await apiRequest(request, `http://localhost:${port}/api/sources`, {
+      const sourceResponse = await apiRequest(request, `http://localhost:${port}/v1/sources`, {
         method: 'POST',
         body: {
           title: 'Test Source',
           content: 'This is a test source for profile generation.',
         },
       })
-      expect(sourceResponse.status).toBe(200)
+      expect(sourceResponse.status).toBe(201)
       const sourceId = (sourceResponse.body as { id: string }).id
 
       // Create a profile from the source
