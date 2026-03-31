@@ -78,12 +78,12 @@ export const startLLMServer = async (): Promise<void> => {
   const logLevel = logger.level
   logger.level = 'silent'
 
-  await app.listen({ port: config.port, host: config.host })
+  await app.listen({ port: config.llmPort, host: config.llmHost })
 
   logger.level = logLevel
-  logger.info(`🚀 LLM API Server listening at http://${config.host}:${config.port}`)
+  logger.info(`🚀 LLM API Server listening at http://${config.llmHost}:${config.llmPort}`)
   logger.info(
-    `📡 OpenAI-compatible endpoint: http://${config.host}:${config.port}/v1/chat/completions`
+    `📡 OpenAI-compatible endpoint: http://${config.llmHost}:${config.llmPort}/v1/chat/completions`
   )
 }
 

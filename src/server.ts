@@ -21,11 +21,11 @@ export const startServer = async (): Promise<void> => {
   const logLevel = logger.level
   logger.level = 'silent'
 
-  await app.listen({ port: config.port, host: config.host })
+  await app.listen({ port: config.llmPort, host: config.llmHost })
 
   // Restore logger and log the custom message
   logger.level = logLevel
-  logger.info(`Server listening at http://localhost:${config.port}`)
+  logger.info(`Server listening at http://${config.llmHost}:${config.llmPort}`)
 }
 
 // Only start server if this file is run directly (not imported)
