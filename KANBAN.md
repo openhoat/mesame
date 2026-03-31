@@ -66,5 +66,3 @@
 - [ ] **[DEVOPS]** Publish Docker images to Docker Hub in release workflow (P3)
 
 ## In Progress
-
-- [ ] **[FEAT]** Implement multi-profile management with source selection

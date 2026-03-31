@@ -1,7 +1,24 @@
 # Changelog
 
+## 31/03/2026
+
+- **[07:30:57] 🐛 [FIX]** add empty body to activate profile POST request
+- **[07:27:18] 🐛 [FIX]** use correct /v1/sources endpoint and status code
+- **[07:23:02] 🐛 [FIX]** update admin dashboard tests for new multi-profile API
+- **[07:12:36] ✨ [FEAT]** implement multi-profile management with source selection
+- **[07:42:04] ✨ [FEAT]** transition to narrative IA-generated style profile
+
 ## 30/03/2026
 
+- **[20:11:02] ♻️ [REFACTOR]** focus prompt generation on qualitative expressions and remove thematic noise
+- **[20:04:32] 🎨 [STYLE]** improve theme colors and dark mode readability
+- **[19:22:54] 📝 [DOCS]** add TypeScript coding standards
+- **[14:10:37] 🐛 [FIX]** align DATABASE_URL path for E2E tests in CI
+- **[14:04:43] 🐛 [FIX]** add ESM compatibility fix for Prisma 7 generated imports
+- **[10:06:20] 🐛 [FIX]** resolve Biome lint issues for CI compatibility
+- **[10:03:46] 🐛 [FIX]** add datasource URL to prisma.config.ts for Prisma 7
+- **[10:01:41] 🐛 [FIX]** resolve magicast dependency conflict between Prisma 7 and Vitest 4
+- **[09:57:44] 🔧 [CHORE]** update changelog after Prisma 7 and LangChain v1 migrations
 - **[09:54:21] ✨ [FEAT]** migrate LangChain to v1 and Vitest to v4
 - **[09:50:04] ✨ [FEAT]** migrate to Prisma 7 with libSQL adapter
 - **[06:23:37] 📦 [DEPS]** bump i18next from 25.10.9 to 26.0.1
