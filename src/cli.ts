@@ -1,14 +1,26 @@
 #!/usr/bin/env node
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import type { Provider } from './config.js'
 
-// Read package.json version from the correct location
+// Read package.json version - try multiple locations for robustness
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const packageJsonPath = join(__dirname, '..', '..', 'package.json')
-const { version } = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
+const possiblePaths = [
+  join(__dirname, '..', '..', 'package.json'), // From dist/server/
+  join(__dirname, '..', 'package.json'), // From src/ (when running tests)
+  join(process.cwd(), 'package.json'), // From current working directory
+]
+
+let version = '0.0.0'
+for (const packageJsonPath of possiblePaths) {
+  if (existsSync(packageJsonPath)) {
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
+    version = packageJson.version
+    break
+  }
+}
 
 export interface CliOptions {
   port?: number
