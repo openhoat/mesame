@@ -35,13 +35,13 @@ export function parseCliArgs(argv: string[]): CliOptions {
   program
     .name('mesame')
     .description(
-      `MeSame Proxy Server - OpenAI-compatible LLM proxy with style injection
+      `MeSame LLM API Server - OpenAI-compatible API with style injection
 
-A local proxy that analyzes your writing style and transforms any LLM
+A local API server that analyzes your writing style and transforms any LLM
 into a faithful digital twin. Your documents stay local, your style travels
 everywhere.
 
-This command launches the proxy server only. For the web dashboard, use:
+This command launches the LLM API server only. For the web dashboard, use:
   npm run web
 
 Supported providers:
@@ -159,9 +159,9 @@ export async function runCli(): Promise<void> {
       process.env.MESAME_LANGUAGE = cliOptions.language
     }
 
-    // Import and start proxy server (dynamic import to ensure env vars are set first)
-    const { startProxyServer } = await import('./proxy-server.js')
-    await startProxyServer()
+    // Import and start LLM API server (dynamic import to ensure env vars are set first)
+    const { startLLMServer } = await import('./llm-server.js')
+    await startLLMServer()
   } catch (error) {
     if (error instanceof Error) {
       process.stderr.write(`Error: ${error.message}\n`)

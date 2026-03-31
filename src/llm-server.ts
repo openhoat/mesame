@@ -11,10 +11,10 @@ async function loadEnvIfNeeded(): Promise<void> {
   }
 }
 
-export const buildProxyApp = async (): Promise<FastifyInstance> => {
+export const buildLLMApp = async (): Promise<FastifyInstance> => {
   const { logger, logConfiguration } = await import('./logger.js')
 
-  logger.info('Building Proxy Server...')
+  logger.info('Building LLM API Server...')
   logConfiguration(config)
 
   const loggerConfig =
@@ -50,7 +50,7 @@ export const buildProxyApp = async (): Promise<FastifyInstance> => {
 
   const { logger: appLogger } = await import('./logger.js')
 
-  appLogger.info('Registering proxy routes...')
+  appLogger.info('Registering LLM API routes...')
   await app.register(cors, {
     origin: true,
     credentials: true,
@@ -63,16 +63,16 @@ export const buildProxyApp = async (): Promise<FastifyInstance> => {
   await app.register(proxyRoute)
   await app.register(healthRoute)
 
-  appLogger.info('✅ Proxy routes registered')
-  appLogger.info('✅ Proxy application built successfully')
+  appLogger.info('✅ LLM API routes registered')
+  appLogger.info('✅ LLM API server built successfully')
 
   return app
 }
 
-export const startProxyServer = async (): Promise<void> => {
+export const startLLMServer = async (): Promise<void> => {
   await loadEnvIfNeeded()
 
-  const app = await buildProxyApp()
+  const app = await buildLLMApp()
 
   const logger = app.log
   const logLevel = logger.level
@@ -81,7 +81,7 @@ export const startProxyServer = async (): Promise<void> => {
   await app.listen({ port: config.port, host: config.host })
 
   logger.level = logLevel
-  logger.info(`🚀 Proxy Server listening at http://${config.host}:${config.port}`)
+  logger.info(`🚀 LLM API Server listening at http://${config.host}:${config.port}`)
   logger.info(
     `📡 OpenAI-compatible endpoint: http://${config.host}:${config.port}/v1/chat/completions`
   )
@@ -89,7 +89,7 @@ export const startProxyServer = async (): Promise<void> => {
 
 // Only start server if this file is run directly
 if (process.argv[1] === import.meta.filename) {
-  startProxyServer().catch(err => {
+  startLLMServer().catch(err => {
     process.stderr.write(`${String(err)}\n`)
     process.exit(1)
   })

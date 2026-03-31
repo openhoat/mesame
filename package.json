@@ -36,7 +36,7 @@
     "docs:dev": "vitepress dev docs",
     "docs:preview": "vitepress preview docs",
     "format": "biome format --write .",
-    "proxy": "wireit",
+    "llm": "wireit",
     "qa": "wireit",
     "qa:fix": "biome check --write .",
     "start": "node dist/server/server.js",
@@ -221,8 +221,8 @@
       ],
       "service": true
     },
-    "proxy": {
-      "command": "tsx watch src/proxy-server.ts",
+    "llm": {
+      "command": "tsx watch src/llm-server.ts",
       "dependencies": [
         "db:generate"
       ],
