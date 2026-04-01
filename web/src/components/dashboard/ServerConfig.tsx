@@ -27,6 +27,7 @@ interface ServerConfig {
   language: string
   cacheEnabled: boolean
   maxTokens: number
+  provider: LLMProvider
 }
 
 const PROVIDER_DEFAULTS: Record<LLMProvider, { url: string; model: string }> = {
@@ -59,16 +60,28 @@ export function ServerConfig() {
     language: 'en',
     cacheEnabled: true,
     maxTokens: 4096,
+    provider: 'openai',
   })
 
   const [provider, setProvider] = useState<LLMProvider>('openai')
   const [hasChanges, setHasChanges] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [configLoaded, setConfigLoaded] = useState(false)
 
-  // Update detected provider when URL changes
+  // Set provider from loaded config
   useEffect(() => {
-    setProvider(detectProvider(config.targetBaseUrl))
-  }, [config.targetBaseUrl])
+    if (configLoaded && config.provider) {
+      setProvider(config.provider)
+    }
+  }, [configLoaded, config.provider])
+
+  // Fallback: detect provider from URL if not set
+  useEffect(() => {
+    if (!configLoaded) return
+    if (!config.provider) {
+      setProvider(detectProvider(config.targetBaseUrl))
+    }
+  }, [configLoaded, config.provider, config.targetBaseUrl])
 
   // Update i18n language when config.language changes
   useEffect(() => {
@@ -104,10 +117,12 @@ export function ServerConfig() {
             language: serverConfig.language as string,
             // Don't load API key from server (security)
             targetApiKey: serverConfig.hasApiKey ? '••••••••' : '',
+            provider: serverConfig.provider as LLMProvider,
           }
 
           return newConfig
         })
+        setConfigLoaded(true)
       } catch (_error) {
         // Silently fail - config will use defaults
       }
@@ -160,6 +175,7 @@ export function ServerConfig() {
       language: 'en',
       cacheEnabled: true,
       maxTokens: 4096,
+      provider: 'openai',
     })
     setHasChanges(true)
   }
