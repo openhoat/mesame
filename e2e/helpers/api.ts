@@ -125,5 +125,5 @@ export async function getSources(
   request: APIRequestContext,
   port: number
 ): Promise<ApiResponse<Array<{ id: string; name: string }>>> {
-  return apiRequest(request, `http://localhost:${port}/v1/sources`)
+  return apiRequest(request, `http://localhost:${port}/api/sources`)
 }

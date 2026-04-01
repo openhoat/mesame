@@ -60,7 +60,7 @@ export function StyleProfiles() {
       const response = await fetch('/api/sources')
       if (response.ok) {
         const data = await response.json()
-        setSources(data.sources || [])
+        setSources(Array.isArray(data) ? data : [])
       }
     } catch (_error) {
       // Failed to fetch sources

@@ -11,7 +11,7 @@ test.describe('Sources Page Tests', () => {
     test('should have working sources API endpoint', async ({ page, port }) => {
       const request = page.context().request
       // Verify the API is accessible before testing UI
-      const response = await apiRequest(request, `http://localhost:${port}/v1/sources`)
+      const response = await apiRequest(request, `http://localhost:${port}/api/sources`)
       expect(response.status).toBe(200)
       expect(Array.isArray(response.body)).toBe(true)
     })
@@ -22,7 +22,7 @@ test.describe('Sources Page Tests', () => {
       const request = page.context().request
       const response = await apiRequest<Array<{ id: string; name: string }>>(
         request,
-        `http://localhost:${port}/v1/sources`
+        `http://localhost:${port}/api/sources`
       )
 
       expect(response.status).toBe(200)
@@ -35,7 +35,7 @@ test.describe('Sources Page Tests', () => {
       // Create a test source
       const createResponse = await apiRequest<{ id: string; name: string; type: string }>(
         request,
-        `http://localhost:${port}/v1/sources`,
+        `http://localhost:${port}/api/sources`,
         {
           method: 'POST',
           body: {
@@ -117,7 +117,7 @@ test.describe('Sources Page Tests', () => {
       const request = page.context().request
       const response = await apiRequest<Array<{ id: string; name: string }>>(
         request,
-        `http://localhost:${port}/v1/sources`
+        `http://localhost:${port}/api/sources`
       )
 
       expect(response.status).toBe(200)

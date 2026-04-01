@@ -59,7 +59,7 @@ export function Sources() {
         controller.abort()
       }, 5000)
 
-      const fetchPromise = fetch('/v1/sources', {
+      const fetchPromise = fetch('/api/sources', {
         signal: controller.signal,
       })
 
@@ -101,7 +101,7 @@ export function Sources() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s for uploads
 
-      const response = await fetch('/v1/sources/import', {
+      const response = await fetch('/api/sources/import', {
         method: 'POST',
         body: formData,
         signal: controller.signal,
@@ -127,7 +127,7 @@ export function Sources() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000)
 
-      const response = await fetch('/v1/sources', {
+      const response = await fetch('/api/sources', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm),
@@ -153,7 +153,7 @@ export function Sources() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000)
 
-      const response = await fetch(`/v1/sources/${id}`, {
+      const response = await fetch(`/api/sources/${id}`, {
         method: 'DELETE',
         signal: controller.signal,
       })

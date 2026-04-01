@@ -59,7 +59,7 @@ test.describe('Admin Dashboard Tests', () => {
       const request = page.context().request
 
       // First create a source
-      const sourceResponse = await apiRequest(request, `http://localhost:${port}/v1/sources`, {
+      const sourceResponse = await apiRequest(request, `http://localhost:${port}/api/sources`, {
         method: 'POST',
         body: {
           title: 'Test Source',
@@ -105,7 +105,7 @@ test.describe('Admin Dashboard Tests', () => {
       const request = page.context().request
       const response = await apiRequest<Array<{ id: string; name: string }>>(
         request,
-        `http://localhost:${port}/v1/sources`
+        `http://localhost:${port}/api/sources`
       )
 
       expect(response.status).toBe(200)

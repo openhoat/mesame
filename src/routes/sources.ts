@@ -25,7 +25,7 @@ export const sourcesRoute: FastifyPluginAsync = async app => {
   })
 
   // Create a source from JSON
-  app.post<{ Body: CreateSourceBody }>('/v1/sources', async (request, reply) => {
+  app.post<{ Body: CreateSourceBody }>('/api/sources', async (request, reply) => {
     request.log.info('[Sources API] Creating new source...')
     const { title, content } = request.body
 
@@ -46,7 +46,7 @@ export const sourcesRoute: FastifyPluginAsync = async app => {
   })
 
   // Import a source from file upload
-  app.post('/v1/sources/import', async (request, reply) => {
+  app.post('/api/sources/import', async (request, reply) => {
     const file = await request.file()
 
     if (!file) {
@@ -72,7 +72,7 @@ export const sourcesRoute: FastifyPluginAsync = async app => {
   })
 
   // List all sources
-  app.get('/v1/sources', async request => {
+  app.get('/api/sources', async request => {
     request.log.info('[Sources API] Fetching all sources...')
     try {
       const sources = await getAllSources()
@@ -86,7 +86,7 @@ export const sourcesRoute: FastifyPluginAsync = async app => {
   })
 
   // Get a source by ID
-  app.get<{ Params: SourceParams }>('/v1/sources/:id', async (request, reply) => {
+  app.get<{ Params: SourceParams }>('/api/sources/:id', async (request, reply) => {
     const source = await getSourceById(request.params.id)
 
     if (!source) {
@@ -97,7 +97,7 @@ export const sourcesRoute: FastifyPluginAsync = async app => {
   })
 
   // Delete a source
-  app.delete<{ Params: SourceParams }>('/v1/sources/:id', async (request, reply) => {
+  app.delete<{ Params: SourceParams }>('/api/sources/:id', async (request, reply) => {
     request.log.info(`[Sources API] Deleting source: ${request.params.id}`)
     const source = await getSourceById(request.params.id)
 

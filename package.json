@@ -4,11 +4,16 @@
   "description": "Your personal style proxy — a local meta-agent that transforms any LLM into your digital twin",
   "license": "MIT",
   "author": "Olivier Penhoat <openhoat@gmail.com>",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "private": true,
+  "productName": "MeSame",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/openhoat/mesame.git"
   },
-  "type": "module",
   "bin": {
     "mesame": "bin/mesame"
   },
@@ -30,16 +35,16 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "dev": "wireit",
-    "dev:back": "wireit",
-    "dev:front": "wireit",
+    "dev:llm": "wireit",
+    "dev:web": "wireit",
     "docs:build": "vitepress build docs",
     "docs:dev": "vitepress dev docs",
     "docs:preview": "vitepress preview docs",
     "format": "biome format --write .",
-    "llm": "wireit",
     "qa": "wireit",
     "qa:fix": "biome check --write .",
-    "start": "node dist/server/server.js",
+    "start:llm": "node dist/server/llm-server.js",
+    "start:web": "node dist/server/web-server.js",
     "test": "wireit",
     "test:coverage": "wireit",
     "test:e2e": "playwright test",
@@ -48,8 +53,7 @@
     "test:e2e:debug": "playwright test --debug",
     "test:watch": "vitest",
     "typecheck": "wireit",
-    "validate": "wireit",
-    "web": "wireit"
+    "validate": "wireit"
   },
   "dependencies": {
     "@fastify/cors": "11.2.0",
@@ -104,11 +108,6 @@
     "vitest": "^4.1.2",
     "wireit": "0.14.12"
   },
-  "engines": {
-    "node": ">=22"
-  },
-  "private": true,
-  "productName": "MeSame",
   "wireit": {
     "build": {
       "command": "tsc",
@@ -196,32 +195,11 @@
     },
     "dev": {
       "dependencies": [
-        "dev:back",
-        "dev:front"
+        "dev:llm",
+        "dev:web"
       ]
     },
-    "dev:back": {
-      "command": "tsx watch src/server.ts",
-      "dependencies": [
-        "db:generate"
-      ],
-      "files": [
-        "src/**/*.ts",
-        "tsconfig.json"
-      ],
-      "service": true
-    },
-    "dev:front": {
-      "command": "vite --config web/vite.config.ts",
-      "files": [
-        "web/src/**/*",
-        "web/vite.config.ts",
-        "web/index.html",
-        "web/tsconfig.json"
-      ],
-      "service": true
-    },
-    "llm": {
+    "dev:llm": {
       "command": "tsx watch src/llm-server.ts",
       "dependencies": [
         "db:generate"
@@ -232,13 +210,13 @@
       ],
       "service": true
     },
-    "web": {
+    "dev:web": {
       "dependencies": [
-        "web:back",
-        "web:front"
+        "dev:web:back",
+        "dev:web:front"
       ]
     },
-    "web:back": {
+    "dev:web:back": {
       "command": "tsx watch src/web-server.ts",
       "dependencies": [
         "db:generate"
@@ -249,7 +227,7 @@
       ],
       "service": true
     },
-    "web:front": {
+    "dev:web:front": {
       "command": "vite --config web/vite.config.ts",
       "files": [
         "web/src/**/*",

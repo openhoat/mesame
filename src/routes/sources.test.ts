@@ -43,7 +43,7 @@ describe('sources route', () => {
     await app.close()
   })
 
-  describe('POST /v1/sources', () => {
+  describe('POST /api/sources', () => {
     test('should create a source from JSON body', async () => {
       const source = {
         id: 'uuid-1',
@@ -55,7 +55,7 @@ describe('sources route', () => {
 
       const response = await app.inject({
         method: 'POST',
-        url: '/v1/sources',
+        url: '/api/sources',
         payload: { title: 'Test', content: 'Hello' },
       })
 
@@ -67,7 +67,7 @@ describe('sources route', () => {
     test('should return 400 when title is missing', async () => {
       const response = await app.inject({
         method: 'POST',
-        url: '/v1/sources',
+        url: '/api/sources',
         payload: { content: 'Hello' },
       })
 
@@ -78,7 +78,7 @@ describe('sources route', () => {
     test('should return 400 when content is missing', async () => {
       const response = await app.inject({
         method: 'POST',
-        url: '/v1/sources',
+        url: '/api/sources',
         payload: { title: 'Test' },
       })
 
@@ -87,7 +87,7 @@ describe('sources route', () => {
     })
   })
 
-  describe('GET /v1/sources', () => {
+  describe('GET /api/sources', () => {
     test('should return all sources', async () => {
       const sources = [
         { id: 'uuid-1', title: 'Doc 1', content: 'a', createdAt: new Date().toISOString() },
@@ -97,7 +97,7 @@ describe('sources route', () => {
 
       const response = await app.inject({
         method: 'GET',
-        url: '/v1/sources',
+        url: '/api/sources',
       })
 
       expect(response.statusCode).toBe(200)
@@ -109,7 +109,7 @@ describe('sources route', () => {
 
       const response = await app.inject({
         method: 'GET',
-        url: '/v1/sources',
+        url: '/api/sources',
       })
 
       expect(response.statusCode).toBe(200)
@@ -117,7 +117,7 @@ describe('sources route', () => {
     })
   })
 
-  describe('GET /v1/sources/:id', () => {
+  describe('GET /api/sources/:id', () => {
     test('should return a source by id', async () => {
       const source = {
         id: 'uuid-1',
@@ -129,7 +129,7 @@ describe('sources route', () => {
 
       const response = await app.inject({
         method: 'GET',
-        url: '/v1/sources/uuid-1',
+        url: '/api/sources/uuid-1',
       })
 
       expect(response.statusCode).toBe(200)
@@ -141,7 +141,7 @@ describe('sources route', () => {
 
       const response = await app.inject({
         method: 'GET',
-        url: '/v1/sources/nonexistent',
+        url: '/api/sources/nonexistent',
       })
 
       expect(response.statusCode).toBe(404)
@@ -149,7 +149,7 @@ describe('sources route', () => {
     })
   })
 
-  describe('DELETE /v1/sources/:id', () => {
+  describe('DELETE /api/sources/:id', () => {
     test('should delete a source and return 204', async () => {
       const source = {
         id: 'uuid-1',
@@ -162,7 +162,7 @@ describe('sources route', () => {
 
       const response = await app.inject({
         method: 'DELETE',
-        url: '/v1/sources/uuid-1',
+        url: '/api/sources/uuid-1',
       })
 
       expect(response.statusCode).toBe(204)
@@ -173,7 +173,7 @@ describe('sources route', () => {
 
       const response = await app.inject({
         method: 'DELETE',
-        url: '/v1/sources/nonexistent',
+        url: '/api/sources/nonexistent',
       })
 
       expect(response.statusCode).toBe(404)
@@ -181,7 +181,7 @@ describe('sources route', () => {
     })
   })
 
-  describe('POST /v1/sources/import', () => {
+  describe('POST /api/sources/import', () => {
     test('should import a text file', async () => {
       vi.mocked(isSupportedFile).mockReturnValueOnce(true)
       vi.mocked(extractText).mockResolvedValueOnce('File content')
@@ -199,7 +199,7 @@ describe('sources route', () => {
 
       const response = await app.inject({
         method: 'POST',
-        url: '/v1/sources/import',
+        url: '/api/sources/import',
         payload: form,
         headers: form instanceof FormData ? {} : { 'content-type': 'multipart/form-data' },
       })
@@ -216,7 +216,7 @@ describe('sources route', () => {
 
       const response = await app.inject({
         method: 'POST',
-        url: '/v1/sources/import',
+        url: '/api/sources/import',
         payload: form,
       })
 
