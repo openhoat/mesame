@@ -43,6 +43,7 @@
     "format": "biome format --write .",
     "qa": "wireit",
     "qa:fix": "biome check --write .",
+    "start": "node dist/server/server.js",
     "start:llm": "node dist/server/llm-server.js",
     "start:web": "node dist/server/web-server.js",
     "test": "wireit",
