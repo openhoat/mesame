@@ -2,6 +2,12 @@
 
 ## 01/04/2026
 
+- **[17:54:36] ✨ [FEAT]** add export functionality for chat history and style profiles
+- **[18:02:08] 🔧 [CHORE]** cleanup prisma organization and fix vitest deprecation
+- **[17:42:45] 🐛 [FIX]** add mock case to model discovery
+- **[17:35:24] 🐛 [FIX]** add database seed step before E2E tests
+- **[17:31:31] 🐛 [FIX]** add default mock provider for E2E tests
+- **[17:28:18] 🔧 [CHORE]** update kanban and changelog after rationalize-db-ui-terms
 - **[17:25:49] 🐛 [FIX]** update Anthropic models to current versions
 - **[17:22:46] ✨ [FEAT]** add multi-provider support and model selection
 - **[12:19:38] 🔧 [CHORE]** update kanban and changelog after fix-dashboard-logs merge

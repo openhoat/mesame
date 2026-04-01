@@ -22,5 +22,3 @@
 - [ ] **[UX]** Add ARIA labels to chat and dashboard components (P3)
 
 ## In Progress
-
-- [ ] **[FEAT]** Add export functionality for chat history and style profile
