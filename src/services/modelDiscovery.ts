@@ -205,6 +205,9 @@ export const listProviderModels = async (provider: Provider): Promise<Discovered
     case 'google':
       return GOOGLE_MODELS
 
+    case 'mock':
+      return MOCK_MODELS
+
     default:
       // Unknown provider type - treat as OpenAI-compatible
       logger.warn(`Unknown provider type: ${provider.type}, treating as OpenAI-compatible`)

@@ -5,7 +5,7 @@
 /**
  * Provider type identifiers
  */
-export type ProviderType = 'openai' | 'anthropic' | 'google' | 'ollama'
+export type ProviderType = 'openai' | 'anthropic' | 'google' | 'ollama' | 'mock'
 
 /**
  * Provider type metadata
@@ -43,6 +43,12 @@ export const PROVIDER_TYPES: Record<ProviderType, ProviderTypeInfo> = {
     type: 'ollama',
     displayName: 'Ollama',
     defaultBaseUrl: 'http://localhost:11434',
+    requiresApiKey: false,
+  },
+  mock: {
+    type: 'mock',
+    displayName: 'Mock Provider',
+    defaultBaseUrl: 'http://localhost:3000',
     requiresApiKey: false,
   },
 }
