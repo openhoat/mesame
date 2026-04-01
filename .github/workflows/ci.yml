@@ -123,6 +123,11 @@ jobs:
         env:
           DATABASE_URL: file:./test.db
 
+      - name: Seed database
+        run: npm run db:seed
+        env:
+          DATABASE_URL: file:./test.db
+
       - name: Cache Playwright browsers
         uses: actions/cache@v5
         with:
