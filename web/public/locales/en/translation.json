@@ -73,7 +73,8 @@
       "title": "Recent Activity",
       "subtitle": "Latest requests and system events",
       "chatCompletion": "Chat completion",
-      "styleProfileUpdated": "Style profile updated"
+      "styleProfileUpdated": "Style profile updated",
+      "noActivity": "No recent activity to display"
     }
   },
   "config": {

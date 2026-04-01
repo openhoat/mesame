@@ -10,6 +10,26 @@ interface Stats {
   uptime: string
 }
 
+interface ActivityItem {
+  time: string
+  event: string
+  model?: string
+  status: 'success' | 'error'
+}
+
+function formatTimeAgo(timestamp: string): string {
+  const date = new Date(timestamp)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMins = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMins / 60)
+
+  if (diffMins < 1) return 'just now'
+  if (diffMins < 60) return `${diffMins} min ago`
+  if (diffHours < 24) return `${diffHours}h ago`
+  return `${Math.floor(diffHours / 24)}d ago`
+}
+
 export function DashboardHome() {
   const { t } = useTranslation()
   const [stats, setStats] = useState<Stats>({
@@ -18,18 +38,23 @@ export function DashboardHome() {
     avgResponseTime: 0,
     uptime: '0h 0m',
   })
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
 
   useEffect(() => {
     // Fetch stats from API
     const fetchStats = async () => {
       try {
-        // TODO: Replace with actual API call
-        setStats({
-          totalRequests: 1247,
-          activeProfiles: 3,
-          avgResponseTime: 856,
-          uptime: '24h 15m',
-        })
+        const response = await fetch('/api/stats')
+        if (response.ok) {
+          const data = await response.json()
+          setStats({
+            totalRequests: data.totalRequests,
+            activeProfiles: data.activeProfiles,
+            avgResponseTime: data.avgResponseTime,
+            uptime: data.uptime,
+          })
+          setRecentActivity(data.recentActivity || [])
+        }
       } catch (_error) {
         // Failed to fetch stats - will retry on next interval
       }
@@ -130,48 +155,40 @@ export function DashboardHome() {
           </div>
 
           <Stack gap="md">
-            {[
-              {
-                time: '2 min ago',
-                event: t('dashboard.recentActivity.chatCompletion'),
-                model: 'gpt-4o-mini',
-                status: 'success',
-              },
-              {
-                time: '5 min ago',
-                event: t('dashboard.recentActivity.styleProfileUpdated'),
-                model: 'Technical Writer',
-                status: 'success',
-              },
-              {
-                time: '12 min ago',
-                event: t('dashboard.recentActivity.chatCompletion'),
-                model: 'gpt-4o',
-                status: 'success',
-              },
-            ].map((activity, index, arr) => (
-              <div key={`${activity.time}-${activity.event}`}>
-                <Group justify="space-between">
-                  <div>
-                    <Text size="sm" fw={500}>
-                      {activity.event}
-                    </Text>
-                    <Text size="xs" c="dimmed">
-                      {activity.model}
-                    </Text>
-                  </div>
-                  <Group gap="xs">
-                    <Text size="xs" c="dimmed">
-                      {activity.time}
-                    </Text>
-                    <Badge color={activity.status === 'success' ? 'green' : 'red'}>
-                      {activity.status}
-                    </Badge>
+            {recentActivity.length === 0 ? (
+              <Stack align="center" gap="md" py="xl">
+                <Activity size={48} opacity={0.5} />
+                <Text size="sm" c="dimmed">
+                  {t('dashboard.recentActivity.noActivity')}
+                </Text>
+              </Stack>
+            ) : (
+              recentActivity.map((activity, index, arr) => (
+                <div key={`${activity.time}-${activity.event}`}>
+                  <Group justify="space-between">
+                    <div>
+                      <Text size="sm" fw={500}>
+                        {activity.event}
+                      </Text>
+                      {activity.model && (
+                        <Text size="xs" c="dimmed">
+                          {activity.model}
+                        </Text>
+                      )}
+                    </div>
+                    <Group gap="xs">
+                      <Text size="xs" c="dimmed">
+                        {formatTimeAgo(activity.time)}
+                      </Text>
+                      <Badge color={activity.status === 'success' ? 'green' : 'red'}>
+                        {activity.status}
+                      </Badge>
+                    </Group>
                   </Group>
-                </Group>
-                {index < arr.length - 1 && <Divider my="sm" />}
-              </div>
-            ))}
+                  {index < arr.length - 1 && <Divider my="sm" />}
+                </div>
+              ))
+            )}
           </Stack>
         </Stack>
       </Paper>
