@@ -13,10 +13,22 @@ import {
   Title,
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { Check, Download, Edit, FileText, Loader2, Plus, RefreshCw, Trash2, X } from 'lucide-react'
+import {
+  Check,
+  Download,
+  Edit,
+  FileText,
+  Loader2,
+  MessageCircleQuestion,
+  Plus,
+  RefreshCw,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ModelSelector } from '@/components/ModelSelector'
+import { ProfileQuestionnaire } from './ProfileQuestionnaire'
 
 interface Source {
   id: string
@@ -38,6 +50,8 @@ export function StyleProfiles() {
   const [profiles, setProfiles] = useState<StyleProfile[]>([])
   const [sources, setSources] = useState<Source[]>([])
   const [modalOpened, { open: openModal, close: closeModal }] = useDisclosure(false)
+  const [questionnaireOpened, { open: openQuestionnaire, close: closeQuestionnaire }] =
+    useDisclosure(false)
   const [editingProfile, setEditingProfile] = useState<StyleProfile | null>(null)
   const [profileName, setProfileName] = useState('')
   const [selectedSources, setSelectedSources] = useState<string[]>([])
@@ -192,6 +206,11 @@ export function StyleProfiles() {
     }
   }
 
+  const handleQuestionnaireComplete = async () => {
+    closeQuestionnaire()
+    await fetchProfiles()
+  }
+
   return (
     <Stack gap="lg">
       <Group justify="space-between">
@@ -206,6 +225,14 @@ export function StyleProfiles() {
             onClick={handleExportProfiles}
           >
             {t('profiles.buttons.export') || 'Export'}
+          </Button>
+          <Button
+            variant="gradient"
+            gradient={{ from: 'blue', to: 'cyan' }}
+            leftSection={<MessageCircleQuestion size={16} />}
+            onClick={openQuestionnaire}
+          >
+            {t('profiles.buttons.questionnaire') || 'Questionnaire'}
           </Button>
           <Button leftSection={<Plus size={16} />} onClick={handleCreateProfile}>
             {t('profiles.buttons.createProfile') || 'Create Profile'}
@@ -369,6 +396,20 @@ export function StyleProfiles() {
             </Button>
           </Group>
         </Stack>
+      </Modal>
+
+      {/* Questionnaire Modal */}
+      <Modal
+        opened={questionnaireOpened}
+        onClose={closeQuestionnaire}
+        title={t('questionnaire.title') || 'Build Your Digital Twin Profile'}
+        size="xl"
+        centered
+      >
+        <ProfileQuestionnaire
+          onComplete={handleQuestionnaireComplete}
+          onCancel={closeQuestionnaire}
+        />
       </Modal>
     </Stack>
   )

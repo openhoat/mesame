@@ -7,6 +7,7 @@
     "edit": "Modifier",
     "create": "Créer",
     "back": "Retour",
+    "next": "Suivant",
     "close": "Fermer",
     "reset": "Réinitialiser",
     "loading": "Chargement...",
@@ -175,7 +176,58 @@
       "save": "Enregistrer",
       "cancel": "Annuler",
       "generateProfile": "Générer un style",
-      "regenerate": "Régénérer"
+      "regenerate": "Régénérer",
+      "questionnaire": "Questionnaire",
+      "export": "Exporter"
+    }
+  },
+  "questionnaire": {
+    "title": "Construisez votre profil de jumeau numérique",
+    "step": "Étape",
+    "of": "sur",
+    "createProfile": "Créer le profil",
+    "step1": {
+      "title": "Parlez-nous de vous",
+      "subtitle": "Aidez-nous à comprendre votre identité et votre rôle",
+      "name": "Nom",
+      "namePlaceholder": "Votre nom ou pseudonyme",
+      "role": "Rôle / Titre",
+      "rolePlaceholder": "ex: Ingénieur logiciel, Écrivain, PDG",
+      "expertise": "Domaine d'expertise",
+      "expertisePlaceholder": "Décrivez vos domaines de connaissance et d'expérience"
+    },
+    "step2": {
+      "title": "Définissez votre style d'écriture",
+      "subtitle": "Comment préférez-vous communiquer ?",
+      "tone": "Ton",
+      "toneFormal": "Formel - Professionnel et soigné",
+      "toneNeutral": "Neutre - Équilibré et objectif",
+      "toneCasual": "Décontracté - Amical et conversationnel",
+      "complexity": "Niveau de complexité",
+      "complexitySimple": "Simple - Clair et accessible",
+      "complexityModerate": "Modéré - Équilibré avec quelques détails",
+      "complexityComplex": "Complexe - Technique et approfondi",
+      "preferences": "Préférences supplémentaires (Optionnel)",
+      "preferencesPlaceholder": "ex: Utilisation de métaphores, humour, storytelling"
+    },
+    "step3": {
+      "title": "Vos valeurs et votre philosophie",
+      "subtitle": "Qu'est-ce qui guide votre pensée et vos décisions ?",
+      "values": "Valeurs fondamentales",
+      "valuesPlaceholder": "Décrivez les principes et valeurs qui vous guident",
+      "approach": "Approche et méthodologie",
+      "approachPlaceholder": "Comment abordez-vous les problèmes et prenez-vous des décisions ?",
+      "examples": "Exemples de communication (Optionnel)",
+      "examplesPlaceholder": "Partagez des exemples de la façon dont vous communiquez ou exprimez habituellement des idées"
+    },
+    "step4": {
+      "title": "Révision et création",
+      "subtitle": "Révisez votre profil et créez-le",
+      "identity": "Identité",
+      "style": "Style",
+      "values": "Valeurs",
+      "model": "Modèle pour la génération",
+      "modelPlaceholder": "Sélectionner le modèle"
     }
   },
   "logs": {

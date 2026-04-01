@@ -7,6 +7,7 @@
     "edit": "Edit",
     "create": "Create",
     "back": "Back",
+    "next": "Next",
     "close": "Close",
     "reset": "Reset to Defaults",
     "loading": "Loading...",
@@ -175,7 +176,58 @@
       "save": "Save",
       "cancel": "Cancel",
       "generateProfile": "Generate Style",
-      "regenerate": "Regenerate"
+      "regenerate": "Regenerate",
+      "questionnaire": "Questionnaire",
+      "export": "Export"
+    }
+  },
+  "questionnaire": {
+    "title": "Build Your Digital Twin Profile",
+    "step": "Step",
+    "of": "of",
+    "createProfile": "Create Profile",
+    "step1": {
+      "title": "Tell us about yourself",
+      "subtitle": "Help us understand your identity and role",
+      "name": "Name",
+      "namePlaceholder": "Your name or alias",
+      "role": "Role / Title",
+      "rolePlaceholder": "e.g., Software Engineer, Writer, CEO",
+      "expertise": "Domain of Expertise",
+      "expertisePlaceholder": "Describe your areas of knowledge and experience"
+    },
+    "step2": {
+      "title": "Define your writing style",
+      "subtitle": "How do you prefer to communicate?",
+      "tone": "Tone",
+      "toneFormal": "Formal - Professional and polished",
+      "toneNeutral": "Neutral - Balanced and objective",
+      "toneCasual": "Casual - Friendly and conversational",
+      "complexity": "Complexity Level",
+      "complexitySimple": "Simple - Clear and accessible",
+      "complexityModerate": "Moderate - Balanced with some detail",
+      "complexityComplex": "Complex - Technical and in-depth",
+      "preferences": "Additional Preferences (Optional)",
+      "preferencesPlaceholder": "e.g., Use of metaphors, humor, storytelling"
+    },
+    "step3": {
+      "title": "Your values and philosophy",
+      "subtitle": "What drives your thinking and decisions?",
+      "values": "Core Values",
+      "valuesPlaceholder": "Describe the principles and values that guide you",
+      "approach": "Approach & Methodology",
+      "approachPlaceholder": "How do you approach problems and make decisions?",
+      "examples": "Communication Examples (Optional)",
+      "examplesPlaceholder": "Share examples of how you typically communicate or express ideas"
+    },
+    "step4": {
+      "title": "Review & Create",
+      "subtitle": "Review your profile and create it",
+      "identity": "Identity",
+      "style": "Style",
+      "values": "Values",
+      "model": "Model for generation",
+      "modelPlaceholder": "Select model"
     }
   },
   "logs": {
