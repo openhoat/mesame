@@ -9,7 +9,6 @@
 <!-- Medium Priority -->
 - [ ] **[DEVOPS]** Setup Husky pre-commit hooks for code quality (P2)
 - [ ] **[DEVOPS]** Add backup/restore documentation for SQLite database (P2)
-- [ ] **[UX]** Add export functionality for chat history and style profile (P2)
 - [ ] **[UX]** Add drag-and-drop file upload support (P2)
 - [ ] **[UX]** Implement keyboard shortcuts in chat interface (P2)
 - [ ] **[UX]** Add interactive questionnaire for building user's digital twin profile (P2)
@@ -23,3 +22,5 @@
 - [ ] **[UX]** Add ARIA labels to chat and dashboard components (P3)
 
 ## In Progress
+
+- [ ] **[FEAT]** Add export functionality for chat history and style profile

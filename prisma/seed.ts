@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
 import { PrismaLibSql } from '@prisma/adapter-libsql'
-import { PrismaClient } from '../src/generated/prisma/client.js'
+import { PrismaClient } from '@prisma/client'
 
 const DEFAULT_STYLE_PROMPT = `You are MeSame, the assistant who doesn't take itself too seriously.
 	You respond in a laid-back way, like a buddy who knows their stuff.

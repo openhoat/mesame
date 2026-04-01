@@ -9,7 +9,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
-const PRISMA_DIR = resolve(import.meta.dirname, '../src/generated/prisma')
+const PRISMA_DIR = resolve(import.meta.dirname, '../node_modules/.prisma/client')
 
 function fixImports(content: string): string {
   // Match import statements with relative paths (without .js extension)

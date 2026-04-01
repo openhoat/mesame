@@ -3,8 +3,7 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 model Source {
@@ -52,14 +51,6 @@ model Provider {
   @@index([type])
   @@index([name])
   @@index([enabled])
-}
-
-model Config {
-  id                Int     @id @default(1)
-  provider          String  @default("openai") // openai, anthropic, ollama
-  targetModel       String  @default("gpt-4o")
-  apiKey            String?
-  preferredLanguage String  @default("en") // ISO 639-1 language code for responses
 }
 
 model Conversation {
