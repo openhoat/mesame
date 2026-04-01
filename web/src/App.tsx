@@ -13,6 +13,7 @@ export function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/chat" replace />} />
       <Route path="/chat" element={<ChatLayout />} />
+      <Route path="/chat/:id" element={<ChatLayout />} />
       <Route
         path="/dashboard"
         element={

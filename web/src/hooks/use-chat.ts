@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { streamChatCompletion } from '@/services/chat-api'
 import {
   type Conversation,
@@ -15,9 +16,13 @@ function nextId(): string {
 }
 
 export function useChat() {
+  const { id: urlConversationId } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isStreaming, setIsStreaming] = useState(false)
-  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>()
+  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>(
+    urlConversationId
+  )
   const [selectedModel, setSelectedModel] = useState<string | null>(() => {
     return localStorage.getItem('selectedModel')
   })
@@ -61,11 +66,12 @@ export function useChat() {
           })),
         })
         setCurrentConversationId(conversation.id)
+        navigate(`/chat/${conversation.id}`, { replace: true })
       }
     } catch {
       // Silently fail - conversation saving is a convenience feature
     }
-  }, [currentConversationId])
+  }, [currentConversationId, navigate])
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -135,22 +141,45 @@ export function useChat() {
     [isStreaming, saveConversation, selectedModel]
   )
 
-  const loadConversation = useCallback((conversation: Conversation) => {
-    setMessages(conversation.messages)
-    setCurrentConversationId(conversation.id)
-    conversationRef.current = conversation.messages
-      .filter(msg => msg.role !== 'error')
-      .map(msg => ({
-        role: msg.role as 'user' | 'assistant',
-        content: msg.content,
-      }))
-  }, [])
+  const loadConversation = useCallback(
+    (conversation: Conversation) => {
+      setMessages(conversation.messages)
+      setCurrentConversationId(conversation.id)
+      conversationRef.current = conversation.messages
+        .filter(msg => msg.role !== 'error')
+        .map(msg => ({
+          role: msg.role as 'user' | 'assistant',
+          content: msg.content,
+        }))
+
+      if (urlConversationId !== conversation.id) {
+        navigate(`/chat/${conversation.id}`)
+      }
+    },
+    [navigate, urlConversationId]
+  )
 
   const startNewConversation = useCallback(() => {
     setMessages([])
     setCurrentConversationId(undefined)
     conversationRef.current = []
-  }, [])
+    navigate('/chat')
+  }, [navigate])
+
+  // Load conversation from URL on mount or URL change
+  useEffect(() => {
+    if (urlConversationId && urlConversationId !== currentConversationId) {
+      import('@/services/conversation-api').then(({ fetchConversationById }) => {
+        fetchConversationById(urlConversationId)
+          .then(conversation => {
+            loadConversation(conversation)
+          })
+          .catch(() => {
+            navigate('/chat')
+          })
+      })
+    }
+  }, [urlConversationId, currentConversationId, loadConversation, navigate])
 
   const setModel = useCallback((modelId: string) => {
     setSelectedModel(modelId)

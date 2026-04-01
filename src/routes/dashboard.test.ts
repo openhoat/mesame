@@ -7,6 +7,7 @@ import * as logBufferModule from '../services/logBuffer.js'
 vi.mock('../services/logBuffer.js', () => ({
   logBuffer: {
     getRecent: vi.fn(),
+    getAll: vi.fn(),
   },
 }))
 
@@ -44,6 +45,7 @@ describe('Dashboard Route', () => {
 
       // Mock logBuffer
       vi.mocked(logBufferModule.logBuffer.getRecent).mockReturnValue([])
+      vi.mocked(logBufferModule.logBuffer.getAll).mockReturnValue([])
 
       const response = await app.inject({
         method: 'GET',
@@ -77,6 +79,7 @@ describe('Dashboard Route', () => {
       vi.mocked(prisma.conversation.count).mockResolvedValueOnce(0)
       vi.mocked(prisma.styleProfile.count).mockResolvedValueOnce(0)
       vi.mocked(logBufferModule.logBuffer.getRecent).mockReturnValue([])
+      vi.mocked(logBufferModule.logBuffer.getAll).mockReturnValue([])
 
       const response = await app.inject({
         method: 'GET',
@@ -93,6 +96,7 @@ describe('Dashboard Route', () => {
       vi.mocked(prisma.conversation.count).mockResolvedValueOnce(0)
       vi.mocked(prisma.styleProfile.count).mockResolvedValueOnce(0)
       vi.mocked(logBufferModule.logBuffer.getRecent).mockReturnValue([])
+      vi.mocked(logBufferModule.logBuffer.getAll).mockReturnValue([])
 
       const response = await app.inject({
         method: 'GET',
@@ -123,6 +127,7 @@ describe('Dashboard Route', () => {
           message: 'style profile updated',
         },
       ])
+      vi.mocked(logBufferModule.logBuffer.getAll).mockReturnValue([])
 
       const response = await app.inject({
         method: 'GET',

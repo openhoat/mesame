@@ -75,8 +75,14 @@ export const dashboardRoute: FastifyPluginAsync = async app => {
       })
 
       // Calculate average response time from logs
-      // For now, we'll use a placeholder until we have actual timing data
-      const avgResponseTime = 856 // TODO: Track actual response times
+      const logs = logBuffer.getAll()
+      const proxyLogs = logs.filter(l => l.responseTime !== undefined)
+      const avgResponseTime =
+        proxyLogs.length > 0
+          ? Math.round(
+              proxyLogs.reduce((acc, l) => acc + (l.responseTime || 0), 0) / proxyLogs.length
+            )
+          : 0
 
       // Calculate uptime
       const uptime = calculateUptime()

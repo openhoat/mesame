@@ -12,6 +12,7 @@ class LogBufferStream extends Writable {
         timestamp: new Date(logObj.time || Date.now()).toISOString(),
         level: logObj.level ? pino.levels.labels[logObj.level] || 'info' : 'info',
         message: logObj.msg || '',
+        responseTime: logObj.responseTime,
       })
     } catch {
       // Ignore parsing errors

@@ -52,37 +52,46 @@ interface OllamaModelResponse {
 }
 
 /**
- * Static list of known Anthropic models
+ * Static list of known Anthropic models (April 2025)
+ * See: https://docs.anthropic.com/en/docs/about-claude/models/all-models
  */
 const ANTHROPIC_MODELS: DiscoveredModel[] = [
+  // Latest generation (Claude 4.x)
+  {
+    id: 'claude-opus-4-6',
+    object: 'model',
+    created: 1743494400, // April 2025
+    owned_by: 'anthropic',
+  },
+  {
+    id: 'claude-sonnet-4-6',
+    object: 'model',
+    created: 1743494400, // April 2025
+    owned_by: 'anthropic',
+  },
+  {
+    id: 'claude-haiku-4-5-20251001',
+    object: 'model',
+    created: 1759315200, // October 2025
+    owned_by: 'anthropic',
+  },
+  // Previous generation (Claude 3.x - still supported)
+  {
+    id: 'claude-3-7-sonnet-20250219',
+    object: 'model',
+    created: 1739923200, // February 2025
+    owned_by: 'anthropic',
+  },
   {
     id: 'claude-3-5-sonnet-20241022',
     object: 'model',
-    created: 1729555200,
+    created: 1729555200, // October 2024
     owned_by: 'anthropic',
   },
   {
     id: 'claude-3-5-haiku-20241022',
     object: 'model',
-    created: 1729555200,
-    owned_by: 'anthropic',
-  },
-  {
-    id: 'claude-3-opus-20240229',
-    object: 'model',
-    created: 1709164800,
-    owned_by: 'anthropic',
-  },
-  {
-    id: 'claude-3-sonnet-20240229',
-    object: 'model',
-    created: 1709164800,
-    owned_by: 'anthropic',
-  },
-  {
-    id: 'claude-3-haiku-20240307',
-    object: 'model',
-    created: 1709769600,
+    created: 1729555200, // October 2024
     owned_by: 'anthropic',
   },
 ]

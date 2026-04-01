@@ -59,6 +59,15 @@ export async function buildApp(): Promise<FastifyInstance> {
     origin: true, // Allow all origins
     credentials: true, // Allow credentials (cookies, auth headers)
   })
+
+  // Add response time tracking
+  app.addHook('onResponse', (request, reply, done) => {
+    const responseTime = reply.elapsedTime
+    if (request.url.startsWith('/v1/proxy') || request.url.startsWith('/v1/chat')) {
+      request.log.info({ responseTime }, `Request to ${request.url} completed`)
+    }
+    done()
+  })
   await app.register(configRoute)
   await app.register(conversationsRoute)
   await app.register(dashboardRoute)

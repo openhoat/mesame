@@ -6,6 +6,7 @@ export interface LogEntry {
   timestamp: string
   level: string
   message: string
+  responseTime?: number
   context?: Record<string, unknown>
 }
 

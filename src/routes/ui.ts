@@ -113,7 +113,9 @@ async function uiRoutes(fastify: FastifyInstance): Promise<void> {
 
   // Client-side routes (chat, dashboard, etc.)
   fastify.get('/chat', serveIndexHtml)
+  fastify.get('/chat/:id', serveIndexHtml)
   fastify.get('/dashboard', serveIndexHtml)
+  fastify.get('/dashboard/*', serveIndexHtml)
 
   // Serve favicon.ico
   fastify.get('/favicon.ico', async (_request: FastifyRequest, reply: FastifyReply) => {
