@@ -2,6 +2,9 @@
 
 ## 01/04/2026
 
+- **[17:25:49] 🐛 [FIX]** update Anthropic models to current versions
+- **[17:22:46] ✨ [FEAT]** add multi-provider support and model selection
+- **[12:19:38] 🔧 [CHORE]** update kanban and changelog after fix-dashboard-logs merge
 - **[12:14:08] 🐛 [FIX]** use correct web server port (3001) for config API
 - **[11:39:22] 🐛 [FIX]** use provider field from server config instead of URL detection
 - **[11:25:28] ✨ [FEAT]** implement real-time stats and logs access
