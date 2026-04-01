@@ -203,4 +203,50 @@ describe('style profile route', () => {
       expect(response.json()).toMatchObject({ personaPrompt: 'New Prompt' })
     })
   })
+
+  describe('GET /api/style-profile/export', () => {
+    test('should export all profiles with metadata', async () => {
+      const now = new Date()
+      const mockProfiles = [
+        {
+          id: 'profile-1',
+          name: 'Profile 1',
+          personaPrompt: 'Prompt 1',
+          metrics: '{}',
+          isActive: true,
+          createdAt: now,
+          updatedAt: now,
+          sources: [{ id: 'source-1', title: 'Source 1' }],
+        },
+        {
+          id: 'profile-2',
+          name: 'Profile 2',
+          personaPrompt: 'Prompt 2',
+          metrics: '{}',
+          isActive: false,
+          createdAt: now,
+          updatedAt: now,
+          sources: [],
+        },
+      ]
+      vi.mocked(styleProfileService.getAllProfiles).mockResolvedValueOnce(mockProfiles)
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/style-profile/export',
+      })
+
+      expect(response.statusCode).toBe(200)
+      const result = response.json()
+      expect(result).toHaveProperty('exportedAt')
+      expect(result).toHaveProperty('version', '1.0')
+      expect(result).toHaveProperty('count', 2)
+      expect(result).toHaveProperty('profiles')
+      expect(result.profiles).toHaveLength(2)
+      expect(result.profiles[0]).toMatchObject({
+        id: 'profile-1',
+        name: 'Profile 1',
+      })
+    })
+  })
 })

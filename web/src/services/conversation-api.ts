@@ -69,3 +69,30 @@ export async function deleteConversation(id: string): Promise<void> {
     throw new Error(`Failed to delete conversation: ${response.statusText}`)
   }
 }
+
+export interface ExportData {
+  exportedAt: string
+  version: string
+  count: number
+  conversations: Conversation[]
+}
+
+export async function exportConversations(): Promise<ExportData> {
+  const response = await fetch('/v1/conversations/export')
+  if (!response.ok) {
+    throw new Error(`Failed to export conversations: ${response.statusText}`)
+  }
+  return response.json()
+}
+
+export function downloadConversationsAsJson(data: ExportData): void {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `conversations-export-${new Date().toISOString().split('T')[0]}.json`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
