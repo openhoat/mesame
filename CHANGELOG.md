@@ -1,7 +1,18 @@
 # Changelog
 
+## 01/04/2026
+
+- **[12:14:08] 🐛 [FIX]** use correct web server port (3001) for config API
+- **[11:39:22] 🐛 [FIX]** use provider field from server config instead of URL detection
+- **[11:25:28] ✨ [FEAT]** implement real-time stats and logs access
+- **[09:59:38] 🐛 [FIX]** restore npm start script for E2E tests
+- **[09:56:02] 🐛 [FIX]** fix sources routes and variabilize server ports
+
 ## 31/03/2026
 
+- **[10:27:53] 🐛 [FIX]** use robust path resolution for package.json
+- **[09:53:08] 🐛 [FIX]** read package.json from correct path after build
+- **[09:51:35] 🔧 [CHORE]** update kanban and changelog after split-proxy-web-servers merge
 - **[09:46:57] 📝 [DOCS]** update README with LLM/Web server architecture
 - **[09:43:49] ♻️ [REFACTOR]** rename env vars from MESAME_HOST/PORT to MESAME_LLM_HOST/PORT
 - **[09:39:29] ♻️ [REFACTOR]** rename proxy to llm for clarity
