@@ -29,10 +29,10 @@ export const styleProfileRoute: FastifyPluginAsync = async app => {
 
   // POST /api/style-profile - Create new profile
   app.post<{
-    Body: { name: string; sourceIds: string[] }
+    Body: { name: string; sourceIds: string[]; modelId?: string }
   }>('/api/style-profile', async request => {
-    const { name, sourceIds } = request.body
-    return await createProfile(name, sourceIds)
+    const { name, sourceIds, modelId } = request.body
+    return await createProfile(name, sourceIds, modelId)
   })
 
   // PUT /api/style-profile/:id - Update profile
@@ -59,8 +59,12 @@ export const styleProfileRoute: FastifyPluginAsync = async app => {
   })
 
   // POST /api/style-profile/:id/regenerate - Regenerate profile from sources
-  app.post<{ Params: { id: string } }>('/api/style-profile/:id/regenerate', async request => {
+  app.post<{
+    Params: { id: string }
+    Body: { modelId?: string }
+  }>('/api/style-profile/:id/regenerate', async request => {
     const { id } = request.params
-    return await regenerateProfile(id)
+    const { modelId } = request.body || {}
+    return await regenerateProfile(id, modelId)
   })
 }

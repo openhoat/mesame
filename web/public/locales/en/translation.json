@@ -21,7 +21,8 @@
     "profiles": "Style Profiles",
     "config": "Configuration",
     "logs": "Request Logs",
-    "sources": "Sources"
+    "sources": "Sources",
+    "providers": "Providers"
   },
   "chat": {
     "title": "Chat",
@@ -30,6 +31,7 @@
     "sendAriaLabel": "Send message",
     "sendInstructions": "Press Enter to send, Shift+Enter for new line",
     "clear": "Clear chat",
+    "selectModel": "Select model",
     "header": {
       "appName": "MeSame",
       "tagline": "Your personal style proxy",
@@ -79,7 +81,7 @@
   },
   "config": {
     "title": "Server Configuration",
-    "subtitle": "Manage proxy server settings",
+    "subtitle": "Manage LLM server settings",
     "buttons": {
       "saveChanges": "Save Changes"
     },
@@ -99,24 +101,11 @@
       "language": "Response Language",
       "languageDescription": "Language for assistant responses"
     },
-    "llmProvider": {
-      "title": "LLM Provider Settings",
-      "subtitle": "Configure the upstream LLM service",
-      "providerLabel": "Provider",
-      "providerDescription": "The LLM provider to use for chat completions",
-      "providerOpenai": "OpenAI",
-      "providerAnthropic": "Anthropic",
-      "providerOllama": "Ollama",
-      "modelLabel": "Default Model",
-      "modelExampleOpenai": "e.g., gpt-4o-mini, gpt-4o",
-      "modelExampleAnthropic": "e.g., claude-3-5-sonnet-20241022, claude-3-5-haiku-20241022",
-      "modelExampleOllama": "e.g., llama2, mistral, codellama",
-      "urlLabel": "API Base URL",
-      "urlDescriptionOpenai": "The base URL for the OpenAI API",
-      "urlDescriptionAnthropic": "The base URL for the Anthropic API",
-      "urlDescriptionOllama": "The base URL for the Ollama API",
-      "apiKeyLabel": "API Key",
-      "apiKeyDescription": "Your API key is stored securely"
+    "llmSource": {
+      "title": "LLM Sources",
+      "subtitle": "Configure your LLM providers",
+      "description": "Manage your LLM providers in the",
+      "link": "Providers page"
     },
     "performance": {
       "title": "Performance",
@@ -167,6 +156,8 @@
     "promptLabel": "Persona Prompt",
     "promptPlaceholder": "Describe the writing style, tone, and structure...",
     "selectSources": "Select Sources",
+    "selectModel": "Model for generation",
+    "selectModelPlaceholder": "Select model",
     "noSources": "No sources available. Create sources first.",
     "sources": "sources",
     "emptyState": "No style profiles yet. Create one to get started.",
@@ -205,6 +196,49 @@
       "success": "Success",
       "clientError": "Client Error",
       "serverError": "Server Error"
+    }
+  },
+  "providers": {
+    "title": "Providers",
+    "subtitle": "Manage LLM providers for your proxy",
+    "addProvider": "Add Provider",
+    "editProvider": "Edit Provider",
+    "emptyState": "No providers configured. Add one to get started.",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "apiKeyConfigured": "Configured",
+    "apiKeyMissing": "Missing",
+    "apiKeyNotRequired": "Not required",
+    "testConnection": "Test connection",
+    "testSuccess": "Connection successful",
+    "testFailed": "Connection failed",
+    "confirmDelete": "Are you sure you want to delete the provider '{{name}}'?",
+    "table": {
+      "name": "Name",
+      "type": "Type",
+      "baseUrl": "Base URL",
+      "models": "Models",
+      "apiKey": "API Key",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "form": {
+      "type": "Provider Type",
+      "typeDescription": "Select the type of LLM provider",
+      "name": "Instance Name",
+      "namePlaceholder": "e.g., My OpenAI, Work Anthropic",
+      "nameDescription": "A unique name to identify this provider instance",
+      "provider": "Provider",
+      "providerDescription": "Provider name cannot be changed after creation",
+      "displayName": "Display Name",
+      "displayNamePlaceholder": "e.g., OpenAI, Anthropic",
+      "baseUrl": "Base URL",
+      "apiKey": "API Key",
+      "apiKeyPlaceholderEdit": "Leave empty to keep current key",
+      "apiKeyHint": "Leave empty to keep the existing API key",
+      "priority": "Priority",
+      "priorityDescription": "Lower numbers have higher priority",
+      "enabled": "Enabled"
     }
   },
   "status": {

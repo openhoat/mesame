@@ -17,7 +17,8 @@ export interface StreamCallbacks {
 
 export async function streamChatCompletion(
   messages: ConversationMessage[],
-  callbacks: StreamCallbacks
+  callbacks: StreamCallbacks,
+  model?: string
 ): Promise<void> {
   const response = await fetch('/v1/chat/completions', {
     method: 'POST',
@@ -25,6 +26,7 @@ export async function streamChatCompletion(
     body: JSON.stringify({
       messages,
       stream: true,
+      ...(model ? { model } : {}),
     }),
   })
 

@@ -1,17 +1,26 @@
-import { ActionIcon, Text } from '@mantine/core'
+import { ActionIcon, Group, Text } from '@mantine/core'
 import { History, Plus, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { ModelSelector } from '@/components/ModelSelector'
 import { StatusIndicator } from '@/components/StatusIndicator'
 import { ThemeToggle } from '@/components/ThemeToggle'
 
 interface ChatHeaderProps {
   isConnected: boolean
+  selectedModel: string | null
+  onModelChange: (modelId: string) => void
   onOpenHistory?: () => void
   onNewConversation?: () => void
 }
 
-export function ChatHeader({ isConnected, onOpenHistory, onNewConversation }: ChatHeaderProps) {
+export function ChatHeader({
+  isConnected,
+  selectedModel,
+  onModelChange,
+  onOpenHistory,
+  onNewConversation,
+}: ChatHeaderProps) {
   const { t } = useTranslation()
   return (
     <header
@@ -40,28 +49,46 @@ export function ChatHeader({ isConnected, onOpenHistory, onNewConversation }: Ch
         {t('chat.header.tagline')}
       </Text>
       <div style={{ flex: 1 }} />
-      {onNewConversation && (
-        <ActionIcon onClick={onNewConversation} variant="subtle" title="New conversation" size="lg">
-          <Plus size={20} />
+      <Group gap="xs">
+        <ModelSelector
+          value={selectedModel}
+          onChange={onModelChange}
+          placeholder={t('chat.selectModel') || 'Select model'}
+          size="xs"
+        />
+        {onNewConversation && (
+          <ActionIcon
+            onClick={onNewConversation}
+            variant="subtle"
+            title="New conversation"
+            size="lg"
+          >
+            <Plus size={20} />
+          </ActionIcon>
+        )}
+        {onOpenHistory && (
+          <ActionIcon
+            onClick={onOpenHistory}
+            variant="subtle"
+            title="Conversation history"
+            size="lg"
+          >
+            <History size={20} />
+          </ActionIcon>
+        )}
+        <ActionIcon
+          component={Link}
+          to="/dashboard"
+          variant="subtle"
+          data-testid="open-dashboard"
+          title={t('chat.header.openDashboard')}
+          size="lg"
+        >
+          <Settings size={20} />
         </ActionIcon>
-      )}
-      {onOpenHistory && (
-        <ActionIcon onClick={onOpenHistory} variant="subtle" title="Conversation history" size="lg">
-          <History size={20} />
-        </ActionIcon>
-      )}
-      <ActionIcon
-        component={Link}
-        to="/dashboard"
-        variant="subtle"
-        data-testid="open-dashboard"
-        title={t('chat.header.openDashboard')}
-        size="lg"
-      >
-        <Settings size={20} />
-      </ActionIcon>
-      <ThemeToggle variant="menu" />
-      <StatusIndicator isConnected={isConnected} />
+        <ThemeToggle variant="menu" />
+        <StatusIndicator isConnected={isConnected} />
+      </Group>
     </header>
   )
 }

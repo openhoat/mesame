@@ -116,7 +116,7 @@ describe('styleProfileService', () => {
 
       expect(result.id).toBe('p1')
       expect(result.personaPrompt).toBe(mockPersonaPrompt)
-      expect(styleRefiner.refineStyleAnalysis).toHaveBeenCalledWith(mockAnalysis)
+      expect(styleRefiner.refineStyleAnalysis).toHaveBeenCalledWith(mockAnalysis, undefined)
     })
   })
 

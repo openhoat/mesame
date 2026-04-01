@@ -41,3 +41,15 @@ export interface ModelsListResponse {
   object: 'list'
   data: Model[]
 }
+
+/**
+ * OpenAI-compatible error response
+ */
+export interface OpenAIErrorResponse {
+  error: {
+    message: string
+    type: 'invalid_request_error' | 'api_error' | 'authentication_error'
+    param: string | null
+    code?: string
+  }
+}

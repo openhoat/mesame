@@ -16,6 +16,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { Check, Edit, FileText, Loader2, Plus, RefreshCw, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ModelSelector } from '@/components/ModelSelector'
 
 interface Source {
   id: string
@@ -42,6 +43,7 @@ export function StyleProfiles() {
   const [selectedSources, setSelectedSources] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [regeneratingId, setRegeneratingId] = useState<string | null>(null)
+  const [selectedModel, setSelectedModel] = useState<string | null>(null)
 
   const fetchProfiles = useCallback(async () => {
     try {
@@ -100,6 +102,7 @@ export function StyleProfiles() {
         body: JSON.stringify({
           name: profileName,
           sourceIds: selectedSources,
+          modelId: selectedModel,
         }),
       })
 
@@ -149,6 +152,8 @@ export function StyleProfiles() {
     try {
       const response = await fetch(`/api/style-profile/${id}/regenerate`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ modelId: selectedModel }),
       })
 
       if (response.ok) {
@@ -308,6 +313,16 @@ export function StyleProfiles() {
               </Stack>
             )}
           </div>
+
+          <Divider />
+
+          <ModelSelector
+            value={selectedModel}
+            onChange={setSelectedModel}
+            label={t('profiles.selectModel') || 'Model for generation'}
+            placeholder={t('profiles.selectModelPlaceholder') || 'Select model'}
+            size="sm"
+          />
 
           <Divider />
 

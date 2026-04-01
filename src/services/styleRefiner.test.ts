@@ -1,11 +1,34 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { getLLMProvider } from './llmProvider.js'
+import { getChatModelFromModelId } from './llmProvider.js'
 import { refineStyleAnalysis } from './styleRefiner.js'
 
 // Mock LLM Provider
 vi.mock('./llmProvider.js', () => ({
-  getLLMProvider: vi.fn(),
+  getChatModelFromModelId: vi.fn(),
   convertToLangChainMessages: vi.fn(msgs => msgs),
+}))
+
+// Mock provider registry
+vi.mock('./providerRegistry.js', () => ({
+  getDefaultProvider: vi.fn().mockResolvedValue({
+    id: 1,
+    name: 'ollama',
+    displayName: 'Ollama',
+    baseUrl: 'http://localhost:11434',
+    apiKey: null,
+    enabled: true,
+    priority: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }),
+}))
+
+// Mock config
+vi.mock('../config.js', () => ({
+  config: {
+    model: 'llama3',
+    language: 'en',
+  },
 }))
 
 describe('styleRefiner', () => {
@@ -13,7 +36,7 @@ describe('styleRefiner', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    ;(getLLMProvider as any).mockReturnValue({
+    ;(getChatModelFromModelId as any).mockResolvedValue({
       invoke: mockInvoke,
     })
   })

@@ -1,13 +1,14 @@
 import { ChatAnthropic } from '@langchain/anthropic'
 import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages'
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai'
 import { ChatOllama } from '@langchain/ollama'
 import { ChatOpenAI } from '@langchain/openai'
 import { describe, expect, test, vi } from 'vitest'
 import {
   convertToLangChainMessages,
-  createChatModel,
-  detectProvider,
-  getLLMProvider,
+  createChatModelForProvider,
+  detectProviderType,
+  getChatModel,
 } from './llmProvider.js'
 
 vi.mock('../config.js', () => ({
@@ -19,49 +20,88 @@ vi.mock('../config.js', () => ({
 }))
 
 describe('llmProvider', () => {
-  describe('detectProvider', () => {
+  describe('detectProviderType', () => {
     test('should detect Anthropic provider', () => {
-      expect(detectProvider('https://api.anthropic.com')).toBe('anthropic')
+      expect(detectProviderType('anthropic')).toBe('anthropic')
     })
 
-    test('should detect Ollama provider from localhost', () => {
-      expect(detectProvider('http://localhost:11434')).toBe('ollama')
+    test('should detect Ollama provider', () => {
+      expect(detectProviderType('ollama')).toBe('ollama')
     })
 
-    test('should detect Ollama provider from URL', () => {
-      expect(detectProvider('http://my-ollama-server:11434')).toBe('ollama')
+    test('should detect OpenAI provider', () => {
+      expect(detectProviderType('openai')).toBe('openai')
     })
 
-    test('should default to OpenAI provider', () => {
-      expect(detectProvider('https://api.openai.com')).toBe('openai')
+    test('should detect Google provider', () => {
+      expect(detectProviderType('google')).toBe('google')
+    })
+
+    test('should default to OpenAI for unknown providers', () => {
+      expect(detectProviderType('unknown')).toBe('openai')
     })
   })
 
-  describe('createChatModel', () => {
+  describe('createChatModelForProvider', () => {
     test('should create ChatOpenAI instance', () => {
-      const model = createChatModel('openai')
+      const model = createChatModelForProvider(
+        'openai',
+        'gpt-4',
+        'https://api.openai.com',
+        'test-key',
+        false
+      )
       expect(model).toBeInstanceOf(ChatOpenAI)
     })
 
     test('should create ChatAnthropic instance', () => {
-      const model = createChatModel('anthropic')
+      const model = createChatModelForProvider(
+        'anthropic',
+        'claude-3',
+        'https://api.anthropic.com',
+        'test-key',
+        false
+      )
       expect(model).toBeInstanceOf(ChatAnthropic)
     })
 
     test('should create ChatOllama instance', () => {
-      const model = createChatModel('ollama')
+      const model = createChatModelForProvider(
+        'ollama',
+        'llama3',
+        'http://localhost:11434',
+        null,
+        false
+      )
       expect(model).toBeInstanceOf(ChatOllama)
     })
 
+    test('should create ChatGoogleGenerativeAI instance', () => {
+      const model = createChatModelForProvider(
+        'google',
+        'gemini-1.5-flash',
+        'https://generativelanguage.googleapis.com',
+        'test-key',
+        false
+      )
+      expect(model).toBeInstanceOf(ChatGoogleGenerativeAI)
+    })
+
     test('should create streaming model when requested', () => {
-      const model = createChatModel('openai', true)
+      const model = createChatModelForProvider(
+        'openai',
+        'gpt-4',
+        'https://api.openai.com',
+        'test-key',
+        true
+      )
       expect(model).toBeInstanceOf(ChatOpenAI)
     })
   })
 
-  describe('getLLMProvider', () => {
+  describe('getChatModel', () => {
     test('should return a chat model instance', () => {
-      const model = getLLMProvider()
+      const model = getChatModel('openai', 'gpt-4', 'https://api.openai.com', 'test-key', false)
       expect(model).toBeInstanceOf(ChatOpenAI)
     })
   })

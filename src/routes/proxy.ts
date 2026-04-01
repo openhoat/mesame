@@ -1,30 +1,57 @@
 import type { AIMessageChunk } from '@langchain/core/messages'
 import type { FastifyPluginAsync } from 'fastify'
 import { config } from '../config.js'
-import { convertToLangChainMessages, getLLMProvider } from '../services/llmProvider.js'
+import { convertToLangChainMessages, getChatModelFromModelId } from '../services/llmProvider.js'
+import { listAllModels } from '../services/modelDiscovery.js'
 import { injectStylePrompt } from '../services/styleInjector.js'
 import { getActiveStyleProfile } from '../services/styleProfileService.js'
-import type { ChatCompletionRequest, ModelsListResponse } from '../types/openai.js'
+import type {
+  ChatCompletionRequest,
+  ModelsListResponse,
+  OpenAIErrorResponse,
+} from '../types/openai.js'
 
 export const proxyRoute: FastifyPluginAsync = async app => {
   // GET /v1/models - OpenAI-compatible model discovery endpoint
-  app.get('/v1/models', async () => {
-    const response: ModelsListResponse = {
-      object: 'list',
-      data: [
-        {
-          id: config.model,
-          object: 'model',
-          created: Math.floor(Date.now() / 1000),
-          owned_by: 'mesame',
+  app.get('/v1/models', async (_request, reply) => {
+    try {
+      const models = await listAllModels()
+      const response: ModelsListResponse = {
+        object: 'list',
+        data: models,
+      }
+      return response
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      const errorResponse: OpenAIErrorResponse = {
+        error: {
+          message: `Failed to list models: ${errorMessage}`,
+          type: 'api_error',
+          param: null,
+          code: 'provider_unavailable',
         },
-      ],
+      }
+      reply.status(500)
+      return errorResponse
     }
-    return response
   })
 
   app.post<{ Body: ChatCompletionRequest }>('/v1/chat/completions', async (request, reply) => {
     const body = request.body
+
+    // Validate required model field (OpenAI API compliance)
+    if (!body.model) {
+      const errorResponse: OpenAIErrorResponse = {
+        error: {
+          message: 'Missing required field: model',
+          type: 'invalid_request_error',
+          param: 'model',
+          code: 'missing_required_field',
+        },
+      }
+      reply.status(400)
+      return errorResponse
+    }
 
     // Inject style persona into messages with user's preferred language
     const styleProfile = await getActiveStyleProfile()
@@ -33,8 +60,8 @@ export const proxyRoute: FastifyPluginAsync = async app => {
     // Convert OpenAI format to LangChain messages
     const langchainMessages = convertToLangChainMessages(modifiedMessages)
 
-    // Get LangChain chat model
-    const chatModel = getLLMProvider(body.stream)
+    // Get LangChain chat model with the requested model (multi-provider)
+    const chatModel = await getChatModelFromModelId(body.model, body.stream ?? false)
 
     if (body.stream) {
       // Streaming response
@@ -58,7 +85,7 @@ export const proxyRoute: FastifyPluginAsync = async app => {
               id: `chatcmpl-${Date.now()}`,
               object: 'chat.completion.chunk',
               created: Math.floor(Date.now() / 1000),
-              model: config.model,
+              model: body.model,
               choices: [
                 {
                   index: 0,
@@ -85,7 +112,7 @@ export const proxyRoute: FastifyPluginAsync = async app => {
             id: `chatcmpl-${Date.now()}`,
             object: 'chat.completion.chunk',
             created: Math.floor(Date.now() / 1000),
-            model: config.model,
+            model: body.model,
             error: {
               message: errorMessage,
               type: 'langchain_error',
@@ -114,7 +141,7 @@ export const proxyRoute: FastifyPluginAsync = async app => {
         id: `chatcmpl-${Date.now()}`,
         object: 'chat.completion',
         created: Math.floor(Date.now() / 1000),
-        model: config.model,
+        model: body.model,
         choices: [
           {
             index: 0,

@@ -1,11 +1,27 @@
+import { config } from '../config.js'
 import { logger } from '../logger.js'
-import { convertToLangChainMessages, getLLMProvider } from './llmProvider.js'
+import { convertToLangChainMessages, getChatModelFromModelId } from './llmProvider.js'
+import { getDefaultProvider } from './providerRegistry.js'
 import type { StyleAnalysis } from './styleAnalyzer.js'
 
-export async function refineStyleAnalysis(analysis: StyleAnalysis): Promise<string> {
+export async function refineStyleAnalysis(
+  analysis: StyleAnalysis,
+  modelId?: string
+): Promise<string> {
   logger.info('🧠 Generating narrative style profile with IA...')
   try {
-    const model = getLLMProvider()
+    let effectiveModelId = modelId
+
+    // If no model provided, use default provider's model
+    if (!effectiveModelId) {
+      const defaultProvider = await getDefaultProvider()
+      if (!defaultProvider) {
+        throw new Error('No provider configured')
+      }
+      effectiveModelId = `${defaultProvider.type}/${config.model}`
+    }
+
+    const model = await getChatModelFromModelId(effectiveModelId, false)
 
     // Prepare data for the IA to understand the style
     const rawBigrams = (analysis.bigrams || []).slice(0, 20).map(b => b.gram)

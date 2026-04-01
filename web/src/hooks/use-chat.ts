@@ -18,6 +18,9 @@ export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isStreaming, setIsStreaming] = useState(false)
   const [currentConversationId, setCurrentConversationId] = useState<string | undefined>()
+  const [selectedModel, setSelectedModel] = useState<string | null>(() => {
+    return localStorage.getItem('selectedModel')
+  })
   const conversationRef = useRef<ConversationMessage[]>([])
   const streamingContentRef = useRef('')
 
@@ -84,32 +87,36 @@ export function useChat() {
       streamingContentRef.current = ''
 
       try {
-        await streamChatCompletion(conversationRef.current, {
-          onChunk(chunk) {
-            streamingContentRef.current += chunk
-            const content = streamingContentRef.current
-            setMessages(prev => prev.map(m => (m.id === assistantId ? { ...m, content } : m)))
-          },
-          onError(error) {
-            setMessages(prev => [
-              ...prev.filter(m => m.id !== assistantId),
-              { id: nextId(), role: 'error', content: error },
-            ])
-            conversationRef.current.pop()
-          },
-          onDone() {
-            const finalContent = streamingContentRef.current
-            if (finalContent) {
-              conversationRef.current.push({ role: 'assistant', content: finalContent })
-            }
-            setMessages(prev =>
-              prev.map(m => (m.id === assistantId ? { ...m, isStreaming: false } : m))
-            )
+        await streamChatCompletion(
+          conversationRef.current,
+          {
+            onChunk(chunk) {
+              streamingContentRef.current += chunk
+              const content = streamingContentRef.current
+              setMessages(prev => prev.map(m => (m.id === assistantId ? { ...m, content } : m)))
+            },
+            onError(error) {
+              setMessages(prev => [
+                ...prev.filter(m => m.id !== assistantId),
+                { id: nextId(), role: 'error', content: error },
+              ])
+              conversationRef.current.pop()
+            },
+            onDone() {
+              const finalContent = streamingContentRef.current
+              if (finalContent) {
+                conversationRef.current.push({ role: 'assistant', content: finalContent })
+              }
+              setMessages(prev =>
+                prev.map(m => (m.id === assistantId ? { ...m, isStreaming: false } : m))
+              )
 
-            // Auto-save conversation after each assistant response
-            saveConversation()
+              // Auto-save conversation after each assistant response
+              saveConversation()
+            },
           },
-        })
+          selectedModel ?? undefined
+        )
       } catch (err) {
         const errorMessage =
           err instanceof Error && err.message === 'Failed to fetch'
@@ -125,7 +132,7 @@ export function useChat() {
         setIsStreaming(false)
       }
     },
-    [isStreaming, saveConversation]
+    [isStreaming, saveConversation, selectedModel]
   )
 
   const loadConversation = useCallback((conversation: Conversation) => {
@@ -145,6 +152,11 @@ export function useChat() {
     conversationRef.current = []
   }, [])
 
+  const setModel = useCallback((modelId: string) => {
+    setSelectedModel(modelId)
+    localStorage.setItem('selectedModel', modelId)
+  }, [])
+
   return {
     messages,
     isStreaming,
@@ -152,6 +164,8 @@ export function useChat() {
     currentConversationId,
     loadConversation,
     startNewConversation,
+    selectedModel,
+    setModel,
   }
 }
 

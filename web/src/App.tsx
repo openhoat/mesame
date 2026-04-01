@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { ChatLayout } from '@/components/chat/ChatLayout'
 import { DashboardHome } from '@/components/dashboard/DashboardHome'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
+import { Providers } from '@/components/dashboard/Providers'
 import { RequestLogs } from '@/components/dashboard/RequestLogs'
 import { ServerConfig } from '@/components/dashboard/ServerConfig'
 import { Sources } from '@/components/dashboard/Sources'
@@ -41,6 +42,14 @@ export function App() {
         element={
           <DashboardLayout>
             <RequestLogs />
+          </DashboardLayout>
+        }
+      />
+      <Route
+        path="/dashboard/providers"
+        element={
+          <DashboardLayout>
+            <Providers />
           </DashboardLayout>
         }
       />

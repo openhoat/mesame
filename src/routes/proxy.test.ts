@@ -14,7 +14,7 @@ const mockInvoke = vi.fn()
 const mockStream = vi.fn()
 
 vi.mock('../services/llmProvider.js', () => ({
-  getLLMProvider: vi.fn(() => ({
+  getChatModelFromModelId: vi.fn(() => ({
     invoke: mockInvoke,
     stream: mockStream,
   })),
@@ -24,6 +24,57 @@ vi.mock('../services/llmProvider.js', () => ({
       role: msg.role,
     }))
   ),
+}))
+
+// Mock the modelDiscovery service
+vi.mock('../services/modelDiscovery.js', () => ({
+  listAllModels: vi.fn().mockResolvedValue([
+    {
+      id: 'ollama/test-model',
+      object: 'model',
+      created: 1704067200,
+      owned_by: 'ollama',
+    },
+  ]),
+}))
+
+// Mock the providerRegistry service
+vi.mock('../services/providerRegistry.js', () => ({
+  getAllProviders: vi.fn().mockResolvedValue([
+    {
+      id: 1,
+      name: 'ollama',
+      displayName: 'Ollama',
+      baseUrl: 'http://localhost:11434',
+      apiKey: null,
+      enabled: true,
+      priority: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  ]),
+  getDefaultProvider: vi.fn().mockResolvedValue({
+    id: 1,
+    name: 'ollama',
+    displayName: 'Ollama',
+    baseUrl: 'http://localhost:11434',
+    apiKey: null,
+    enabled: true,
+    priority: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }),
+  findProvider: vi.fn().mockResolvedValue({
+    id: 1,
+    name: 'ollama',
+    displayName: 'Ollama',
+    baseUrl: 'http://localhost:11434',
+    apiKey: null,
+    enabled: true,
+    priority: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }),
 }))
 
 describe('proxy route', () => {
@@ -40,7 +91,7 @@ describe('proxy route', () => {
   })
 
   const requestBody: ChatCompletionRequest = {
-    model: 'gpt-4o',
+    model: 'ollama/test-model',
     messages: [{ role: 'user', content: 'Hello' }],
   }
 
@@ -110,6 +161,22 @@ describe('proxy route', () => {
     expect(body.data[0]).toHaveProperty('id')
     expect(body.data[0]).toHaveProperty('object', 'model')
     expect(body.data[0]).toHaveProperty('created')
-    expect(body.data[0]).toHaveProperty('owned_by', 'mesame')
+    expect(body.data[0]).toHaveProperty('owned_by')
+  })
+
+  test('should return 400 when model is missing in chat completions request', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/v1/chat/completions',
+      payload: {
+        messages: [{ role: 'user', content: 'Hello' }],
+      },
+    })
+
+    expect(response.statusCode).toBe(400)
+    const body = response.json()
+    expect(body.error.message).toBe('Missing required field: model')
+    expect(body.error.type).toBe('invalid_request_error')
+    expect(body.error.param).toBe('model')
   })
 })

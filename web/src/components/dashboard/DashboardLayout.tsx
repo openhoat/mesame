@@ -1,5 +1,14 @@
 import { ActionIcon, AppShell, Container, Group, NavLink, Text } from '@mantine/core'
-import { Database, FileText, LayoutDashboard, Menu, MessageSquare, Settings, X } from 'lucide-react'
+import {
+  Database,
+  FileText,
+  LayoutDashboard,
+  Menu,
+  MessageSquare,
+  Server,
+  Settings,
+  X,
+} from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
@@ -14,6 +23,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { labelKey: 'nav.chat', icon: <MessageSquare size={16} />, path: '/' },
   { labelKey: 'nav.dashboard', icon: <LayoutDashboard size={16} />, path: '/dashboard' },
+  { labelKey: 'nav.providers', icon: <Server size={16} />, path: '/dashboard/providers' },
   { labelKey: 'nav.sources', icon: <Database size={16} />, path: '/dashboard/sources' },
   { labelKey: 'nav.profiles', icon: <FileText size={16} />, path: '/dashboard/profiles' },
   { labelKey: 'nav.config', icon: <Settings size={16} />, path: '/dashboard/config' },

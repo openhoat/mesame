@@ -86,7 +86,8 @@ export const getProfileById = async (id: string): Promise<ProfileWithSources | n
 // Create new profile
 export const createProfile = async (
   name: string,
-  sourceIds: string[]
+  sourceIds: string[],
+  modelId?: string
 ): Promise<ProfileWithSources> => {
   if (sourceIds.length === 0) {
     throw new Error('At least one source is required to create a profile')
@@ -106,7 +107,7 @@ export const createProfile = async (
   const analysis = analyzeStyle(combinedContent)
 
   // Generate narrative persona prompt via IA
-  const personaPrompt = await refineStyleAnalysis(analysis)
+  const personaPrompt = await refineStyleAnalysis(analysis, modelId)
   const metricsJson = JSON.stringify(analysis.metrics)
 
   // Create profile with sources
@@ -221,7 +222,10 @@ export const activateProfile = async (id: string): Promise<ProfileWithSources> =
 }
 
 // Regenerate profile from its sources
-export const regenerateProfile = async (id: string): Promise<ProfileWithSources> => {
+export const regenerateProfile = async (
+  id: string,
+  modelId?: string
+): Promise<ProfileWithSources> => {
   const profile = await prisma.styleProfile.findUnique({
     where: { id },
     include: {
@@ -246,7 +250,7 @@ export const regenerateProfile = async (id: string): Promise<ProfileWithSources>
   const analysis = analyzeStyle(combinedContent)
 
   // Generate narrative persona prompt via IA
-  const personaPrompt = await refineStyleAnalysis(analysis)
+  const personaPrompt = await refineStyleAnalysis(analysis, modelId)
   const metricsJson = JSON.stringify(analysis.metrics)
 
   // Update profile

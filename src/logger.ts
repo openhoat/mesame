@@ -21,25 +21,23 @@ class LogBufferStream extends Writable {
 }
 
 export function createLogger(logLevel: string = 'info') {
+  const prettyStream = pino.transport({
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+      translateTime: 'SYS:standard',
+      ignore: 'pid,hostname',
+      messageFormat: '{msg}',
+    },
+  })
+
+  // Stream 2: custom stream for log buffer
+  const bufferStream = new LogBufferStream()
+
+  // Use pino.multistream for multiple destinations
   const streams = [
-    // Stream 1: pino-pretty for console
-    {
-      level: logLevel,
-      stream: pino.transport({
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-          translateTime: 'SYS:standard',
-          ignore: 'pid,hostname',
-          messageFormat: '{msg}',
-        },
-      }),
-    },
-    // Stream 2: custom stream for log buffer
-    {
-      level: logLevel,
-      stream: new LogBufferStream(),
-    },
+    { level: logLevel, stream: prettyStream },
+    { level: logLevel, stream: bufferStream },
   ]
 
   return pino({ level: logLevel }, pino.multistream(streams))
@@ -72,7 +70,7 @@ export function logConfiguration(config: AppConfig): void {
   logger.info('')
 
   logger.info('💾 Database:')
-  const dbUrl = process.env.DATABASE_URL || 'file:./prisma/dev.db'
+  const dbUrl = process.env.DATABASE_URL || 'file:./data/mesame.db'
   logger.info(`   • URL: ${dbUrl}`)
   logger.info('')
 

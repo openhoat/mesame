@@ -21,7 +21,8 @@
     "profiles": "Profils de style",
     "config": "Configuration",
     "logs": "Journaux",
-    "sources": "Sources"
+    "sources": "Sources",
+    "providers": "Fournisseurs"
   },
   "chat": {
     "title": "Discussion",
@@ -30,6 +31,7 @@
     "sendAriaLabel": "Envoyer le message",
     "sendInstructions": "Appuyez sur Entrée pour envoyer, Shift+Entrée pour une nouvelle ligne",
     "clear": "Effacer la discussion",
+    "selectModel": "Sélectionner le modèle",
     "header": {
       "appName": "MeSame",
       "tagline": "Votre proxy de style personnel",
@@ -79,7 +81,7 @@
   },
   "config": {
     "title": "Configuration du serveur",
-    "subtitle": "Gérer les paramètres du serveur proxy",
+    "subtitle": "Gérer les paramètres du serveur LLM",
     "buttons": {
       "saveChanges": "Enregistrer les modifications"
     },
@@ -99,24 +101,11 @@
       "language": "Langue des réponses",
       "languageDescription": "Langue pour les réponses de l'assistant"
     },
-    "llmProvider": {
-      "title": "Paramètres du fournisseur LLM",
-      "subtitle": "Configurer le service LLM en amont",
-      "providerLabel": "Fournisseur",
-      "providerDescription": "Le fournisseur LLM à utiliser pour les complétions de discussion",
-      "providerOpenai": "OpenAI",
-      "providerAnthropic": "Anthropic",
-      "providerOllama": "Ollama",
-      "modelLabel": "Modèle par défaut",
-      "modelExampleOpenai": "ex: gpt-4o-mini, gpt-4o",
-      "modelExampleAnthropic": "ex: claude-3-5-sonnet-20241022, claude-3-5-haiku-20241022",
-      "modelExampleOllama": "ex: llama2, mistral, codellama",
-      "urlLabel": "URL de base de l'API",
-      "urlDescriptionOpenai": "L'URL de base pour l'API OpenAI",
-      "urlDescriptionAnthropic": "L'URL de base pour l'API Anthropic",
-      "urlDescriptionOllama": "L'URL de base pour l'API Ollama",
-      "apiKeyLabel": "Clé API",
-      "apiKeyDescription": "Votre clé API est stockée en toute sécurité"
+    "llmSource": {
+      "title": "Sources LLM",
+      "subtitle": "Configurez vos fournisseurs LLM",
+      "description": "Gérez vos fournisseurs LLM sur la",
+      "link": "page Fournisseurs"
     },
     "performance": {
       "title": "Performance",
@@ -167,6 +156,8 @@
     "promptLabel": "Prompt de persona",
     "promptPlaceholder": "Décrivez le style d'écriture, le ton et la structure...",
     "selectSources": "Sélectionner les sources",
+    "selectModel": "Modèle pour la génération",
+    "selectModelPlaceholder": "Sélectionner le modèle",
     "noSources": "Aucune source disponible. Créez d'abord des sources.",
     "sources": "sources",
     "emptyState": "Aucun profil de style pour le moment. Créez-en un pour commencer.",
@@ -205,6 +196,49 @@
       "success": "Succès",
       "clientError": "Erreur client",
       "serverError": "Erreur serveur"
+    }
+  },
+  "providers": {
+    "title": "Fournisseurs",
+    "subtitle": "Gérer les fournisseurs LLM pour votre proxy",
+    "addProvider": "Ajouter un fournisseur",
+    "editProvider": "Modifier le fournisseur",
+    "emptyState": "Aucun fournisseur configuré. Ajoutez-en un pour commencer.",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "apiKeyConfigured": "Configurée",
+    "apiKeyMissing": "Manquante",
+    "apiKeyNotRequired": "Non requise",
+    "testConnection": "Tester la connexion",
+    "testSuccess": "Connexion réussie",
+    "testFailed": "Échec de la connexion",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer le fournisseur '{{name}}' ?",
+    "table": {
+      "name": "Nom",
+      "type": "Type",
+      "baseUrl": "URL de base",
+      "models": "Modèles",
+      "apiKey": "Clé API",
+      "status": "État",
+      "actions": "Actions"
+    },
+    "form": {
+      "type": "Type de fournisseur",
+      "typeDescription": "Sélectionnez le type de fournisseur LLM",
+      "name": "Nom de l'instance",
+      "namePlaceholder": "ex: Mon OpenAI, Anthropic Travail",
+      "nameDescription": "Un nom unique pour identifier cette instance de fournisseur",
+      "provider": "Fournisseur",
+      "providerDescription": "Le nom du fournisseur ne peut pas être modifié après création",
+      "displayName": "Nom d'affichage",
+      "displayNamePlaceholder": "ex: OpenAI, Anthropic",
+      "baseUrl": "URL de base",
+      "apiKey": "Clé API",
+      "apiKeyPlaceholderEdit": "Laisser vide pour conserver la clé actuelle",
+      "apiKeyHint": "Laisser vide pour conserver la clé API existante",
+      "priority": "Priorité",
+      "priorityDescription": "Les nombres inférieurs ont une priorité plus élevée",
+      "enabled": "Activé"
     }
   },
   "status": {

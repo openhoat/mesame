@@ -14,6 +14,8 @@ export function ChatLayout() {
     currentConversationId,
     loadConversation,
     startNewConversation,
+    selectedModel,
+    setModel,
   } = useChat()
   const { isConnected } = useHealthCheck()
   const [showHistory, setShowHistory] = useState(false)
@@ -22,6 +24,8 @@ export function ChatLayout() {
     <div className="flex flex-col h-screen overflow-hidden">
       <ChatHeader
         isConnected={isConnected}
+        selectedModel={selectedModel}
+        onModelChange={setModel}
         onOpenHistory={() => setShowHistory(true)}
         onNewConversation={startNewConversation}
       />

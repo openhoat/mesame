@@ -59,9 +59,11 @@ export const buildLLMApp = async (): Promise<FastifyInstance> => {
   // Import and register routes
   const { proxyRoute } = await import('./routes/proxy.js')
   const { healthRoute } = await import('./routes/health.js')
+  const { conversationsRoute } = await import('./routes/conversations.js')
 
   await app.register(proxyRoute)
   await app.register(healthRoute)
+  await app.register(conversationsRoute)
 
   appLogger.info('✅ LLM API routes registered')
   appLogger.info('✅ LLM API server built successfully')
