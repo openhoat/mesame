@@ -61,7 +61,29 @@ async function main() {
   // biome-ignore lint/suspicious/noConsole: seed script needs console output
   console.log('Created style profile:', styleProfile.id)
 
-  // No default providers - user adds them manually
+  // Seed default mock provider for testing/development
+  const mockProvider = await prisma.provider.upsert({
+    where: { name: 'mock' },
+    update: {
+      type: 'mock',
+      displayName: 'Mock Provider',
+      baseUrl: 'http://localhost:3000',
+      enabled: true,
+      priority: 0,
+    },
+    create: {
+      type: 'mock',
+      name: 'mock',
+      displayName: 'Mock Provider',
+      baseUrl: 'http://localhost:3000',
+      enabled: true,
+      priority: 0,
+    },
+  })
+
+  // biome-ignore lint/suspicious/noConsole: seed script needs console output
+  console.log('Created mock provider:', mockProvider.name)
+
   // biome-ignore lint/suspicious/noConsole: seed script needs console output
   console.log('Seeding completed!')
 
