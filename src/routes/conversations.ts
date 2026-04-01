@@ -122,4 +122,24 @@ export const conversationsRoute: FastifyPluginAsync = async app => {
       throw error
     }
   })
+
+  // Export all conversations
+  app.get('/v1/conversations/export', async request => {
+    request.log.info('[Conversations API] Exporting all conversations...')
+    try {
+      const conversations = await getAllConversations()
+      const exportData = {
+        exportedAt: new Date().toISOString(),
+        version: '1.0',
+        count: conversations.length,
+        conversations,
+      }
+      request.log.info(`[Conversations API] ✅ Exported ${conversations.length} conversations`)
+      return exportData
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      request.log.error(`[Conversations API] ❌ Failed to export conversations: ${errorMessage}`)
+      throw error
+    }
+  })
 }

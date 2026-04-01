@@ -13,7 +13,7 @@ import {
   Title,
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { Check, Edit, FileText, Loader2, Plus, RefreshCw, Trash2, X } from 'lucide-react'
+import { Check, Download, Edit, FileText, Loader2, Plus, RefreshCw, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ModelSelector } from '@/components/ModelSelector'
@@ -172,6 +172,26 @@ export function StyleProfiles() {
     )
   }
 
+  const handleExportProfiles = async () => {
+    try {
+      const response = await fetch('/api/style-profile/export')
+      if (response.ok) {
+        const data = await response.json()
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `style-profiles-export-${new Date().toISOString().split('T')[0]}.json`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+      }
+    } catch (_error) {
+      // Failed to export profiles
+    }
+  }
+
   return (
     <Stack gap="lg">
       <Group justify="space-between">
@@ -179,9 +199,18 @@ export function StyleProfiles() {
           <Title order={1}>{t('profiles.title')}</Title>
           <Text c="dimmed">{t('profiles.subtitle')}</Text>
         </div>
-        <Button leftSection={<Plus size={16} />} onClick={handleCreateProfile}>
-          {t('profiles.buttons.createProfile') || 'Create Profile'}
-        </Button>
+        <Group gap="sm">
+          <Button
+            variant="light"
+            leftSection={<Download size={16} />}
+            onClick={handleExportProfiles}
+          >
+            {t('profiles.buttons.export') || 'Export'}
+          </Button>
+          <Button leftSection={<Plus size={16} />} onClick={handleCreateProfile}>
+            {t('profiles.buttons.createProfile') || 'Create Profile'}
+          </Button>
+        </Group>
       </Group>
 
       {/* Profiles List */}

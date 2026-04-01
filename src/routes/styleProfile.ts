@@ -67,4 +67,16 @@ export const styleProfileRoute: FastifyPluginAsync = async app => {
     const { modelId } = request.body || {}
     return await regenerateProfile(id, modelId)
   })
+
+  // GET /api/style-profile/export - Export all profiles
+  app.get('/api/style-profile/export', async () => {
+    const profiles = await getAllProfiles()
+    const exportData = {
+      exportedAt: new Date().toISOString(),
+      version: '1.0',
+      count: profiles.length,
+      profiles,
+    }
+    return exportData
+  })
 }

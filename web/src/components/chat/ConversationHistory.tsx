@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   type Conversation,
   deleteConversation,
+  downloadConversationsAsJson,
+  exportConversations,
   fetchConversations,
 } from '@/services/conversation-api'
 
@@ -49,6 +51,16 @@ export function ConversationHistory({
     }
   }
 
+  async function handleExport() {
+    try {
+      setError(null)
+      const data = await exportConversations()
+      downloadConversationsAsJson(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to export conversations')
+    }
+  }
+
   function formatDate(dateString: string): string {
     const date = new Date(dateString)
     const now = new Date()
@@ -75,30 +87,57 @@ export function ConversationHistory({
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             Conversation History
           </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            aria-label="Close conversation history"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              role="img"
-              aria-label="Close icon"
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleExport}
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              aria-label="Export conversations"
+              title="Export all conversations as JSON"
             >
-              <title>Close</title>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Download icon"
+              >
+                <title>Export</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              aria-label="Close conversation history"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Close icon"
+              >
+                <title>Close</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Content */}
