@@ -101,6 +101,31 @@ export function Providers() {
     priority: 0,
   })
 
+  const generateDefaultName = (type: ProviderType, existingProviders: Provider[]): string => {
+    const displayName = PROVIDER_TYPES[type].displayName
+
+    // Check if the base name (without index) is available
+    const baseNameExists = existingProviders.some(p => p.name === displayName)
+    if (!baseNameExists) {
+      return displayName
+    }
+
+    // Find next available index
+    const existingNames = existingProviders
+      .filter(p => p.type === type)
+      .map(p => p.name)
+      .filter(name => new RegExp(`^${displayName}\\d+$`).test(name))
+      .map(name => Number.parseInt(name.replace(displayName, ''), 10))
+      .filter(num => !Number.isNaN(num))
+
+    let index = 1
+    while (existingNames.includes(index)) {
+      index++
+    }
+
+    return `${displayName}${index}`
+  }
+
   const fetchProviders = useCallback(async () => {
     setLoading(true)
     try {
@@ -160,9 +185,10 @@ export function Providers() {
       })
     } else {
       setEditingProvider(null)
+      const defaultType = 'openai'
       setFormData({
-        type: 'openai',
-        name: '',
+        type: defaultType,
+        name: generateDefaultName(defaultType, providers),
         displayName: '',
         baseUrl: PROVIDER_TYPES.openai.defaultBaseUrl,
         apiKey: '',
@@ -194,6 +220,7 @@ export function Providers() {
     setFormData(prev => ({
       ...prev,
       type: providerType,
+      name: editingProvider ? prev.name : generateDefaultName(providerType, providers),
       displayName: typeInfo.displayName,
       baseUrl: typeInfo.defaultBaseUrl,
     }))
