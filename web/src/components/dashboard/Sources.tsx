@@ -17,6 +17,7 @@ import {
 import { CheckCircle2, FileText, Plus, Sparkles, Trash2, Upload } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { FileDropZone } from '@/components/FileDropZone'
 
 interface Source {
   id: string
@@ -112,6 +113,35 @@ export function Sources() {
         await fetchSources()
         resetRef.current?.()
       }
+    } catch (_error) {
+      // Silently handle upload errors
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleFilesDropped = async (files: File[]) => {
+    if (files.length === 0) return
+
+    setLoading(true)
+    try {
+      // Upload files sequentially
+      for (const file of files) {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 30000)
+
+        await fetch('/api/sources/import', {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal,
+        })
+        clearTimeout(timeoutId)
+      }
+
+      await fetchSources()
     } catch (_error) {
       // Silently handle upload errors
     } finally {
@@ -229,97 +259,103 @@ export function Sources() {
         </Group>
       </Group>
 
-      {/* Sources List */}
-      {fetchError && (
-        <Paper shadow="sm" p="xl" withBorder bg="red.1">
-          <Stack align="center" gap="md">
-            <Text size="sm" c="red">
-              ❌ Error: {fetchError}
-            </Text>
-            <Button size="sm" onClick={fetchSources}>
-              Retry
-            </Button>
-          </Stack>
-        </Paper>
-      )}
-      {loading && sources.length === 0 ? (
-        <Paper shadow="sm" p="xl" withBorder>
-          <Stack align="center" gap="md">
-            <Loader size="md" />
-            <Text size="sm" c="dimmed">
-              {t('sources.loading')}
-            </Text>
-            <Text size="xs" c="dimmed">
-              Check console for debug logs...
-            </Text>
-          </Stack>
-        </Paper>
-      ) : sources.length === 0 ? (
-        <Paper shadow="sm" p="xl" withBorder>
-          <Stack align="center" gap="md">
-            <FileText size={48} opacity={0.5} />
-            <Text size="sm" c="dimmed">
-              {t('sources.emptyState')}
-            </Text>
-          </Stack>
-        </Paper>
-      ) : (
-        <Grid>
-          {sources.map(source => (
-            <Grid.Col key={source.id} span={{ base: 12, md: 6 }}>
-              <Paper shadow="sm" p="md" withBorder>
-                <Stack gap="md">
-                  <Group justify="space-between" align="flex-start">
-                    <div style={{ flex: 1 }}>
-                      <Title order={4} lineClamp={1}>
-                        {source.title}
-                      </Title>
-                      <Badge size="xs" color="gray" variant="light">
-                        {new Date(source.createdAt).toLocaleDateString()}
-                      </Badge>
-                    </div>
-                    <ActionIcon
-                      size="sm"
-                      color="red"
-                      variant="subtle"
-                      onClick={() => handleDeleteSource(source.id)}
-                      disabled={loading}
-                    >
-                      <Trash2 size={14} />
-                    </ActionIcon>
-                  </Group>
+      {/* Sources List with Drag & Drop */}
+      <FileDropZone
+        onDrop={handleFilesDropped}
+        accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"
+        disabled={loading}
+      >
+        {fetchError && (
+          <Paper shadow="sm" p="xl" withBorder bg="red.1">
+            <Stack align="center" gap="md">
+              <Text size="sm" c="red">
+                ❌ Error: {fetchError}
+              </Text>
+              <Button size="sm" onClick={fetchSources}>
+                Retry
+              </Button>
+            </Stack>
+          </Paper>
+        )}
+        {loading && sources.length === 0 ? (
+          <Paper shadow="sm" p="xl" withBorder>
+            <Stack align="center" gap="md">
+              <Loader size="md" />
+              <Text size="sm" c="dimmed">
+                {t('sources.loading')}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Check console for debug logs...
+              </Text>
+            </Stack>
+          </Paper>
+        ) : sources.length === 0 ? (
+          <Paper shadow="sm" p="xl" withBorder>
+            <Stack align="center" gap="md">
+              <FileText size={48} opacity={0.5} />
+              <Text size="sm" c="dimmed">
+                {t('sources.emptyState')}
+              </Text>
+            </Stack>
+          </Paper>
+        ) : (
+          <Grid>
+            {sources.map(source => (
+              <Grid.Col key={source.id} span={{ base: 12, md: 6 }}>
+                <Paper shadow="sm" p="md" withBorder>
+                  <Stack gap="md">
+                    <Group justify="space-between" align="flex-start">
+                      <div style={{ flex: 1 }}>
+                        <Title order={4} lineClamp={1}>
+                          {source.title}
+                        </Title>
+                        <Badge size="xs" color="gray" variant="light">
+                          {new Date(source.createdAt).toLocaleDateString()}
+                        </Badge>
+                      </div>
+                      <ActionIcon
+                        size="sm"
+                        color="red"
+                        variant="subtle"
+                        onClick={() => handleDeleteSource(source.id)}
+                        disabled={loading}
+                      >
+                        <Trash2 size={14} />
+                      </ActionIcon>
+                    </Group>
 
-                  <Text
-                    size="sm"
-                    c="dimmed"
-                    lineClamp={3}
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => openViewModal(source)}
-                  >
-                    {source.content}
-                  </Text>
-
-                  <Group gap="xs">
-                    <Button
+                    <Text
                       size="sm"
-                      variant="light"
-                      leftSection={<Sparkles size={14} />}
-                      onClick={() => handleGenerateProfile(source.id)}
-                      loading={generatingProfile === source.id}
-                      disabled={loading || generatingProfile !== null}
+                      c="dimmed"
+                      lineClamp={3}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => openViewModal(source)}
                     >
-                      {t('sources.buttons.generateProfile')}
-                    </Button>
-                    <Button size="sm" variant="default" onClick={() => openViewModal(source)}>
-                      {t('sources.buttons.view')}
-                    </Button>
-                  </Group>
-                </Stack>
-              </Paper>
-            </Grid.Col>
-          ))}
-        </Grid>
-      )}
+                      {source.content}
+                    </Text>
+
+                    <Group gap="xs">
+                      <Button
+                        size="sm"
+                        variant="light"
+                        leftSection={<Sparkles size={14} />}
+                        onClick={() => handleGenerateProfile(source.id)}
+                        loading={generatingProfile === source.id}
+                        disabled={loading || generatingProfile !== null}
+                      >
+                        {t('sources.buttons.generateProfile')}
+                      </Button>
+                      <Button size="sm" variant="default" onClick={() => openViewModal(source)}>
+                        {t('sources.buttons.view')}
+                      </Button>
+                    </Group>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+            ))}
+          </Grid>
+        )}
+      </FileDropZone>
 
       {/* Create/View Modal */}
       <Modal
