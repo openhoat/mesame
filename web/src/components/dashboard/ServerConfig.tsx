@@ -100,7 +100,8 @@ export function ServerConfig() {
         if (window.electronAPI) {
           serverConfig = await window.electronAPI.getConfig()
         } else {
-          const response = await fetch('http://localhost:3000/api/config')
+          // Web server runs on port 3001 by default (MESAME_WEB_PORT)
+          const response = await fetch('http://localhost:3001/api/config')
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`)
           }
