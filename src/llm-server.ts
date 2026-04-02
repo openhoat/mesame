@@ -2,6 +2,7 @@ import cors from '@fastify/cors'
 import type { FastifyError, FastifyInstance } from 'fastify'
 import Fastify from 'fastify'
 import { config } from './config.js'
+import { parseCorsOrigin } from './corsConfig.js'
 
 async function loadEnvIfNeeded(): Promise<void> {
   // Load environment variables from .env.test if in test mode
@@ -52,7 +53,7 @@ export const buildLLMApp = async (): Promise<FastifyInstance> => {
 
   appLogger.info('Registering LLM API routes...')
   await app.register(cors, {
-    origin: true,
+    origin: parseCorsOrigin(),
     credentials: true,
   })
 

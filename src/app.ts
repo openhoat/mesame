@@ -2,6 +2,7 @@ import cors from '@fastify/cors'
 import type { FastifyError, FastifyInstance } from 'fastify'
 import Fastify from 'fastify'
 import { config } from './config.js'
+import { parseCorsOrigin } from './corsConfig.js'
 import { prisma } from './db.js'
 import { configRoute } from './routes/config.js'
 import { conversationsRoute } from './routes/conversations.js'
@@ -56,7 +57,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   appLogger.info('Registering routes...')
   await app.register(cors, {
-    origin: true, // Allow all origins
+    origin: parseCorsOrigin(),
     credentials: true, // Allow credentials (cookies, auth headers)
   })
 

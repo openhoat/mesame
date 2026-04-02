@@ -1,6 +1,7 @@
 import cors from '@fastify/cors'
 import type { FastifyError, FastifyInstance } from 'fastify'
 import Fastify from 'fastify'
+import { parseCorsOrigin } from './corsConfig.js'
 import { prisma } from './db.js'
 
 // LLM server URL for proxying requests
@@ -59,7 +60,7 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
 
   appLogger.info('Registering web routes...')
   await app.register(cors, {
-    origin: true,
+    origin: parseCorsOrigin(),
     credentials: true,
   })
 
