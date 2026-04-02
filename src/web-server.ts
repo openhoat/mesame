@@ -1,4 +1,5 @@
 import cors from '@fastify/cors'
+import websocket from '@fastify/websocket'
 import type { FastifyError, FastifyInstance } from 'fastify'
 import Fastify from 'fastify'
 import { parseCorsOrigin } from './corsConfig.js'
@@ -63,12 +64,14 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
     origin: parseCorsOrigin(),
     credentials: true,
   })
+  await app.register(websocket)
 
   // Import and register routes
   const { configRoute } = await import('./routes/config.js')
   const { conversationsRoute } = await import('./routes/conversations.js')
   const { healthRoute } = await import('./routes/health.js')
   const { logsRoute } = await import('./routes/logs.js')
+  const { logsWsRoute } = await import('./routes/logsWs.js')
   const { providerRoutes } = await import('./routes/providers.js')
   const { settingsRoutes } = await import('./routes/settings.js')
   const { sourcesRoute } = await import('./routes/sources.js')
@@ -79,6 +82,7 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
   await app.register(conversationsRoute)
   await app.register(healthRoute)
   await app.register(logsRoute)
+  await app.register(logsWsRoute)
   await app.register(providerRoutes)
   await app.register(settingsRoutes)
   await app.register(sourcesRoute)

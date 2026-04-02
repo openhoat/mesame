@@ -45,6 +45,11 @@ export const API = {
   styleProfileGenerate: () => apiUrl('/api/style-profile/generate'),
   styleProfileExport: () => apiUrl('/api/style-profile/export'),
   logs: (limit = 100) => apiUrl(`/api/logs?limit=${limit}`),
+  logsWs: () => {
+    const base = API_BASE_URL || window.location.origin
+    const wsBase = base.replace(/^http/, 'ws')
+    return `${wsBase}/api/logs/ws`
+  },
   stats: () => apiUrl('/api/stats'),
   health: () => apiUrl('/health'),
 
