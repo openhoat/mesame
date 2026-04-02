@@ -48,7 +48,14 @@
     },
     "streaming": "En cours de frappe...",
     "errorSending": "Erreur lors de l'envoi du message",
-    "retryMessage": "Réessayer"
+    "retryMessage": "Réessayer",
+    "fileUpload": {
+      "dropHere": "Déposez vos fichiers ici",
+      "uploading": "Téléchargement des fichiers...",
+      "uploadSuccess": "Fichiers téléchargés avec succès",
+      "uploadError": "Erreur lors du téléchargement des fichiers",
+      "unsupportedType": "Type de fichier non supporté. Supportés : .txt, .md, .pdf"
+    }
   },
   "dashboard": {
     "title": "Tableau de bord",

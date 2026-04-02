@@ -48,7 +48,14 @@
     },
     "streaming": "Typing...",
     "errorSending": "Error sending message",
-    "retryMessage": "Retry"
+    "retryMessage": "Retry",
+    "fileUpload": {
+      "dropHere": "Drop files here",
+      "uploading": "Uploading files...",
+      "uploadSuccess": "Files uploaded successfully",
+      "uploadError": "Error uploading files",
+      "unsupportedType": "Unsupported file type. Supported: .txt, .md, .pdf"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
