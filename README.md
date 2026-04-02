@@ -45,24 +45,30 @@ MeSame captures **your** writing style — tone, syntax, vocabulary patterns —
 
 ### Two-Server Design
 
-```
-┌─────────────────────┐     ┌─────────────────────┐
-│   Frontend (Web)    │     │   Backend (API)     │
-│   React + Vite      │     │   Fastify + Node.js  │
-│                     │     │                     │
-│   Port: any (CDN)   │────►│   Port: 3001        │
-│   VITE_API_URL      │     │                     │
-└─────────────────────┘     └──────────┬──────────┘
-                                       │
-                                       │ Proxy /v1/*
-                                       ▼
-                            ┌─────────────────────┐
-                            │   LLM Proxy Server  │
-                            │   Port: 3000       │
-                            │                     │
-                            │   Style Injection  │
-                            │   Multi-Provider   │
-                            └─────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Frontend["Frontend (Web)"]
+        direction TB
+        FW["React + Vite"]
+        FP["Port: any (CDN)"]
+        FE["VITE_API_URL"]
+    end
+
+    subgraph WebServer["Backend API"]
+        direction TB
+        WS["Fastify + Node.js"]
+        WP["Port: 3001"]
+    end
+
+    subgraph LLMProxy["LLM Proxy Server"]
+        direction TB
+        LP["Style Injection"]
+        LM["Multi-Provider"]
+        LPort["Port: 3000"]
+    end
+
+    Frontend -->|"HTTP/REST"| WebServer
+    WebServer -->|"Proxy /v1/*"| LLMProxy
 ```
 
 ### Key Benefits

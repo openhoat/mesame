@@ -4,88 +4,115 @@ MeSame is built with a modern TypeScript stack, designed for local-first operati
 
 ## System Overview
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           Frontend (Web App)                               │
-│                     React + Vite + Mantine + Tailwind                       │
-│                                                                             │
-│   Development: Vite dev server with proxy (localhost:5173)                 │
-│   Production: Static files deployable to any CDN (Vercel, Netlify, etc.)   │
-│                                                                             │
-│   Environment: VITE_API_URL=https://api.mesame.com (optional for CDN)      │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    │ HTTP/REST API
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        Backend API (Web Server)                             │
-│                           Port 3001 (default)                               │
-│                                                                             │
-│   Routes:                                                                   │
-│   ├── /api/config          → Server configuration                           │
-│   ├── /api/settings        → User preferences (language)                    │
-│   ├── /api/providers       → LLM provider management                      │
-│   ├── /api/sources         → Document sources CRUD                         │
-│   ├── /api/style-profile   → Style profile management                     │
-│   ├── /api/conversations    → Chat history CRUD                            │
-│   └── /health              → Health check endpoint                         │
-│                                                                             │
-│   CORS: Configurable via CORS_ORIGIN env variable                          │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    │ Proxy /v1/* requests
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        LLM Proxy Server                                     │
-│                           Port 3000 (default)                               │
-│                                                                             │
-│   Routes:                                                                   │
-│   ├── POST /v1/chat/completions → OpenAI-compatible chat endpoint          │
-│   └── GET  /v1/models             → List available models                  │
-│                                                                             │
-│   Flow:                                                                     │
-│   1. Receive request                                                        │
-│   2. Fetch style profile from database                                      │
-│   3. Inject system prompt with user's style                                 │
-│   4. Forward to configured LLM provider                                     │
-│   5. Stream response back (SSE)                                            │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    │ Provider API calls
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        LLM Providers                                         │
-│                                                                             │
-│   OpenAI • Anthropic • Google AI • Ollama (local)                          │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        SQLite Database                                       │
-│                                                                             │
-│   Tables: Sources, StyleProfile, Provider, Conversation, UserSettings      │
-└─────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Frontend["Frontend (Web App)"]
+        direction TB
+        FW["React + Vite + Mantine + Tailwind"]
+        FD["Development: Vite dev server (localhost:5173)"]
+        FP["Production: Static files (CDN)"]
+        FE["VITE_API_URL=https://api.mesame.com"]
+    end
+
+    subgraph WebServer["Backend API (Web Server)"]
+        direction TB
+        WR["Routes:"]
+        WR --> R1["/api/config"]
+        WR --> R2["/api/settings"]
+        WR --> R3["/api/providers"]
+        WR --> R4["/api/sources"]
+        WR --> R5["/api/style-profile"]
+        WR --> R6["/api/conversations"]
+        WR --> R7["/health"]
+        WC["CORS: CORS_ORIGIN env var"]
+    end
+
+    subgraph LLMProxy["LLM Proxy Server"]
+        direction TB
+        LR["Routes:"]
+        LR --> L1["POST /v1/chat/completions"]
+        LR --> L2["GET /v1/models"]
+        LF["Flow: Receive → Style → Inject → Forward → Stream"]
+    end
+
+    subgraph Providers["LLM Providers"]
+        P1[OpenAI]
+        P2[Anthropic]
+        P3[Google AI]
+        P4[Ollama - local]
+    end
+
+    subgraph Database["SQLite Database"]
+        DT["Tables:"]
+        DT --> T1[Sources]
+        DT --> T2[StyleProfile]
+        DT --> T3[Provider]
+        DT --> T4[Conversation]
+        DT --> T5[UserSettings]
+    end
+
+    Frontend -->|"HTTP/REST API"| WebServer
+    WebServer -->|"Proxy /v1/*"| LLMProxy
+    LLMProxy -->|"Provider API calls"| Providers
+    LLMProxy -->|"Fetch/Save"| Database
+    WebServer -->|"Read/Write"| Database
 ```
 
 ## Deployment Architecture
 
 ### Development Mode
 
-```
-┌──────────────────┐     ┌──────────────────┐
-│   Vite Dev       │     │   LLM Server     │
-│   (localhost:5173)│     │   (localhost:3000)│
-│                  │     │                  │
-│   Proxy /v1/* ───┼────►│   Proxy /api/* ──┼────► Web Server
-│   Proxy /api/* ───┼────►│                  │     (localhost:3001)
-└──────────────────┘     └──────────────────┘
+```mermaid
+flowchart LR
+    subgraph ViteDev["Vite Dev Server"]
+        VD["localhost:5173"]
+        VD -->|"Proxy /v1/*"| VP1["/v1/*"]
+        VD -->|"Proxy /api/*"| AP1["/api/*"]
+    end
+
+    subgraph LLMDev["LLM Server"]
+        LS["localhost:3000"]
+    end
+
+    subgraph WebDev["Web Server"]
+        WS["localhost:3001"]
+    end
+
+    VP1 --> LS
+    AP1 --> LS
+    LS -->|"Proxy /api/*"| WS
 ```
 
 ### Production (Docker Compose)
+
+```mermaid
+flowchart TB
+    subgraph Docker["Docker Compose"]
+        subgraph LLMContainer["LLM Service"]
+            LLM["mesame-llm:latest"]
+            LLMP["Port 3000"]
+        end
+
+        subgraph WebContainer["Web Service"]
+            WEB["mesame-web:latest"]
+            WEBP["Port 3001"]
+        end
+
+        subgraph Volume["Shared Volume"]
+            VOL["mesame-data:/app/data"]
+        end
+    end
+
+    LLM -->|"DATABASE_URL"| VOL
+    WEB -->|"DATABASE_URL"| VOL
+    WEB -->|"MESAME_LLM_URL"| LLM
+    LLM -->|"Health Check"| WEB
+
+    classDef container fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    class LLM,WEB container
+```
+
+**Configuration:**
 
 ```yaml
 services:
@@ -111,14 +138,20 @@ services:
 
 ### Production (CDN + API)
 
-```
-┌──────────────────┐     ┌──────────────────┐
-│   Frontend CDN   │     │   API Server    │
-│   (Vercel, etc.)  │     │   (api.mesame.com)
-│                  │     │                  │
-│   VITE_API_URL ──┼────►│   CORS_ORIGIN ──┼────► Frontend URL
-│   = api.mesame.com│     │                  │
-└──────────────────┘     └──────────────────┘
+```mermaid
+flowchart LR
+    subgraph CDN["Frontend CDN"]
+        FE["Vercel / Netlify / Cloudflare"]
+        FE -->|"VITE_API_URL"| API_URL["api.mesame.com"]
+    end
+
+    subgraph APIServer["API Server"]
+        API["api.mesame.com"]
+        CORS["CORS_ORIGIN"]
+    end
+
+    CDN -->|"HTTP/REST"| APIServer
+    APIServer -->|"Frontend URL"| CORS
 ```
 
 ## Directory Structure
@@ -278,35 +311,40 @@ model UserSettings {
 
 ### Style Analysis Flow
 
-```
-User uploads document (PDF, MD, TXT)
-         ↓
-fileParser.ts → Extract text
-         ↓
-styleAnalyzer.ts → Analyze patterns (TF-IDF, N-Grams)
-         ↓
-personaPromptGenerator.ts → Generate System Prompt
-         ↓
-Save to StyleProfile table (SQLite)
+```mermaid
+flowchart TB
+    A["User uploads document (PDF, MD, TXT)"]
+    B["fileParser.ts"]
+    C["styleAnalyzer.ts"]
+    D["personaPromptGenerator.ts"]
+    E["SQLite Database"]
+
+    A --> B
+    B -->|"Extract text"| C
+    C -->|"Analyze patterns (TF-IDF, N-Grams)"| D
+    D -->|"Generate System Prompt"| E
+    E -->|"Save to StyleProfile table"| E
 ```
 
 ### Chat Request Flow
 
-```
-User sends chat message (POST /v1/chat/completions)
-         ↓
-Web Server receives request
-         ↓
-Proxy to LLM Server (http://llm:3000/v1/chat/completions)
-         ↓
-LLM Server:
-  1. Fetch active style profile from database
-  2. Fetch user's language preference
-  3. Inject style + language into system prompt
-  4. Forward to configured LLM provider
-  5. Stream response (SSE)
-         ↓
-Return streaming response to user
+```mermaid
+sequenceDiagram
+    participant User
+    participant WebServer as Web Server
+    participant LLMProxy as LLM Server
+    participant DB as SQLite Database
+    participant LLM as LLM Provider
+
+    User->>WebServer: POST /v1/chat/completions
+    WebServer->>LLMProxy: Proxy request
+    LLMProxy->>DB: Fetch active style profile
+    LLMProxy->>DB: Fetch user's language preference
+    LLMProxy->>LLMProxy: Inject style + language into system prompt
+    LLMProxy->>LLM: Forward to configured provider
+    LLM-->>LLMProxy: Stream response (SSE)
+    LLMProxy-->>WebServer: Stream response
+    WebServer-->>User: Stream response
 ```
 
 ## Tech Choices
