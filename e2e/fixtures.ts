@@ -11,7 +11,7 @@ import type { APIRequestContext, BrowserContext, Page } from '@playwright/test'
 import { test as base } from '@playwright/test'
 
 // Server port from environment or default
-const PORT = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3000
+const PORT = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3001
 
 // Extend base test with web fixtures
 export const test = base.extend<{

@@ -35,8 +35,8 @@ export default defineConfig({
   },
   // Configure web server for E2E tests
   webServer: {
-    command: 'NODE_ENV=test npm run start:web',
-    port: 3000,
+    command: 'NODE_ENV=test npm run start',
+    port: 3001,
     timeout: 30000,
     reuseExistingServer: false,
     stdout: 'ignore',
