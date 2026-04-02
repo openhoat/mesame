@@ -1,5 +1,9 @@
-import { afterEach, describe, expect, test } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 import { buildApp } from './app.js'
+
+vi.mock('./services/styleProfileService.js', () => ({
+  ensureDefaultProfile: vi.fn().mockResolvedValue(undefined),
+}))
 
 describe('app', () => {
   let app: Awaited<ReturnType<typeof buildApp>>

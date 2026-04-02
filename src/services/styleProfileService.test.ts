@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { prisma } from '../db.js'
 import * as styleAnalyzer from './styleAnalyzer.js'
-import { createProfile, getActiveStyleProfile, regenerateProfile } from './styleProfileService.js'
+import {
+  createProfile,
+  ensureDefaultProfile,
+  getActiveStyleProfile,
+  regenerateProfile,
+} from './styleProfileService.js'
 import * as styleRefiner from './styleRefiner.js'
 
 // Mock the dependencies
@@ -15,6 +20,7 @@ vi.mock('../db.js', () => ({
       update: vi.fn(),
       updateMany: vi.fn(),
       findMany: vi.fn(),
+      count: vi.fn(),
     },
     profileSource: {
       deleteMany: vi.fn(),
@@ -151,6 +157,40 @@ describe('styleProfileService', () => {
       const result = await regenerateProfile('p1')
       expect(result.personaPrompt).toBe('New Prompt')
       expect(styleRefiner.refineStyleAnalysis).toHaveBeenCalled()
+    })
+  })
+
+  describe('ensureDefaultProfile', () => {
+    test('should create default profile when no profiles exist', async () => {
+      vi.mocked(prisma.styleProfile.count).mockResolvedValueOnce(0)
+      vi.mocked(prisma.styleProfile.create).mockResolvedValueOnce({
+        id: '00000000-0000-0000-0000-000000000001',
+        name: 'Default Style',
+        personaPrompt: 'test',
+        metrics: '{}',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any)
+
+      await ensureDefaultProfile()
+
+      expect(prisma.styleProfile.count).toHaveBeenCalled()
+      expect(prisma.styleProfile.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          name: 'Default Style',
+          isActive: true,
+        }),
+      })
+    })
+
+    test('should skip creation when profiles already exist', async () => {
+      vi.mocked(prisma.styleProfile.count).mockResolvedValueOnce(3)
+
+      await ensureDefaultProfile()
+
+      expect(prisma.styleProfile.count).toHaveBeenCalled()
+      expect(prisma.styleProfile.create).not.toHaveBeenCalled()
     })
   })
 })

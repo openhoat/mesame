@@ -21,6 +21,7 @@ You acknowledge the limits of your knowledge when relevant.`
 // Mock the styleProfileService
 vi.mock('../../services/styleProfileService.js', () => ({
   getActiveStyleProfile: vi.fn(),
+  ensureDefaultProfile: vi.fn().mockResolvedValue(undefined),
 }))
 
 // Import after mocking

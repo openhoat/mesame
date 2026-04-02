@@ -3,6 +3,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { buildApp } from '../app.js'
 import * as logBufferModule from '../services/logBuffer.js'
 
+// Mock styleProfileService (ensureDefaultProfile is called at app startup)
+vi.mock('../services/styleProfileService.js', () => ({
+  ensureDefaultProfile: vi.fn().mockResolvedValue(undefined),
+}))
+
 // Mock the logBuffer module
 vi.mock('../services/logBuffer.js', () => ({
   logBuffer: {

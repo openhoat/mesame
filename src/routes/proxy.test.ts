@@ -7,6 +7,7 @@ import type { ChatCompletionRequest } from '../types/openai.js'
 // Mock the styleProfileService to return no style profile by default
 vi.mock('../services/styleProfileService.js', () => ({
   getActiveStyleProfile: vi.fn().mockResolvedValue(null),
+  ensureDefaultProfile: vi.fn().mockResolvedValue(undefined),
 }))
 
 // Mock the LLM provider

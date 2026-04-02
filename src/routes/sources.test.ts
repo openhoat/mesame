@@ -13,6 +13,7 @@ vi.mock('../services/sourceService.js', () => ({
 // Mock the style profile service (required by proxy route)
 vi.mock('../services/styleProfileService.js', () => ({
   getActiveStyleProfile: vi.fn().mockResolvedValue(null),
+  ensureDefaultProfile: vi.fn().mockResolvedValue(undefined),
 }))
 
 // Mock file parser
