@@ -4,6 +4,7 @@ import type { FastifyError, FastifyInstance } from 'fastify'
 import Fastify from 'fastify'
 import { parseCorsOrigin } from './corsConfig.js'
 import { prisma } from './db.js'
+import { logBuffer } from './services/logBuffer.js'
 
 // LLM server URL for proxying requests
 const LLM_URL = process.env.MESAME_LLM_URL || 'http://localhost:3001'
@@ -65,6 +66,20 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
     credentials: true,
   })
   await app.register(websocket)
+
+  // Capture all HTTP requests into logBuffer for dashboard display
+  app.addHook('onResponse', (request, reply, done) => {
+    // Skip internal/static routes to reduce noise
+    if (!request.url.startsWith('/assets') && !request.url.startsWith('/favicon')) {
+      logBuffer.add({
+        timestamp: new Date().toISOString(),
+        level: reply.statusCode >= 400 ? 'error' : 'info',
+        message: `${request.method} ${request.url} ${reply.statusCode}`,
+        responseTime: reply.elapsedTime,
+      })
+    }
+    done()
+  })
 
   // Import and register routes
   const { configRoute } = await import('./routes/config.js')

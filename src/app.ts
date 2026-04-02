@@ -5,6 +5,7 @@ import Fastify from 'fastify'
 import { config } from './config.js'
 import { parseCorsOrigin } from './corsConfig.js'
 import { prisma } from './db.js'
+import { logBuffer } from './services/logBuffer.js'
 import { configRoute } from './routes/config.js'
 import { conversationsRoute } from './routes/conversations.js'
 import { dashboardRoute } from './routes/dashboard.js'
@@ -65,11 +66,15 @@ export async function buildApp(): Promise<FastifyInstance> {
   })
   await app.register(websocket)
 
-  // Add response time tracking
+  // Capture all HTTP requests into logBuffer for dashboard display
   app.addHook('onResponse', (request, reply, done) => {
-    const responseTime = reply.elapsedTime
-    if (request.url.startsWith('/v1/proxy') || request.url.startsWith('/v1/chat')) {
-      request.log.info({ responseTime }, `Request to ${request.url} completed`)
+    if (!request.url.startsWith('/assets') && !request.url.startsWith('/favicon')) {
+      logBuffer.add({
+        timestamp: new Date().toISOString(),
+        level: reply.statusCode >= 400 ? 'error' : 'info',
+        message: `${request.method} ${request.url} ${reply.statusCode}`,
+        responseTime: reply.elapsedTime,
+      })
     }
     done()
   })

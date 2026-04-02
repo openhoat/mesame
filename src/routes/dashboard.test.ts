@@ -13,6 +13,8 @@ vi.mock('../services/logBuffer.js', () => ({
   logBuffer: {
     getRecent: vi.fn(),
     getAll: vi.fn(),
+    add: vi.fn(),
+    subscribe: vi.fn(() => () => {}),
   },
 }))
 
