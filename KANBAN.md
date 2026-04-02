@@ -16,11 +16,8 @@
 - [ ] **[DEVOPS]** Setup Husky pre-commit hooks for code quality (P2)
 - [ ] **[DEVOPS]** Add backup/restore documentation for SQLite database (P2)
 - [ ] **[DOCS]** Document keyboard navigation for accessibility (P2)
-- [ ] **[DEVOPS]** Implement real-time logging system with WebSocket (P2)
-
 <!-- Low Priority -->
 - [ ] **[FEAT]** Create OpenAPI/Swagger specification for proxy API (P3)
-- [ ] **[DEVOPS]** Create Dockerfile and Docker Compose setup (P3)
 - [ ] **[FEAT]** Add ARIA labels to chat and dashboard components (P3)
 
 ## In Progress

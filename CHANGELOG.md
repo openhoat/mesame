@@ -1,7 +1,32 @@
 # Changelog
 
+## 02/04/2026
+
+- **[15:51:04] ✨ [FEAT]** add real-time logging system with WebSocket
+- **[15:01:22] 📝 [DOCS]** simplify README by removing redundant content
+- **[14:54:24] 🔧 [CHORE]** re-tag UX items as [FEAT] in kanban
+- **[14:52:15] 📝 [DOCS]** add roadmap section with planned features
+- **[14:50:52] 🔧 [CHORE]** add LLM optimization research to backlog
+- **[14:46:27] 🐛 [FIX]** use combined server for E2E tests with port 3001
+- **[14:43:56] 📝 [DOCS]** improve Mermaid diagrams and remove WIP warning
+- **[14:35:11] 🐛 [FIX]** update E2E test configuration for new port layout
+- **[14:29:39] ✨ [FEAT]** swap ports and add Mermaid diagrams
+- **[14:19:02] 📝 [DOCS]** convert architecture diagrams to Mermaid
+- **[14:13:48] 📝 [DOCS]** update architecture documentation for CDN-ready frontend
+- **[14:07:15] 🐛 [FIX]** reset conversation when deleted from history view
+- **[13:55:34] ✨ [FEAT]** add configurable CORS for CDN deployment
+- **[13:51:51] 🔧 [CHORE]** add mobile responsive design task to backlog
+- **[13:51:16] ✨ [FEAT]** make frontend CDN-ready with configurable API URL
+- **[13:41:38] 🐛 [FIX]** set default theme to follow system preference
+- **[13:40:22] ✨ [FEAT]** persist user language preference in database
+- **[09:45:33] ✨ [FEAT]** add Docker Compose configuration for LLM and Web services
+
 ## 01/04/2026
 
+- **[18:33:26] ✨ [FEAT]** add interactive questionnaire for digital twin profile creation
+- **[18:27:07] ✨ [FEAT]** add drag-and-drop file upload support
+- **[18:12:57] ✨ [FEAT]** auto-generate provider instance names in add provider form
+- **[18:07:10] 🔧 [CHORE]** update kanban and changelog after export-functionality merge
 - **[17:54:36] ✨ [FEAT]** add export functionality for chat history and style profiles
 - **[18:02:08] 🔧 [CHORE]** cleanup prisma organization and fix vitest deprecation
 - **[17:42:45] 🐛 [FIX]** add mock case to model discovery
