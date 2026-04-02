@@ -91,8 +91,25 @@ export function ServerConfig() {
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      // TODO: Implement config save endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Mock delay
+      // Save language preference to server
+      if (window.electronAPI) {
+        // Electron mode - not implemented yet
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      } else {
+        // Web mode - call API
+        const response = await fetch('http://localhost:3001/api/settings', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            language: config.language,
+          }),
+        })
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        }
+      }
       setHasChanges(false)
     } catch (_error) {
       // Failed to save config

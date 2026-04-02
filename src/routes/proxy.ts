@@ -1,6 +1,6 @@
 import type { AIMessageChunk } from '@langchain/core/messages'
 import type { FastifyPluginAsync } from 'fastify'
-import { config } from '../config.js'
+import { getPreferredLanguage } from '../services/languageService.js'
 import { convertToLangChainMessages, getChatModelFromModelId } from '../services/llmProvider.js'
 import { listAllModels } from '../services/modelDiscovery.js'
 import { injectStylePrompt } from '../services/styleInjector.js'
@@ -55,7 +55,8 @@ export const proxyRoute: FastifyPluginAsync = async app => {
 
     // Inject style persona into messages with user's preferred language
     const styleProfile = await getActiveStyleProfile()
-    const modifiedMessages = injectStylePrompt(body.messages, styleProfile, config.language)
+    const preferredLanguage = await getPreferredLanguage()
+    const modifiedMessages = injectStylePrompt(body.messages, styleProfile, preferredLanguage)
 
     // Convert OpenAI format to LangChain messages
     const langchainMessages = convertToLangChainMessages(modifiedMessages)
