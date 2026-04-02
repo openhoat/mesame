@@ -84,6 +84,7 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
   // Import and register routes
   const { configRoute } = await import('./routes/config.js')
   const { conversationsRoute } = await import('./routes/conversations.js')
+  const { dashboardRoute } = await import('./routes/dashboard.js')
   const { healthRoute } = await import('./routes/health.js')
   const { logsRoute } = await import('./routes/logs.js')
   const { logsWsRoute } = await import('./routes/logsWs.js')
@@ -95,6 +96,7 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
 
   await app.register(configRoute)
   await app.register(conversationsRoute)
+  await app.register(dashboardRoute)
   await app.register(healthRoute)
   await app.register(logsRoute)
   await app.register(logsWsRoute)
