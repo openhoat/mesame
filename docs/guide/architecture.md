@@ -6,7 +6,7 @@ MeSame is built with a modern TypeScript stack, designed for local-first operati
 
 ```mermaid
 flowchart TB
-    subgraph Frontend["Frontend (Web App)"]
+    subgraph Frontend["🌐 Frontend (Web App)"]
         direction TB
         FW["React + Vite + Mantine + Tailwind"]
         FD["Development: Vite dev server (localhost:5173)"]
@@ -14,7 +14,7 @@ flowchart TB
         FE["VITE_API_URL=https://api.mesame.com"]
     end
 
-    subgraph WebServer["Backend API (Web Server)"]
+    subgraph WebServer["🖥️ Backend API (Web Server)"]
         direction TB
         WR["Routes:"]
         WR --> R1["/api/config"]
@@ -25,24 +25,26 @@ flowchart TB
         WR --> R6["/api/conversations"]
         WR --> R7["/health"]
         WC["CORS: CORS_ORIGIN env var"]
+        WP["Port: 3000"]
     end
 
-    subgraph LLMProxy["LLM Proxy Server"]
+    subgraph LLMProxy["🤖 LLM Proxy Server"]
         direction TB
         LR["Routes:"]
         LR --> L1["POST /v1/chat/completions"]
         LR --> L2["GET /v1/models"]
         LF["Flow: Receive → Style → Inject → Forward → Stream"]
+        LPort["Port: 3001"]
     end
 
-    subgraph Providers["LLM Providers"]
+    subgraph Providers["☁️ LLM Providers"]
         P1[OpenAI]
         P2[Anthropic]
         P3[Google AI]
         P4[Ollama - local]
     end
 
-    subgraph Database["SQLite Database"]
+    subgraph Database["💾 SQLite Database"]
         DT["Tables:"]
         DT --> T1[Sources]
         DT --> T2[StyleProfile]
@@ -56,6 +58,12 @@ flowchart TB
     LLMProxy -->|"Provider API calls"| Providers
     LLMProxy -->|"Fetch/Save"| Database
     WebServer -->|"Read/Write"| Database
+
+    style Frontend fill:#dbeafe,stroke:#3b82f6,stroke-width:2px,color:#1e3a5f
+    style WebServer fill:#dcfce7,stroke:#22c55e,stroke-width:2px,color:#14532d
+    style LLMProxy fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#78350f
+    style Providers fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#831843
+    style Database fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#581c87
 ```
 
 ## Deployment Architecture
@@ -64,41 +72,45 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    subgraph ViteDev["Vite Dev Server"]
+    subgraph ViteDev["🖥️ Vite Dev Server"]
         VD["localhost:5173"]
         VD -->|"Proxy /v1/*"| VP1["/v1/*"]
         VD -->|"Proxy /api/*"| AP1["/api/*"]
     end
 
-    subgraph LLMDev["LLM Server"]
+    subgraph LLMDev["🤖 LLM Server"]
         LS["localhost:3001"]
     end
 
-    subgraph WebDev["Web Server"]
+    subgraph WebDev["🌐 Web Server"]
         WS["localhost:3000"]
     end
 
     VP1 --> LS
     AP1 --> LS
     LS -->|"Proxy /api/*"| WS
+
+    style ViteDev fill:#dbeafe,stroke:#3b82f6,stroke-width:2px,color:#1e3a5f
+    style LLMDev fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#78350f
+    style WebDev fill:#dcfce7,stroke:#22c55e,stroke-width:2px,color:#14532d
 ```
 
 ### Production (Docker Compose)
 
 ```mermaid
 flowchart TB
-    subgraph Docker["Docker Compose"]
-        subgraph LLMContainer["LLM Service"]
+    subgraph Docker["🐳 Docker Compose"]
+        subgraph LLMContainer["🤖 LLM Service"]
             LLM["mesame-llm:latest"]
             LLMP["Port 3001"]
         end
 
-        subgraph WebContainer["Web Service"]
+        subgraph WebContainer["🌐 Web Service"]
             WEB["mesame-web:latest"]
             WEBP["Port 3000"]
         end
 
-        subgraph Volume["Shared Volume"]
+        subgraph Volume["💾 Shared Volume"]
             VOL["mesame-data:/app/data"]
         end
     end
@@ -108,8 +120,9 @@ flowchart TB
     WEB -->|"MESAME_LLM_URL"| LLM
     LLM -->|"Health Check"| WEB
 
-    classDef container fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    class LLM,WEB container
+    style LLMContainer fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#78350f
+    style WebContainer fill:#dcfce7,stroke:#22c55e,stroke-width:2px,color:#14532d
+    style Volume fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#581c87
 ```
 
 **Configuration:**
@@ -140,18 +153,21 @@ services:
 
 ```mermaid
 flowchart LR
-    subgraph CDN["Frontend CDN"]
+    subgraph CDN["🌐 Frontend CDN"]
         FE["Vercel / Netlify / Cloudflare"]
         FE -->|"VITE_API_URL"| API_URL["api.mesame.com"]
     end
 
-    subgraph APIServer["API Server"]
+    subgraph APIServer["🖥️ API Server"]
         API["api.mesame.com"]
         CORS["CORS_ORIGIN"]
     end
 
     CDN -->|"HTTP/REST"| APIServer
     APIServer -->|"Frontend URL"| CORS
+
+    style CDN fill:#dbeafe,stroke:#3b82f6,stroke-width:2px,color:#1e3a5f
+    style APIServer fill:#dcfce7,stroke:#22c55e,stroke-width:2px,color:#14532d
 ```
 
 ## Directory Structure
@@ -313,28 +329,31 @@ model UserSettings {
 
 ```mermaid
 flowchart TB
-    A["User uploads document (PDF, MD, TXT)"]
+    A["📄 User uploads document (PDF, MD, TXT)"]
     B["fileParser.ts"]
     C["styleAnalyzer.ts"]
     D["personaPromptGenerator.ts"]
-    E["SQLite Database"]
+    E["💾 SQLite Database"]
 
     A --> B
     B -->|"Extract text"| C
     C -->|"Analyze patterns (TF-IDF, N-Grams)"| D
     D -->|"Generate System Prompt"| E
     E -->|"Save to StyleProfile table"| E
+
+    style A fill:#f0f4f8,stroke:#4a5568
+    style E fill:#f0f4f8,stroke:#4a5568
 ```
 
 ### Chat Request Flow
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant WebServer as Web Server
-    participant LLMProxy as LLM Server
-    participant DB as SQLite Database
-    participant LLM as LLM Provider
+    participant User as 👤 User
+    participant WebServer as 🖥️ Web Server
+    participant LLMProxy as 🤖 LLM Server
+    participant DB as 💾 SQLite Database
+    participant LLM as ☁️ LLM Provider
 
     User->>WebServer: POST /v1/chat/completions
     WebServer->>LLMProxy: Proxy request

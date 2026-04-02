@@ -5,10 +5,8 @@
 ![Node.js](https://img.shields.io/badge/Node.js-22-339933.svg?logo=node.js&logoColor=white)
 ![Tested with Vitest](https://img.shields.io/badge/tested%20with-Vitest-6E9F18.svg?logo=vitest&logoColor=white)
 [![GitHub Stars](https://img.shields.io/github/stars/openhoat/mesame?style=social)](https://github.com/openhoat/mesame/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/openhoat/mesame?style=social)](https://github.com/openhoat/mesame/network/members)
+[![GitHub forks](https://img.shields.io/badge/github/forks/openhoat/mesame?style=social)](https://github.com/openhoat/mesame/network/members)
 [![GitHub issues](https://img.shields.io/github/issues/openhoat/mesame)](https://github.com/openhoat/mesame/issues)
-
-> ⚠️ **Work In Progress** — This project is under active development. Features and documentation may be incomplete or subject to change.
 
 > **"The AI that writes like me, for me."**
 
@@ -47,20 +45,20 @@ MeSame captures **your** writing style — tone, syntax, vocabulary patterns —
 
 ```mermaid
 flowchart TB
-    subgraph Frontend["Frontend (Web)"]
+    subgraph Frontend["🌐 Frontend (Web)"]
         direction TB
         FW["React + Vite"]
         FP["Port: any (CDN)"]
         FE["VITE_API_URL"]
     end
 
-    subgraph WebServer["Backend API"]
+    subgraph WebServer["🖥️ Backend API"]
         direction TB
         WS["Fastify + Node.js"]
         WP["Port: 3000"]
     end
 
-    subgraph LLMProxy["LLM Proxy Server"]
+    subgraph LLMProxy["🤖 LLM Proxy Server"]
         direction TB
         LP["Style Injection"]
         LM["Multi-Provider"]
@@ -69,6 +67,10 @@ flowchart TB
 
     Frontend -->|"HTTP/REST"| WebServer
     WebServer -->|"Proxy /v1/*"| LLMProxy
+
+    style Frontend fill:#dbeafe,stroke:#3b82f6,stroke-width:2px,color:#1e3a5f
+    style WebServer fill:#dcfce7,stroke:#22c55e,stroke-width:2px,color:#14532d
+    style LLMProxy fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#78350f
 ```
 
 ### Key Benefits
