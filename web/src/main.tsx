@@ -12,7 +12,7 @@ if (root) {
   createRoot(root).render(
     <StrictMode>
       <BrowserRouter>
-        <MantineProvider defaultColorScheme="dark">
+        <MantineProvider defaultColorScheme="auto">
           <App />
         </MantineProvider>
       </BrowserRouter>
