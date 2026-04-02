@@ -14,6 +14,7 @@
 - [ ] **[UX]** Add interactive questionnaire for building user's digital twin profile (P2)
 - [ ] **[UX]** Add voice discussion as alternative questionnaire experience (P2)
 - [ ] **[UX]** Document keyboard navigation for accessibility (P2)
+- [ ] **[UX]** Support smartphones with responsive design and mobile web experience (P2)
 - [ ] **[DEVOPS]** Implement real-time logging system with WebSocket (P2)
 
 <!-- Low Priority -->
