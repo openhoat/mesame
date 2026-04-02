@@ -113,8 +113,9 @@ Gestion et configuration de MeSame :
 - Documentation technique automatisée via **VitePress**.
 - Intégration continue (CI) et qualité de code (Biome).
 
-### Phase 10 : Optimisation & Features Avancées (En cours)
+### Phase 10 : Optimisation & Features Avancées ✅
 
+- ✅ Design responsive pour smartphones et mobiles (2026-04-02)
 - Amélioration de l'extraction de style (N-Grams plus fins).
 - Export/Import de profils stylistiques.
 - Support de nouveaux formats de sources (DOCX, URL).
@@ -169,6 +170,7 @@ model Conversation {
 
 ## Prochaines Étapes
 
-1. Continuer l'amélioration de la précision de l'analyseur de style.
-2. Ajouter le support des fichiers DOCX.
-3. Intégrer une recherche plein texte dans l'historique des conversations.
+1. **Améliorer l'accessibilité** : Ajouter des labels ARIA et une navigation au clavier (voir KANBAN.md pour les tâches priorisées).
+2. **Optimiser les performances** : Implémenter la mise en cache des prompts et optimiser les requêtes LLM.
+3. **Étendre les sources** : Ajouter le support des fichiers DOCX et l'import depuis URL.
+4. **Améliorer l'expérience utilisateur** : Implémenter le drag-and-drop, les raccourcis clavier, et le questionnaire interactif.
