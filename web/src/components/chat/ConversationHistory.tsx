@@ -10,12 +10,14 @@ import {
 interface ConversationHistoryProps {
   onSelect: (conversation: Conversation) => void
   onClose: () => void
+  onDelete: (id: string) => void
   currentConversationId?: string
 }
 
 export function ConversationHistory({
   onSelect,
   onClose,
+  onDelete,
   currentConversationId,
 }: ConversationHistoryProps) {
   const [conversations, setConversations] = useState<Conversation[]>([])
@@ -46,6 +48,7 @@ export function ConversationHistory({
     try {
       await deleteConversation(id)
       setConversations(prev => prev.filter(conv => conv.id !== id))
+      onDelete(id)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete conversation')
     }

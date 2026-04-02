@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useChat } from '@/hooks/use-chat'
 import { useHealthCheck } from '@/hooks/use-health-check'
 import { ChatHeader } from './ChatHeader'
@@ -20,6 +20,16 @@ export function ChatLayout() {
   const { isConnected } = useHealthCheck()
   const [showHistory, setShowHistory] = useState(false)
 
+  const handleDeleteConversation = useCallback(
+    (deletedId: string) => {
+      // If the deleted conversation is the current one, start a new conversation
+      if (deletedId === currentConversationId) {
+        startNewConversation()
+      }
+    },
+    [currentConversationId, startNewConversation]
+  )
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <ChatHeader
@@ -36,6 +46,7 @@ export function ChatLayout() {
         <ConversationHistory
           onSelect={loadConversation}
           onClose={() => setShowHistory(false)}
+          onDelete={handleDeleteConversation}
           currentConversationId={currentConversationId}
         />
       )}
