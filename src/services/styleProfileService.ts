@@ -1,7 +1,15 @@
 import { prisma } from '../db.js'
+import { logger } from '../logger.js'
 import { analyzeStyle } from './styleAnalyzer.js'
 import type { StyleProfile } from './styleInjector.js'
 import { refineStyleAnalysis } from './styleRefiner.js'
+
+const DEFAULT_PROFILE_ID = '00000000-0000-0000-0000-000000000001'
+
+const DEFAULT_PERSONA_PROMPT = `You are MeSame, the assistant who doesn't take itself too seriously.
+You respond in a laid-back way, like a buddy who knows their stuff.
+You say "hey" sometimes, you're direct and friendly.
+No unnecessary formalities, just helpful answers with a smile.`
 
 export interface ProfileWithSources {
   id: string
@@ -281,4 +289,27 @@ export const regenerateProfile = async (
     updatedAt: updated.updatedAt,
     sources: updated.sources.map(ps => ps.source),
   }
+}
+
+// Ensure a default style profile exists on first startup
+export const ensureDefaultProfile = async (): Promise<void> => {
+  const count = await prisma.styleProfile.count()
+  if (count > 0) return
+
+  logger.info('No style profiles found, creating default profile...')
+
+  await prisma.styleProfile.create({
+    data: {
+      id: DEFAULT_PROFILE_ID,
+      name: 'Default Style',
+      personaPrompt: DEFAULT_PERSONA_PROMPT,
+      metrics: JSON.stringify({
+        avgSentenceLength: 15,
+        formalityLevel: 'professional',
+      }),
+      isActive: true,
+    },
+  })
+
+  logger.info('Default style profile created and activated')
 }

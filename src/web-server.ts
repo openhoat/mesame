@@ -157,6 +157,10 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
     appLogger.info('✅ Prisma disconnected')
   })
 
+  // Auto-create default style profile on first startup
+  const { ensureDefaultProfile } = await import('./services/styleProfileService.js')
+  await ensureDefaultProfile()
+
   appLogger.info('✅ Web application built successfully')
 
   // Store port for access

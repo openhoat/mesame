@@ -23,6 +23,11 @@ vi.mock('../services/logBuffer.js', () => {
   }
 })
 
+// Mock styleProfileService (ensureDefaultProfile is called at app startup)
+vi.mock('../services/styleProfileService.js', () => ({
+  ensureDefaultProfile: vi.fn().mockResolvedValue(undefined),
+}))
+
 // Mock Prisma
 vi.mock('../db.js', () => ({
   prisma: {

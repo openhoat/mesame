@@ -15,6 +15,7 @@ import { proxyRoute } from './routes/proxy.js'
 import { sourcesRoute } from './routes/sources.js'
 import { styleProfileRoute } from './routes/styleProfile.js'
 import { uiRoutes } from './routes/ui.js'
+import { ensureDefaultProfile } from './services/styleProfileService.js'
 
 export async function buildApp(): Promise<FastifyInstance> {
   const { logger, logConfiguration } = await import('./logger.js')
@@ -89,6 +90,9 @@ export async function buildApp(): Promise<FastifyInstance> {
     await prisma.$disconnect()
     appLogger.info('✅ Prisma disconnected')
   })
+
+  // Auto-create default style profile on first startup
+  await ensureDefaultProfile()
 
   appLogger.info('✅ Application built successfully')
   return app

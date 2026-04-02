@@ -4,6 +4,9 @@ import { resetConfig } from '../config.js'
 import * as conversationService from '../services/conversationService.js'
 
 vi.mock('../services/conversationService.js')
+vi.mock('../services/styleProfileService.js', () => ({
+  ensureDefaultProfile: vi.fn().mockResolvedValue(undefined),
+}))
 
 describe('conversations route', () => {
   let app: Awaited<ReturnType<typeof buildApp>>
