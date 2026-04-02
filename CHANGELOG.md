@@ -2,6 +2,12 @@
 
 ## 02/04/2026
 
+- **[17:33:47] ✨ [FEAT]** add responsive design for mobile devices
+- **[17:26:56] 🔧 [CHORE]** use single Docker image for llm and web services
+- **[17:22:42] 🐛 [FIX]** register dashboard route to enable stats API
+- **[17:09:22] 🐛 [FIX]** add logs nav link and improve log display
+- **[16:26:03] 🐛 [FIX]** resolve Biome lint errors in app.ts and dashboard test
+- **[16:24:18] 🔧 [CHORE]** update kanban and changelog after remove-types-natural merge
 - **[16:22:57] 🐛 [FIX]** capture HTTP requests in logBuffer for dashboard display
 - **[16:17:31] 🔧 [CHORE]** remove deprecated @types/natural stub package
 - **[16:16:45] 🔧 [CHORE]** update kanban and changelog after default-style-profile merge
