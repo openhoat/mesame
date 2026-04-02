@@ -2,6 +2,8 @@
 
 ## 02/04/2026
 
+- **[16:12:28] ✨ [FEAT]** auto-create default style profile on first startup
+- **[16:04:19] 🔧 [CHORE]** update kanban and changelog after realtime-logging merge
 - **[15:51:04] ✨ [FEAT]** add real-time logging system with WebSocket
 - **[15:01:22] 📝 [DOCS]** simplify README by removing redundant content
 - **[14:54:24] 🔧 [CHORE]** re-tag UX items as [FEAT] in kanban
