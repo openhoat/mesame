@@ -1,16 +1,15 @@
-import { ActionIcon, AppShell, Container, Group, NavLink, Text } from '@mantine/core'
+import { ActionIcon, AppShell, Burger, Container, Group, NavLink, Text } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import {
   Activity,
   Database,
   FileText,
   LayoutDashboard,
-  Menu,
   MessageSquare,
   Server,
   Settings,
-  X,
 } from 'lucide-react'
-import { type ReactNode, useState } from 'react'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -37,41 +36,36 @@ export interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { t } = useTranslation()
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false)
+  const [desktopCollapsed, { toggle: toggleDesktop }] = useDisclosure(false)
   const location = useLocation()
 
   return (
     <AppShell
+      header={{ height: 60 }}
       navbar={{
-        width: sidebarOpen ? 280 : 80,
+        width: desktopCollapsed ? 80 : 280,
         breakpoint: 'sm',
+        collapsed: { mobile: !mobileOpened },
       }}
       padding={{ base: 'sm', md: 'md' }}
     >
-      <AppShell.Navbar p="md">
-        {/* Logo & Toggle */}
-        <AppShell.Section>
-          <Group justify="space-between" mb="md">
-            {sidebarOpen && (
-              <Text fw={700} size="lg" className="hidden sm:block">
-                {t('common.appName')}
-              </Text>
-            )}
-            <ActionIcon
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              variant="subtle"
-              size="lg"
-              style={{
-                marginLeft: sidebarOpen ? 0 : 'auto',
-                marginRight: sidebarOpen ? 0 : 'auto',
-              }}
-            >
-              {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+      <AppShell.Header>
+        <Group h="100%" px="md" justify="space-between">
+          <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
+          <Text fw={700} size="lg" className="hidden sm:block">
+            {t('common.appName')}
+          </Text>
+          <Group>
+            <ActionIcon onClick={toggleDesktop} variant="subtle" size="lg" hiddenFrom="sm">
+              {desktopCollapsed ? 'Expand' : 'Collapse'}
             </ActionIcon>
+            <ThemeToggle variant="menu" />
           </Group>
-        </AppShell.Section>
+        </Group>
+      </AppShell.Header>
 
-        {/* Navigation */}
+      <AppShell.Navbar p="md">
         <AppShell.Section grow>
           {navItems.map(item => (
             <NavLink
@@ -80,16 +74,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               component={Link}
               to={item.path}
               active={location.pathname === item.path}
-              label={sidebarOpen ? t(item.labelKey) : undefined}
+              label={!desktopCollapsed || mobileOpened ? t(item.labelKey) : undefined}
               leftSection={item.icon}
+              onClick={() => toggleMobile()}
               style={{ borderRadius: 'var(--mantine-radius-default)', minHeight: '44px' }}
             />
           ))}
         </AppShell.Section>
 
-        {/* Theme toggle */}
         <AppShell.Section>
-          <Group justify={sidebarOpen ? 'flex-end' : 'center'}>
+          <Group justify={!desktopCollapsed || mobileOpened ? 'flex-end' : 'center'}>
             <ThemeToggle variant="menu" />
           </Group>
         </AppShell.Section>
