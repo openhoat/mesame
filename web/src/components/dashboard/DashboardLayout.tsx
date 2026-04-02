@@ -91,7 +91,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </AppShell.Section>
       </AppShell.Navbar>
 
-      <AppShell.Main style={{ overflow: 'auto' }}>
+      <AppShell.Main style={{ overflow: 'auto', height: 'calc(100vh - 60px)' }}>
         <Container size="xl" p="md">
           {children}
         </Container>
