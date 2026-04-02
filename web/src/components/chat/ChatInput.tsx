@@ -32,8 +32,8 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   }
 
   return (
-    <div className="px-5 py-4 bg-black/20 border-t border-white/[0.08] shrink-0">
-      <div className="flex gap-3 items-end max-w-[900px] mx-auto">
+    <div className="px-4 py-3 md:px-5 md:py-4 bg-black/20 border-t border-white/[0.08] shrink-0">
+      <div className="flex gap-2 md:gap-3 items-end max-w-[900px] mx-auto">
         <textarea
           id="input"
           ref={textareaRef}
@@ -52,7 +52,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           type="button"
           onClick={handleSend}
           disabled={!canSend}
-          className="w-11 h-11 rounded-xl border-none bg-gradient-to-br from-accent to-accent-secondary text-white cursor-pointer flex items-center justify-center shrink-0 transition-all hover:enabled:opacity-90 active:enabled:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-10 h-10 md:w-11 md:h-11 rounded-xl border-none bg-gradient-to-br from-accent to-accent-secondary text-white cursor-pointer flex items-center justify-center shrink-0 transition-all hover:enabled:opacity-90 active:enabled:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <svg
             viewBox="0 0 24 24"
@@ -70,7 +70,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           </svg>
         </button>
       </div>
-      <p className="text-center text-[0.7rem] text-slate-600 mt-1.5">
+      <p className="text-center text-[0.65rem] md:text-[0.7rem] text-slate-600 mt-1.5">
         {t('chat.sendInstructions')}
       </p>
     </div>

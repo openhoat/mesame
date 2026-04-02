@@ -125,3 +125,70 @@ body {
 :root[data-mantine-color-scheme="light"] .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.25);
 }
+
+/* Mobile improvements */
+@media (max-width: 640px) {
+  /* Reduce text size on mobile for better fit */
+  body {
+    font-size: 15px;
+  }
+
+  /* Improve touch targets */
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better spacing on mobile */
+  .mantine-AppShell-root .mantine-AppShell-main {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* Improve focus states for mobile */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  button:active,
+  a:active {
+    transform: scale(0.98);
+  }
+
+  /* Larger touch targets */
+  .mantine-ActionIcon-root {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Prevent text selection on interactive elements */
+button,
+[role="button"] {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Improve scrolling on mobile */
+@media (max-width: 640px) {
+  .scrollbar-thin {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Responsive font sizes */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+  body {
+    min-height: 100vh;
+  }
+}
