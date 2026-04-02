@@ -16,11 +16,35 @@ export function RequestLogs() {
 
   const getLevelBadge = (level: string) => {
     const levelLower = level.toLowerCase()
-    if (levelLower === 'error') return <Badge color="red">ERROR</Badge>
-    if (levelLower === 'warn') return <Badge color="orange">WARN</Badge>
-    if (levelLower === 'info') return <Badge color="blue">INFO</Badge>
-    if (levelLower === 'debug') return <Badge color="gray">DEBUG</Badge>
-    return <Badge color="gray">{level.toUpperCase()}</Badge>
+    if (levelLower === 'error')
+      return (
+        <Badge color="red" size="xs">
+          ERR
+        </Badge>
+      )
+    if (levelLower === 'warn')
+      return (
+        <Badge color="orange" size="xs">
+          WRN
+        </Badge>
+      )
+    if (levelLower === 'info')
+      return (
+        <Badge color="blue" size="xs">
+          INF
+        </Badge>
+      )
+    if (levelLower === 'debug')
+      return (
+        <Badge color="gray" size="xs">
+          DBG
+        </Badge>
+      )
+    return (
+      <Badge color="gray" size="xs">
+        {level.substring(0, 3).toUpperCase()}
+      </Badge>
+    )
   }
 
   const formatTimestamp = (iso: string) => {
@@ -102,24 +126,27 @@ export function RequestLogs() {
               </Text>
             </Stack>
           ) : (
-            <Stack gap="xs">
-              {filteredLogs.map(log => (
-                <Paper
+            <Stack gap={4}>
+              {[...filteredLogs].reverse().map(log => (
+                <Group
                   key={`${log.timestamp}-${log.level}-${log.message.substring(0, 50)}`}
-                  p="xs"
-                  withBorder
-                  style={{ fontFamily: 'monospace', fontSize: '12px' }}
+                  gap="xs"
+                  wrap="nowrap"
+                  style={{
+                    fontFamily: 'monospace',
+                    fontSize: '11px',
+                    padding: '4px 8px',
+                    borderBottom: '1px solid var(--mantine-color-default-border)',
+                  }}
                 >
-                  <Group gap="xs" wrap="nowrap">
-                    <Text size="xs" c="dimmed" style={{ minWidth: '140px' }}>
-                      {formatTimestamp(log.timestamp)}
-                    </Text>
-                    {getLevelBadge(log.level)}
-                    <Text size="xs" style={{ flex: 1, wordBreak: 'break-word' }}>
-                      {log.message}
-                    </Text>
-                  </Group>
-                </Paper>
+                  <Text size="xs" c="dimmed" style={{ minWidth: '70px', flexShrink: 0 }}>
+                    {formatTimestamp(log.timestamp)}
+                  </Text>
+                  {getLevelBadge(log.level)}
+                  <Text size="xs" style={{ flex: 1, wordBreak: 'break-word', overflow: 'hidden' }}>
+                    {log.message}
+                  </Text>
+                </Group>
               ))}
             </Stack>
           )}

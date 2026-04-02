@@ -1,5 +1,6 @@
 import { ActionIcon, AppShell, Container, Group, NavLink, Text } from '@mantine/core'
 import {
+  Activity,
   Database,
   FileText,
   LayoutDashboard,
@@ -26,6 +27,7 @@ const navItems: NavItem[] = [
   { labelKey: 'nav.providers', icon: <Server size={16} />, path: '/dashboard/providers' },
   { labelKey: 'nav.sources', icon: <Database size={16} />, path: '/dashboard/sources' },
   { labelKey: 'nav.profiles', icon: <FileText size={16} />, path: '/dashboard/profiles' },
+  { labelKey: 'nav.logs', icon: <Activity size={16} />, path: '/dashboard/logs' },
   { labelKey: 'nav.config', icon: <Settings size={16} />, path: '/dashboard/config' },
 ]
 
