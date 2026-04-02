@@ -14,11 +14,8 @@ RUN npm ci
 # Copy source files
 COPY . .
 
-# Generate Prisma Client
-RUN npm run db:generate
-
 # Build backend and web frontend
-RUN npm run build && npm run build:web
+RUN npm run build:all
 
 # Stage 2: Production
 FROM node:22-alpine
@@ -36,6 +33,7 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Copy runtime files
 COPY prisma ./prisma
+COPY prisma.config.ts ./
 COPY assets ./assets
 
 # Create data directory for SQLite database
@@ -44,15 +42,13 @@ RUN mkdir -p /app/data
 # Set environment variables
 ENV NODE_ENV=production
 ENV DATABASE_URL=file:/app/data/mesame.db
-ENV MESAME_HOST=0.0.0.0
-ENV MESAME_PORT=3000
 
 # Expose port
 EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"
+  CMD node -e "require('http').get('http://127.0.0.1:3000/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"
 
-# Initialize database and start server
-CMD ["sh", "-c", "npx prisma db push --accept-data-loss && node dist/server/server.js"]
+# Start server (db:push is handled by wireit dependency)
+CMD ["npm", "start"]

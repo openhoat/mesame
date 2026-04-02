@@ -114,6 +114,30 @@ npm run dev
 
 > See the [Getting Started guide](https://openhoat.github.io/mesame/guide/getting-started) for detailed setup instructions including provider configuration.
 
+### Option C — Docker
+
+Run both services with Docker Compose:
+
+```bash
+# Build and start both LLM and Web services
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# Stop services
+docker compose down
+```
+
+**Services:**
+- **LLM API**: `http://localhost:3000` — OpenAI-compatible proxy endpoint
+- **Web Dashboard**: `http://localhost:3001` — Admin interface for configuring providers
+
+**Architecture:**
+- Both services share a SQLite database (persisted in a Docker volume)
+- Providers are configured via the web dashboard (stored in database)
+- The web service proxies `/v1/chat/completions` and `/v1/models` to the LLM service
+
 ## 💻 CLI Usage
 
 MeSame includes a command-line interface for starting the LLM API server with custom options.
@@ -175,24 +199,34 @@ mesame -p 8080 --provider anthropic -m claude-3-sonnet-20240229 -l info
 CLI options override environment variables. If no CLI option is provided, MeSame reads from:
 
 **LLM API Server:**
-- `MESAME_LLM_PORT`: LLM server port (default: `3000`)
-- `MESAME_LLM_HOST`: LLM server host (default: `0.0.0.0`)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MESAME_LLM_PORT` | LLM server port | `3000` |
+| `MESAME_LLM_HOST` | LLM server host | `0.0.0.0` |
+| `MESAME_LOG_LEVEL` | Logging level | `info` |
 
 **Web Dashboard:**
-- `MESAME_WEB_PORT`: Web server port (default: `3001`)
-- `MESAME_WEB_HOST`: Web server host (default: `0.0.0.0`)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MESAME_WEB_PORT` | Web server port | `3001` |
+| `MESAME_WEB_HOST` | Web server host | `0.0.0.0` |
+| `MESAME_LLM_URL` | LLM server URL (for proxy) | `http://localhost:3000` |
 
-**Common:**
-- `MESAME_PROVIDER`: LLM provider (default: `ollama`)
-- `MESAME_MODEL`: Model name (default: `gemma3:1b` or `gpt-4o`)
-- `MESAME_TARGET_BASE_URL`: Target API URL
-- `MESAME_LOG_LEVEL`: Logging level (default: `info`)
-- `MESAME_LANGUAGE`: Interface language (default: auto-detected)
+**Provider Configuration (CLI only):**
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MESAME_PROVIDER` | LLM provider | `ollama` |
+| `MESAME_MODEL` | Model name | `gemma3:1b` (ollama) / `gpt-4o` (others) |
+| `MESAME_TARGET_BASE_URL` | Target API URL | Provider default |
+
+> **Note**: When using Docker, providers are configured via the web dashboard and stored in the database. The provider environment variables are only used in CLI/combined server mode.
 
 **API Keys:**
-- `OPENAI_API_KEY`: OpenAI API key
-- `ANTHROPIC_API_KEY`: Anthropic API key
-- `GOOGLE_API_KEY`: Google API key
+| Variable | Description |
+|----------|-------------|
+| `OPENAI_API_KEY` | OpenAI API key |
+| `ANTHROPIC_API_KEY` | Anthropic API key |
+| `GOOGLE_API_KEY` | Google AI API key |
 
 ## 📖 Documentation
 

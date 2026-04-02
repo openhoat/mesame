@@ -1,37 +1,49 @@
 services:
-  mesame:
+  llm:
     build:
       context: .
       dockerfile: Dockerfile
-    image: mesame:latest
-    container_name: mesame
+    image: headwood.ddns.net:5000/mesame-llm:latest
+    container_name: mesame-llm
     restart: unless-stopped
     ports:
       - "3000:3000"
     volumes:
-      # Persist SQLite database
       - mesame-data:/app/data
     environment:
-      # Server configuration
-      - MESAME_HOST=0.0.0.0
-      - MESAME_PORT=3000
-      - MESAME_LOG_LEVEL=info
-
-      # LLM Provider (default: ollama)
-      # Options: openai, anthropic, google, ollama, mock
-      - MESAME_PROVIDER=ollama
-      - MESAME_MODEL=gemma3:1b
-      - MESAME_TARGET_BASE_URL=http://host.docker.internal:11434
-
-      # API Keys (required for cloud providers)
-      # - OPENAI_API_KEY=sk-...
-      # - ANTHROPIC_API_KEY=sk-ant-...
-      # - GOOGLE_API_KEY=...
-
-      # Optional: Set language (auto-detected by default)
-      # - MESAME_LANGUAGE=en
+      - DATABASE_URL=file:/app/data/mesame.db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: ["npm", "run", "llm"]
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: headwood.ddns.net:5000/mesame-web:latest
+    container_name: mesame-web
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - mesame-data:/app/data
+    environment:
+      - DATABASE_URL=file:/app/data/mesame.db
+      - MESAME_LLM_URL=http://llm:3000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: ["npm", "run", "web"]
+    depends_on:
+      llm:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3001/health"]
       interval: 30s
       timeout: 10s
       retries: 3

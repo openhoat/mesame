@@ -3,6 +3,9 @@ import type { FastifyError, FastifyInstance } from 'fastify'
 import Fastify from 'fastify'
 import { prisma } from './db.js'
 
+// LLM server URL for proxying requests
+const LLM_URL = process.env.MESAME_LLM_URL || 'http://localhost:3000'
+
 async function loadEnvIfNeeded(): Promise<void> {
   // Load environment variables from .env.test if in test mode
   if (process.env.NODE_ENV === 'test') {
@@ -78,6 +81,65 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
   await app.register(sourcesRoute)
   await app.register(styleProfileRoute)
   await app.register(uiRoutes)
+
+  // Proxy LLM routes to LLM server
+  appLogger.info(`Proxying /v1/chat/completions and /v1/models to ${LLM_URL}`)
+
+  // Proxy POST /v1/chat/completions
+  app.post('/v1/chat/completions', async (request, reply) => {
+    try {
+      const response = await fetch(`${LLM_URL}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(request.headers.authorization
+            ? { authorization: request.headers.authorization }
+            : {}),
+        },
+        body: JSON.stringify(request.body),
+      })
+
+      // Handle streaming responses
+      const contentType = response.headers.get('content-type') || ''
+      if (
+        contentType.includes('text/event-stream') ||
+        contentType.includes('application/x-ndjson')
+      ) {
+        reply.raw.writeHead(response.status, Object.entries(response.headers))
+        if (response.body) {
+          const reader = response.body.getReader()
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            reply.raw.write(value)
+          }
+        }
+        reply.raw.end()
+        return
+      }
+
+      // Handle JSON responses
+      const data = await response.text()
+      return reply.status(response.status).send(data)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      appLogger.error(`Proxy error: ${errorMessage}`)
+      return reply.status(502).send({ error: `LLM server unavailable: ${errorMessage}` })
+    }
+  })
+
+  // Proxy GET /v1/models
+  app.get('/v1/models', async (_request, reply) => {
+    try {
+      const response = await fetch(`${LLM_URL}/v1/models`)
+      const data = await response.text()
+      return reply.status(response.status).send(data)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      appLogger.error(`Proxy error: ${errorMessage}`)
+      return reply.status(502).send({ error: `LLM server unavailable: ${errorMessage}` })
+    }
+  })
 
   appLogger.info('✅ Web routes registered')
 
