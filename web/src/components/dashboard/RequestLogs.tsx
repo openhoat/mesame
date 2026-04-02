@@ -1,41 +1,14 @@
-import { Badge, Button, Group, Paper, Stack, Text, TextInput, Title } from '@mantine/core'
-import { Activity, Download, RefreshCw, Search } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { Badge, Button, Group, Paper, Stack, Text, TextInput, Title, Tooltip } from '@mantine/core'
+import { Activity, Download, Search, Wifi, WifiOff } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { API } from '@/config/api'
-
-interface LogEntry {
-  timestamp: string
-  level: string
-  message: string
-}
+import { useLogWebSocket } from '@/hooks/use-log-websocket'
 
 export function RequestLogs() {
   const { t } = useTranslation()
-  const [logs, setLogs] = useState<LogEntry[]>([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [autoRefresh, setAutoRefresh] = useState(true)
-
-  const fetchLogs = useCallback(async () => {
-    try {
-      const response = await fetch(API.logs(100))
-      if (response.ok) {
-        const data = await response.json()
-        setLogs(data.logs || [])
-      }
-    } catch (_error) {
-      // Silently fail to avoid disrupting the UI
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchLogs()
-
-    if (autoRefresh) {
-      const interval = setInterval(fetchLogs, 5000)
-      return () => clearInterval(interval)
-    }
-  }, [autoRefresh, fetchLogs])
+  const [streaming, setStreaming] = useState(true)
+  const { logs, status, clearLogs } = useLogWebSocket(streaming)
 
   const filteredLogs = logs.filter(log =>
     log.message.toLowerCase().includes(searchTerm.toLowerCase())
@@ -59,6 +32,9 @@ export function RequestLogs() {
     }).format(date)
   }
 
+  const statusColor = status === 'connected' ? 'green' : status === 'connecting' ? 'yellow' : 'red'
+  const StatusIcon = status === 'connected' ? Wifi : WifiOff
+
   return (
     <Stack gap="lg">
       <Group justify="space-between">
@@ -67,12 +43,25 @@ export function RequestLogs() {
           <Text c="dimmed">{t('logs.subtitle')}</Text>
         </div>
         <Group gap="xs">
+          <Tooltip label={status}>
+            <Badge
+              color={statusColor}
+              variant="dot"
+              size="lg"
+              leftSection={<StatusIcon size={14} />}
+            >
+              {status === 'connected' ? 'Live' : status === 'connecting' ? 'Connecting' : 'Offline'}
+            </Badge>
+          </Tooltip>
           <Button
             variant="default"
-            leftSection={<RefreshCw size={16} className={autoRefresh ? 'animate-spin' : ''} />}
-            onClick={() => setAutoRefresh(!autoRefresh)}
+            leftSection={<Wifi size={16} />}
+            onClick={() => setStreaming(!streaming)}
           >
-            {autoRefresh ? t('logs.autoRefreshOn') : t('logs.autoRefreshOff')}
+            {streaming ? t('logs.autoRefreshOn') : t('logs.autoRefreshOff')}
+          </Button>
+          <Button variant="default" onClick={clearLogs}>
+            {t('logs.clear', 'Clear')}
           </Button>
           <Button variant="default" leftSection={<Download size={16} />}>
             {t('logs.export')}

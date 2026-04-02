@@ -1,4 +1,5 @@
 import cors from '@fastify/cors'
+import websocket from '@fastify/websocket'
 import type { FastifyError, FastifyInstance } from 'fastify'
 import Fastify from 'fastify'
 import { config } from './config.js'
@@ -9,6 +10,7 @@ import { conversationsRoute } from './routes/conversations.js'
 import { dashboardRoute } from './routes/dashboard.js'
 import { healthRoute } from './routes/health.js'
 import { logsRoute } from './routes/logs.js'
+import { logsWsRoute } from './routes/logsWs.js'
 import { proxyRoute } from './routes/proxy.js'
 import { sourcesRoute } from './routes/sources.js'
 import { styleProfileRoute } from './routes/styleProfile.js'
@@ -60,6 +62,7 @@ export async function buildApp(): Promise<FastifyInstance> {
     origin: parseCorsOrigin(),
     credentials: true, // Allow credentials (cookies, auth headers)
   })
+  await app.register(websocket)
 
   // Add response time tracking
   app.addHook('onResponse', (request, reply, done) => {
@@ -74,6 +77,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(dashboardRoute)
   await app.register(healthRoute)
   await app.register(logsRoute)
+  await app.register(logsWsRoute)
   await app.register(proxyRoute)
   await app.register(sourcesRoute)
   await app.register(styleProfileRoute)

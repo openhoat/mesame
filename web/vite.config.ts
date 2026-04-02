@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: `http://127.0.0.1:${webPort}`,
           changeOrigin: true,
+          ws: true,
           timeout: 120000, // 2 minutes for LLM processing
           proxyTimeout: 120000,
           configure: (proxy, _options) => {
