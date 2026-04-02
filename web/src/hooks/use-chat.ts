@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { API } from '@/config/api'
 import { streamChatCompletion } from '@/services/chat-api'
 import {
   type Conversation,
@@ -141,6 +142,57 @@ export function useChat() {
     [isStreaming, saveConversation, selectedModel]
   )
 
+  const uploadFiles = useCallback(
+    async (files: File[]) => {
+      if (files.length === 0 || isStreaming) return
+
+      setIsStreaming(true)
+
+      try {
+        // Upload files sequentially
+        for (const file of files) {
+          const formData = new FormData()
+          formData.append('file', file)
+
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 30000)
+
+          const response = await fetch(API.sourcesImport(), {
+            method: 'POST',
+            body: formData,
+            signal: controller.signal,
+          })
+          clearTimeout(timeoutId)
+
+          if (!response.ok) {
+            const errorText = await response.text()
+            throw new Error(`Failed to upload ${file.name}: ${errorText}`)
+          }
+        }
+
+        // Add a success message to the chat
+        const successMsg: ChatMessage = {
+          id: nextId(),
+          role: 'assistant',
+          content: `Successfully uploaded ${files.length} file${files.length > 1 ? 's' : ''}. Your documents have been added to the sources and can be used to generate style profiles.`,
+        }
+        setMessages(prev => [...prev, successMsg])
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : String(err)
+
+        const errorMsg: ChatMessage = {
+          id: nextId(),
+          role: 'error',
+          content: `File upload failed: ${errorMessage}`,
+        }
+        setMessages(prev => [...prev, errorMsg])
+      } finally {
+        setIsStreaming(false)
+      }
+    },
+    [isStreaming]
+  )
+
   const loadConversation = useCallback(
     (conversation: Conversation) => {
       setMessages(conversation.messages)
@@ -169,8 +221,8 @@ export function useChat() {
   // Load conversation from URL on mount or URL change
   useEffect(() => {
     if (urlConversationId && urlConversationId !== currentConversationId) {
-      import('@/services/conversation-api').then(({ fetchConversationById }) => {
-        fetchConversationById(urlConversationId)
+      import('@/services/conversation-api').then(({ fetchConversation }) => {
+        fetchConversation(urlConversationId)
           .then(conversation => {
             loadConversation(conversation)
           })
@@ -190,6 +242,7 @@ export function useChat() {
     messages,
     isStreaming,
     sendMessage,
+    uploadFiles,
     currentConversationId,
     loadConversation,
     startNewConversation,

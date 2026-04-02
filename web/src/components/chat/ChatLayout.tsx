@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { FileDropZone } from '@/components/FileDropZone'
 import { useChat } from '@/hooks/use-chat'
 import { useHealthCheck } from '@/hooks/use-health-check'
 import { ChatHeader } from './ChatHeader'
@@ -16,6 +17,7 @@ export function ChatLayout() {
     startNewConversation,
     selectedModel,
     setModel,
+    uploadFiles,
   } = useChat()
   const { isConnected } = useHealthCheck()
   const [showHistory, setShowHistory] = useState(false)
@@ -30,26 +32,40 @@ export function ChatLayout() {
     [currentConversationId, startNewConversation]
   )
 
-  return (
-    <div className="flex flex-col h-screen overflow-hidden">
-      <ChatHeader
-        isConnected={isConnected}
-        selectedModel={selectedModel}
-        onModelChange={setModel}
-        onOpenHistory={() => setShowHistory(true)}
-        onNewConversation={startNewConversation}
-      />
-      <ChatMessages messages={messages} />
-      <ChatInput onSend={sendMessage} disabled={isStreaming} />
+  const handleFilesDropped = useCallback(
+    async (files: File[]) => {
+      if (files.length === 0) return
+      await uploadFiles(files)
+    },
+    [uploadFiles]
+  )
 
-      {showHistory && (
-        <ConversationHistory
-          onSelect={loadConversation}
-          onClose={() => setShowHistory(false)}
-          onDelete={handleDeleteConversation}
-          currentConversationId={currentConversationId}
+  return (
+    <FileDropZone
+      onDrop={handleFilesDropped}
+      accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"
+      disabled={isStreaming}
+    >
+      <div className="flex flex-col h-screen overflow-hidden">
+        <ChatHeader
+          isConnected={isConnected}
+          selectedModel={selectedModel}
+          onModelChange={setModel}
+          onOpenHistory={() => setShowHistory(true)}
+          onNewConversation={startNewConversation}
         />
-      )}
-    </div>
+        <ChatMessages messages={messages} />
+        <ChatInput onSend={sendMessage} disabled={isStreaming} />
+
+        {showHistory && (
+          <ConversationHistory
+            onSelect={loadConversation}
+            onClose={() => setShowHistory(false)}
+            onDelete={handleDeleteConversation}
+            currentConversationId={currentConversationId}
+          />
+        )}
+      </div>
+    </FileDropZone>
   )
 }
