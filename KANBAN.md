@@ -7,7 +7,6 @@
 <!-- High Priority -->
 
 <!-- Medium Priority -->
-- [ ] **[FEAT]** Add drag-and-drop file upload support (P2)
 - [ ] **[FEAT]** Implement keyboard shortcuts in chat interface (P2)
 - [ ] **[FEAT]** Add interactive questionnaire for building user's digital twin profile (P2)
 - [ ] **[FEAT]** Add voice discussion as alternative questionnaire experience (P2)

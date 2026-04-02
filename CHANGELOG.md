@@ -2,6 +2,12 @@
 
 ## 02/04/2026
 
+- **[18:57:47] ✨ [FEAT]** add drag-and-drop file upload support to chat interface
+- **[18:43:26] 🐛 [FIX]** prevent dashboard content from overflowing vertically
+- **[18:41:02] 🐛 [FIX]** improve dashboard mobile UX - add scrollbar and fix table overflow
+- **[18:36:13] 🐛 [FIX]** improve dashboard mobile menu with proper AppShell configuration
+- **[17:42:00] 📝 [DOCS]** update REQUIREMENTS.md with mobile responsive implementation
+- **[17:40:55] 🔧 [CHORE]** update kanban and changelog after mobile-responsive merge
 - **[17:33:47] ✨ [FEAT]** add responsive design for mobile devices
 - **[17:26:56] 🔧 [CHORE]** use single Docker image for llm and web services
 - **[17:22:42] 🐛 [FIX]** register dashboard route to enable stats API
