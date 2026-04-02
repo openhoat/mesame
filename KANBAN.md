@@ -7,6 +7,7 @@
 <!-- High Priority -->
 
 <!-- Medium Priority -->
+- [ ] **[PERF]** Research and implement LLM request optimizations (compression, prompt caching, token efficiency) - explore techniques used in similar projects like prompt compression, context window management, and evaluate if RTK (Retaining Token Knowledge) or similar approaches could improve performance (P2)
 - [ ] **[DEVOPS]** Setup Husky pre-commit hooks for code quality (P2)
 - [ ] **[DEVOPS]** Add backup/restore documentation for SQLite database (P2)
 - [ ] **[UX]** Add drag-and-drop file upload support (P2)
