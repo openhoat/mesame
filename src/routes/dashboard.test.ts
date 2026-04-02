@@ -14,7 +14,9 @@ vi.mock('../services/logBuffer.js', () => ({
     getRecent: vi.fn(),
     getAll: vi.fn(),
     add: vi.fn(),
-    subscribe: vi.fn(() => () => {}),
+    subscribe: vi.fn(() => () => {
+      // no-op unsubscribe
+    }),
   },
 }))
 
