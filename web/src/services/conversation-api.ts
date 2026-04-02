@@ -1,3 +1,4 @@
+import { API } from '@/config/api'
 import type { ChatMessage } from '@/types/chat'
 
 export interface Conversation {
@@ -19,7 +20,7 @@ export interface UpdateConversationData {
 }
 
 export async function fetchConversations(): Promise<Conversation[]> {
-  const response = await fetch('/v1/conversations')
+  const response = await fetch(API.conversations())
   if (!response.ok) {
     throw new Error(`Failed to fetch conversations: ${response.statusText}`)
   }
@@ -27,7 +28,7 @@ export async function fetchConversations(): Promise<Conversation[]> {
 }
 
 export async function fetchConversation(id: string): Promise<Conversation> {
-  const response = await fetch(`/v1/conversations/${id}`)
+  const response = await fetch(API.conversationById(id))
   if (!response.ok) {
     throw new Error(`Failed to fetch conversation: ${response.statusText}`)
   }
@@ -35,7 +36,7 @@ export async function fetchConversation(id: string): Promise<Conversation> {
 }
 
 export async function createConversation(data: CreateConversationData): Promise<Conversation> {
-  const response = await fetch('/v1/conversations', {
+  const response = await fetch(API.conversations(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -50,7 +51,7 @@ export async function updateConversation(
   id: string,
   data: UpdateConversationData
 ): Promise<Conversation> {
-  const response = await fetch(`/v1/conversations/${id}`, {
+  const response = await fetch(API.conversationById(id), {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -62,7 +63,7 @@ export async function updateConversation(
 }
 
 export async function deleteConversation(id: string): Promise<void> {
-  const response = await fetch(`/v1/conversations/${id}`, {
+  const response = await fetch(API.conversationById(id), {
     method: 'DELETE',
   })
   if (!response.ok) {
@@ -78,7 +79,7 @@ export interface ExportData {
 }
 
 export async function exportConversations(): Promise<ExportData> {
-  const response = await fetch('/v1/conversations/export')
+  const response = await fetch(API.conversationsExport())
   if (!response.ok) {
     throw new Error(`Failed to export conversations: ${response.statusText}`)
   }

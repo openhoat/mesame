@@ -2,6 +2,7 @@ import { Badge, Button, Group, Paper, Stack, Text, TextInput, Title } from '@man
 import { Activity, Download, RefreshCw, Search } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { API } from '@/config/api'
 
 interface LogEntry {
   timestamp: string
@@ -17,7 +18,7 @@ export function RequestLogs() {
 
   const fetchLogs = useCallback(async () => {
     try {
-      const response = await fetch('/api/logs?limit=100')
+      const response = await fetch(API.logs(100))
       if (response.ok) {
         const data = await response.json()
         setLogs(data.logs || [])

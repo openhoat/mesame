@@ -28,6 +28,7 @@ import {
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ModelSelector } from '@/components/ModelSelector'
+import { API } from '@/config/api'
 import { ProfileQuestionnaire } from './ProfileQuestionnaire'
 
 interface Source {
@@ -61,7 +62,7 @@ export function StyleProfiles() {
 
   const fetchProfiles = useCallback(async () => {
     try {
-      const response = await fetch('/api/style-profile')
+      const response = await fetch(API.styleProfile())
       if (response.ok) {
         const data = await response.json()
         setProfiles(data)
@@ -73,7 +74,7 @@ export function StyleProfiles() {
 
   const fetchSources = useCallback(async () => {
     try {
-      const response = await fetch('/api/sources')
+      const response = await fetch(API.sources())
       if (response.ok) {
         const data = await response.json()
         setSources(Array.isArray(data) ? data : [])
@@ -107,7 +108,7 @@ export function StyleProfiles() {
 
     setSaving(true)
     try {
-      const url = editingProfile ? `/api/style-profile/${editingProfile.id}` : '/api/style-profile'
+      const url = editingProfile ? API.styleProfileById(editingProfile.id) : API.styleProfile()
       const method = editingProfile ? 'PUT' : 'POST'
 
       const response = await fetch(url, {
@@ -135,7 +136,7 @@ export function StyleProfiles() {
     if (!confirm(t('profiles.confirmDelete') || 'Delete this profile?')) return
 
     try {
-      const response = await fetch(`/api/style-profile/${id}`, {
+      const response = await fetch(API.styleProfileById(id), {
         method: 'DELETE',
       })
 
@@ -149,7 +150,7 @@ export function StyleProfiles() {
 
   const handleActivateProfile = async (id: string) => {
     try {
-      const response = await fetch(`/api/style-profile/${id}/activate`, {
+      const response = await fetch(API.styleProfileActivate(id), {
         method: 'POST',
       })
 
@@ -164,7 +165,7 @@ export function StyleProfiles() {
   const handleRegenerateProfile = async (id: string) => {
     setRegeneratingId(id)
     try {
-      const response = await fetch(`/api/style-profile/${id}/regenerate`, {
+      const response = await fetch(API.styleProfileRegenerate(id), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ modelId: selectedModel }),
@@ -188,7 +189,7 @@ export function StyleProfiles() {
 
   const handleExportProfiles = async () => {
     try {
-      const response = await fetch('/api/style-profile/export')
+      const response = await fetch(API.styleProfileExport())
       if (response.ok) {
         const data = await response.json()
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })

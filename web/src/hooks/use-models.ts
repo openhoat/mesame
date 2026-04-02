@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { API } from '@/config/api'
 
 export interface Model {
   id: string
@@ -26,7 +27,7 @@ export function useModels() {
   const fetchModels = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true, error: null }))
     try {
-      const response = await fetch('/v1/models')
+      const response = await fetch(API.models())
       if (!response.ok) {
         throw new Error(`Failed to fetch models: ${response.statusText}`)
       }

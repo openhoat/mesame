@@ -17,6 +17,7 @@ import {
 import { Check, Key, Play, Plus, RefreshCw, Settings, Trash, X } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { API } from '@/config/api'
 
 type ProviderType = 'openai' | 'anthropic' | 'google' | 'ollama'
 
@@ -129,7 +130,7 @@ export function Providers() {
   const fetchProviders = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/providers')
+      const response = await fetch(API.providers())
       if (response.ok) {
         const data = await response.json()
         setProviders(data.providers)
@@ -157,7 +158,7 @@ export function Providers() {
   const handleTestProvider = async (provider: Provider) => {
     setTestingProvider(provider.name)
     try {
-      const response = await fetch(`/api/providers/${provider.name}/models`)
+      const response = await fetch(API.providerModels(provider.name))
       if (response.ok) {
         setTestResult({ name: provider.name, success: true })
       } else {
@@ -229,7 +230,7 @@ export function Providers() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      const response = await fetch('/api/providers', {
+      const response = await fetch(API.providers(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -256,7 +257,7 @@ export function Providers() {
 
   const handleToggleEnabled = async (provider: Provider) => {
     try {
-      const response = await fetch('/api/providers', {
+      const response = await fetch(API.providers(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -285,7 +286,7 @@ export function Providers() {
     }
 
     try {
-      const response = await fetch(`/api/providers/${provider.name}`, {
+      const response = await fetch(API.sourceById(provider.name), {
         method: 'DELETE',
       })
 

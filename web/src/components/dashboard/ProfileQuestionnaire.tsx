@@ -15,6 +15,7 @@ import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ModelSelector } from '@/components/ModelSelector'
+import { API } from '@/config/api'
 
 interface QuestionnaireAnswers {
   // Step 1: Identity
@@ -114,7 +115,7 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
     try {
       // 1. Create source from questionnaire answers
       const sourceContent = generateSourceContent()
-      const sourceResponse = await fetch('/api/sources', {
+      const sourceResponse = await fetch(API.sources(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -128,7 +129,7 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
       const source = await sourceResponse.json()
 
       // 2. Create profile from source
-      const profileResponse = await fetch('/api/style-profile', {
+      const profileResponse = await fetch(API.styleProfile(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

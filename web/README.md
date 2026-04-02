@@ -5,7 +5,7 @@ Standalone web frontend for MeSame, accessible via browser (desktop and mobile).
 ## Development
 
 ```bash
-# Start dev server (requires backend running on port 3000)
+# Start dev server (requires backend running on port 3001)
 npm run dev:web
 ```
 
@@ -22,23 +22,40 @@ Output: `dist/web/`
 
 ## Architecture
 
-This frontend is extracted from the Electron renderer and adapted for standalone web deployment:
+This is a pure static web frontend that communicates with the backend via REST API:
 
-- **No Electron dependencies**: Uses standard fetch API instead of IPC
+- **No backend dependencies**: Uses standard fetch API for all communication
 - **Responsive design**: Optimized for desktop and mobile browsers
-- **Same UI components**: Reuses all React components from Electron renderer
-- **Backend proxy**: Vite dev server proxies API requests to backend (port 3000)
+- **CDN-ready**: Can be deployed to any static hosting (Cloudflare Pages, Vercel, Netlify, etc.)
+- **Configurable API URL**: Set `VITE_API_URL` environment variable for CDN deployment
 
-## Production Deployment
+## Environment Variables
 
-The built files in `dist/web/` are automatically served by the Fastify backend on the root route (`/`).
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_API_URL` | Backend API URL (for CDN deployment) | Empty (uses Vite proxy in dev) |
 
-Configuration priority:
-1. Web build (`dist/web/`) - highest priority
-2. Electron renderer (`dist/renderer/`) - fallback
+## Development vs Production
 
-## Differences from Electron Renderer
+### Development (with Vite proxy)
 
-- Removed `electron.d.ts` (Electron API types)
-- Uses HTTP fetch for config instead of IPC when `window.electronAPI` is not available
-- Vite base set to `/` instead of `./` for web routing
+In development, Vite proxies API requests to the backend:
+
+```bash
+# No VITE_API_URL needed - uses Vite proxy
+npm run dev:web
+```
+
+### Production (CDN deployment)
+
+Build with the backend API URL:
+
+```bash
+VITE_API_URL=https://api.mesame.com npm run build:web
+```
+
+The built files in `dist/web/` can then be deployed to any static hosting.
+
+## Production Deployment with Backend
+
+The built files in `dist/web/` are also served by the Fastify backend on the root route (`/`). This allows running everything in a single container.

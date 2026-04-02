@@ -18,6 +18,7 @@ import { CheckCircle2, FileText, Plus, Sparkles, Trash2, Upload } from 'lucide-r
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FileDropZone } from '@/components/FileDropZone'
+import { API } from '@/config/api'
 
 interface Source {
   id: string
@@ -47,7 +48,7 @@ export function Sources() {
       const healthController = new AbortController()
       const healthTimeout = setTimeout(() => healthController.abort(), 2000)
 
-      const _healthCheck = await fetch('/health', {
+      const _healthCheck = await fetch(API.health(), {
         signal: healthController.signal,
       })
         .catch(_err => {
@@ -60,7 +61,7 @@ export function Sources() {
         controller.abort()
       }, 5000)
 
-      const fetchPromise = fetch('/api/sources', {
+      const fetchPromise = fetch(API.sources(), {
         signal: controller.signal,
       })
 
@@ -102,7 +103,7 @@ export function Sources() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s for uploads
 
-      const response = await fetch('/api/sources/import', {
+      const response = await fetch(API.sourcesImport(), {
         method: 'POST',
         body: formData,
         signal: controller.signal,
@@ -133,7 +134,7 @@ export function Sources() {
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 30000)
 
-        await fetch('/api/sources/import', {
+        await fetch(API.sourcesImport(), {
           method: 'POST',
           body: formData,
           signal: controller.signal,
@@ -157,7 +158,7 @@ export function Sources() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000)
 
-      const response = await fetch('/api/sources', {
+      const response = await fetch(API.sources(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm),
@@ -183,7 +184,7 @@ export function Sources() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000)
 
-      const response = await fetch(`/api/sources/${id}`, {
+      const response = await fetch(API.sourceById(id), {
         method: 'DELETE',
         signal: controller.signal,
       })
@@ -205,7 +206,7 @@ export function Sources() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 60000) // 60s for AI generation
 
-      const response = await fetch('/api/style-profile/generate', {
+      const response = await fetch(API.styleProfileGenerate(), {
         method: 'POST',
         signal: controller.signal,
       })

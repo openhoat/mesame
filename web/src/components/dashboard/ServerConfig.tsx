@@ -13,6 +13,7 @@ import { AlertCircle, RotateCcw, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { API } from '@/config/api'
 import i18n from '../../i18n'
 
 interface ServerConfig {
@@ -45,22 +46,15 @@ export function ServerConfig() {
   }, [config.language])
 
   useEffect(() => {
-    // Load current config from server (works in both Electron and web mode)
+    // Load current config from server
     const loadConfig = async () => {
       try {
-        // Try IPC first (Electron mode)
-        // biome-ignore lint/suspicious/noExplicitAny: Config structure is dynamic
-        let serverConfig: any
-        if (window.electronAPI) {
-          serverConfig = await window.electronAPI.getConfig()
-        } else {
-          // Web server runs on port 3001 by default (MESAME_WEB_PORT)
-          const response = await fetch('http://localhost:3001/api/config')
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-          }
-          serverConfig = await response.json()
+        const response = await fetch(API.config())
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
         }
+        // biome-ignore lint/suspicious/noExplicitAny: Config structure is dynamic
+        const serverConfig: any = await response.json()
 
         setConfig(prev => {
           const newConfig = {
@@ -92,23 +86,17 @@ export function ServerConfig() {
     setIsSaving(true)
     try {
       // Save language preference to server
-      if (window.electronAPI) {
-        // Electron mode - not implemented yet
-        await new Promise(resolve => setTimeout(resolve, 1000))
-      } else {
-        // Web mode - call API
-        const response = await fetch('http://localhost:3001/api/settings', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            language: config.language,
-          }),
-        })
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-        }
+      const response = await fetch(API.settings(), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          language: config.language,
+        }),
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
       setHasChanges(false)
     } catch (_error) {

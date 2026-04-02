@@ -2,6 +2,7 @@ import { Badge, Divider, Grid, Group, Paper, Stack, Text, Title } from '@mantine
 import { Activity, FileText, TrendingUp, Zap } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { API } from '@/config/api'
 
 interface Stats {
   totalRequests: number
@@ -44,7 +45,7 @@ export function DashboardHome() {
     // Fetch stats from API
     const fetchStats = async () => {
       try {
-        const response = await fetch('/api/stats')
+        const response = await fetch(API.stats())
         if (response.ok) {
           const data = await response.json()
           setStats({

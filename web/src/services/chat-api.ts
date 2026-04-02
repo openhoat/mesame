@@ -1,8 +1,9 @@
+import { API } from '@/config/api'
 import type { ConversationMessage } from '@/types/chat'
 
 export async function checkHealth(): Promise<boolean> {
   try {
-    const res = await fetch('/health')
+    const res = await fetch(API.health())
     return res.ok
   } catch {
     return false
@@ -20,7 +21,7 @@ export async function streamChatCompletion(
   callbacks: StreamCallbacks,
   model?: string
 ): Promise<void> {
-  const response = await fetch('/v1/chat/completions', {
+  const response = await fetch(API.chatCompletions(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
