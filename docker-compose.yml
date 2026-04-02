@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: headwood.ddns.net:5000/mesame-llm:latest
+    image: headwood.ddns.net:5000/mesame:latest
     container_name: mesame-llm
     restart: unless-stopped
     ports:
@@ -23,10 +23,7 @@ services:
       start_period: 10s
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: headwood.ddns.net:5000/mesame-web:latest
+    image: headwood.ddns.net:5000/mesame:latest
     container_name: mesame-web
     restart: unless-stopped
     ports:
