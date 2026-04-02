@@ -2,6 +2,8 @@ import { ActionIcon, AppShell, Burger, Container, Group, NavLink, Text } from '@
 import { useDisclosure } from '@mantine/hooks'
 import {
   Activity,
+  ChevronsLeft,
+  ChevronsRight,
   Database,
   FileText,
   LayoutDashboard,
@@ -57,8 +59,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {t('common.appName')}
           </Text>
           <Group>
-            <ActionIcon onClick={toggleDesktop} variant="subtle" size="lg" hiddenFrom="sm">
-              {desktopCollapsed ? 'Expand' : 'Collapse'}
+            <ActionIcon onClick={toggleDesktop} variant="subtle" size="lg" visibleFrom="sm">
+              {desktopCollapsed ? <ChevronsRight size={18} /> : <ChevronsLeft size={18} />}
             </ActionIcon>
             <ThemeToggle variant="menu" />
           </Group>
@@ -89,7 +91,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </AppShell.Section>
       </AppShell.Navbar>
 
-      <AppShell.Main>
+      <AppShell.Main style={{ overflow: 'auto' }}>
         <Container size="xl" p="md">
           {children}
         </Container>

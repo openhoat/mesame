@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Badge,
+  Box,
   Button,
   Group,
   Modal,
@@ -326,106 +327,108 @@ export function Providers() {
         ) : providers.length === 0 ? (
           <Text c="dimmed">{t('providers.emptyState')}</Text>
         ) : (
-          <Table>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>{t('providers.table.name')}</Table.Th>
-                <Table.Th>{t('providers.table.type')}</Table.Th>
-                <Table.Th>{t('providers.table.baseUrl')}</Table.Th>
-                <Table.Th>{t('providers.table.models')}</Table.Th>
-                <Table.Th>{t('providers.table.apiKey')}</Table.Th>
-                <Table.Th>{t('providers.table.status')}</Table.Th>
-                <Table.Th>{t('providers.table.actions')}</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {providers.map(provider => (
-                <Table.Tr key={provider.name}>
-                  <Table.Td>
-                    <Text fw={500}>{provider.displayName}</Text>
-                    <Text size="xs" c="dimmed">
-                      {provider.name}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td>
-                    <Badge variant="light">
-                      {PROVIDER_TYPES[provider.type]?.displayName || provider.type}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td>
-                    <Text size="sm">{provider.baseUrl}</Text>
-                  </Table.Td>
-                  <Table.Td>
-                    <Badge variant="light">{provider.modelsCount} models</Badge>
-                  </Table.Td>
-                  <Table.Td>
-                    {provider.hasApiKey ? (
-                      <Group gap="xs">
-                        <Key size={14} />
-                        <Text size="sm" c="green">
-                          {t('providers.apiKeyConfigured')}
-                        </Text>
-                      </Group>
-                    ) : PROVIDER_TYPES[provider.type]?.requiresApiKey ? (
-                      <Text size="sm" c="orange">
-                        {t('providers.apiKeyMissing')}
-                      </Text>
-                    ) : (
-                      <Text size="sm" c="dimmed">
-                        {t('providers.apiKeyNotRequired')}
-                      </Text>
-                    )}
-                  </Table.Td>
-                  <Table.Td>
-                    <Switch
-                      checked={provider.enabled}
-                      onChange={() => handleToggleEnabled(provider)}
-                      label={provider.enabled ? t('providers.enabled') : t('providers.disabled')}
-                    />
-                  </Table.Td>
-                  <Table.Td>
-                    <Stack gap="xs">
-                      <Group gap="xs">
-                        <ActionIcon
-                          variant="subtle"
-                          onClick={() => handleTestProvider(provider)}
-                          loading={testingProvider === provider.name}
-                          title={t('providers.testConnection')}
-                        >
-                          <Play size={16} />
-                        </ActionIcon>
-                        <ActionIcon variant="subtle" onClick={() => handleOpenModal(provider)}>
-                          <Settings size={16} />
-                        </ActionIcon>
-                        <ActionIcon
-                          variant="subtle"
-                          color="red"
-                          onClick={() => handleDelete(provider)}
-                        >
-                          <Trash size={16} />
-                        </ActionIcon>
-                      </Group>
-                      {_testResult?.name === provider.name && (
-                        <Group gap="xs">
-                          {_testResult.success ? (
-                            <Text size="xs" c="green">
-                              <Check size={12} style={{ display: 'inline' }} />{' '}
-                              {t('providers.testSuccess')}
-                            </Text>
-                          ) : (
-                            <Text size="xs" c="red">
-                              <X size={12} style={{ display: 'inline' }} />{' '}
-                              {_testResult.error || t('providers.testFailed')}
-                            </Text>
-                          )}
-                        </Group>
-                      )}
-                    </Stack>
-                  </Table.Td>
+          <Box style={{ overflowX: 'auto' }}>
+            <Table>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>{t('providers.table.name')}</Table.Th>
+                  <Table.Th>{t('providers.table.type')}</Table.Th>
+                  <Table.Th>{t('providers.table.baseUrl')}</Table.Th>
+                  <Table.Th>{t('providers.table.models')}</Table.Th>
+                  <Table.Th>{t('providers.table.apiKey')}</Table.Th>
+                  <Table.Th>{t('providers.table.status')}</Table.Th>
+                  <Table.Th>{t('providers.table.actions')}</Table.Th>
                 </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+              </Table.Thead>
+              <Table.Tbody>
+                {providers.map(provider => (
+                  <Table.Tr key={provider.name}>
+                    <Table.Td>
+                      <Text fw={500}>{provider.displayName}</Text>
+                      <Text size="xs" c="dimmed">
+                        {provider.name}
+                      </Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Badge variant="light">
+                        {PROVIDER_TYPES[provider.type]?.displayName || provider.type}
+                      </Badge>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="sm">{provider.baseUrl}</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Badge variant="light">{provider.modelsCount} models</Badge>
+                    </Table.Td>
+                    <Table.Td>
+                      {provider.hasApiKey ? (
+                        <Group gap="xs">
+                          <Key size={14} />
+                          <Text size="sm" c="green">
+                            {t('providers.apiKeyConfigured')}
+                          </Text>
+                        </Group>
+                      ) : PROVIDER_TYPES[provider.type]?.requiresApiKey ? (
+                        <Text size="sm" c="orange">
+                          {t('providers.apiKeyMissing')}
+                        </Text>
+                      ) : (
+                        <Text size="sm" c="dimmed">
+                          {t('providers.apiKeyNotRequired')}
+                        </Text>
+                      )}
+                    </Table.Td>
+                    <Table.Td>
+                      <Switch
+                        checked={provider.enabled}
+                        onChange={() => handleToggleEnabled(provider)}
+                        label={provider.enabled ? t('providers.enabled') : t('providers.disabled')}
+                      />
+                    </Table.Td>
+                    <Table.Td>
+                      <Stack gap="xs">
+                        <Group gap="xs">
+                          <ActionIcon
+                            variant="subtle"
+                            onClick={() => handleTestProvider(provider)}
+                            loading={testingProvider === provider.name}
+                            title={t('providers.testConnection')}
+                          >
+                            <Play size={16} />
+                          </ActionIcon>
+                          <ActionIcon variant="subtle" onClick={() => handleOpenModal(provider)}>
+                            <Settings size={16} />
+                          </ActionIcon>
+                          <ActionIcon
+                            variant="subtle"
+                            color="red"
+                            onClick={() => handleDelete(provider)}
+                          >
+                            <Trash size={16} />
+                          </ActionIcon>
+                        </Group>
+                        {_testResult?.name === provider.name && (
+                          <Group gap="xs">
+                            {_testResult.success ? (
+                              <Text size="xs" c="green">
+                                <Check size={12} style={{ display: 'inline' }} />{' '}
+                                {t('providers.testSuccess')}
+                              </Text>
+                            ) : (
+                              <Text size="xs" c="red">
+                                <X size={12} style={{ display: 'inline' }} />{' '}
+                                {_testResult.error || t('providers.testFailed')}
+                              </Text>
+                            )}
+                          </Group>
+                        )}
+                      </Stack>
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </Box>
         )}
       </Paper>
 
