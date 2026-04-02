@@ -2,6 +2,9 @@
 
 ## 02/04/2026
 
+- **[16:22:57] 🐛 [FIX]** capture HTTP requests in logBuffer for dashboard display
+- **[16:17:31] 🔧 [CHORE]** remove deprecated @types/natural stub package
+- **[16:16:45] 🔧 [CHORE]** update kanban and changelog after default-style-profile merge
 - **[16:12:28] ✨ [FEAT]** auto-create default style profile on first startup
 - **[16:04:19] 🔧 [CHORE]** update kanban and changelog after realtime-logging merge
 - **[15:51:04] ✨ [FEAT]** add real-time logging system with WebSocket
