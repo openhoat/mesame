@@ -5,29 +5,120 @@ MeSame is built with a modern TypeScript stack, designed for local-first operati
 ## System Overview
 
 ```
-┌─────────────────┐
-│  Client App     │  (Any OpenAI-compatible client)
-│  (curl, SDK)    │
-└────────┬────────┘
-         │ POST /v1/chat/completions
-         ▼
-┌─────────────────────────────────────┐
-│       MeSame Proxy Server           │
-│  ┌──────────────────────────────┐   │
-│  │  1. Receive Request          │   │
-│  │  2. Fetch Style Profile (DB) │   │
-│  │  3. Inject System Prompt     │   │
-│  │  4. Forward to LLM           │   │
-│  │  5. Stream Response (SSE)    │   │
-│  └──────────────────────────────┘   │
-└────────┬─────────────────────┬──────┘
-         │                     │
-         ▼                     ▼
-┌─────────────────┐   ┌─────────────────┐
-│   SQLite DB     │   │  Target LLM     │
-│  Style Profiles │   │  (OpenAI, etc)  │
-│  Sources        │   │                 │
-└─────────────────┘   └─────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           Frontend (Web App)                               │
+│                     React + Vite + Mantine + Tailwind                       │
+│                                                                             │
+│   Development: Vite dev server with proxy (localhost:5173)                 │
+│   Production: Static files deployable to any CDN (Vercel, Netlify, etc.)   │
+│                                                                             │
+│   Environment: VITE_API_URL=https://api.mesame.com (optional for CDN)      │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ HTTP/REST API
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        Backend API (Web Server)                             │
+│                           Port 3001 (default)                               │
+│                                                                             │
+│   Routes:                                                                   │
+│   ├── /api/config          → Server configuration                           │
+│   ├── /api/settings        → User preferences (language)                    │
+│   ├── /api/providers       → LLM provider management                      │
+│   ├── /api/sources         → Document sources CRUD                         │
+│   ├── /api/style-profile   → Style profile management                     │
+│   ├── /api/conversations    → Chat history CRUD                            │
+│   └── /health              → Health check endpoint                         │
+│                                                                             │
+│   CORS: Configurable via CORS_ORIGIN env variable                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ Proxy /v1/* requests
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        LLM Proxy Server                                     │
+│                           Port 3000 (default)                               │
+│                                                                             │
+│   Routes:                                                                   │
+│   ├── POST /v1/chat/completions → OpenAI-compatible chat endpoint          │
+│   └── GET  /v1/models             → List available models                  │
+│                                                                             │
+│   Flow:                                                                     │
+│   1. Receive request                                                        │
+│   2. Fetch style profile from database                                      │
+│   3. Inject system prompt with user's style                                 │
+│   4. Forward to configured LLM provider                                     │
+│   5. Stream response back (SSE)                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ Provider API calls
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        LLM Providers                                         │
+│                                                                             │
+│   OpenAI • Anthropic • Google AI • Ollama (local)                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        SQLite Database                                       │
+│                                                                             │
+│   Tables: Sources, StyleProfile, Provider, Conversation, UserSettings      │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+## Deployment Architecture
+
+### Development Mode
+
+```
+┌──────────────────┐     ┌──────────────────┐
+│   Vite Dev       │     │   LLM Server     │
+│   (localhost:5173)│     │   (localhost:3000)│
+│                  │     │                  │
+│   Proxy /v1/* ───┼────►│   Proxy /api/* ──┼────► Web Server
+│   Proxy /api/* ───┼────►│                  │     (localhost:3001)
+└──────────────────┘     └──────────────────┘
+```
+
+### Production (Docker Compose)
+
+```yaml
+services:
+  llm:
+    image: mesame-llm:latest
+    ports: ["3000:3000"]
+    volumes: ["mesame-data:/app/data"]
+    environment:
+      - DATABASE_URL=file:/app/data/mesame.db
+      - CORS_ORIGIN=https://app.mesame.com
+
+  web:
+    image: mesame-web:latest
+    ports: ["3001:3001"]
+    volumes: ["mesame-data:/app/data"]
+    environment:
+      - DATABASE_URL=file:/app/data/mesame.db
+      - MESAME_LLM_URL=http://llm:3000
+      - CORS_ORIGIN=https://app.mesame.com
+    depends_on:
+      llm: { condition: service_healthy }
+```
+
+### Production (CDN + API)
+
+```
+┌──────────────────┐     ┌──────────────────┐
+│   Frontend CDN   │     │   API Server    │
+│   (Vercel, etc.)  │     │   (api.mesame.com)
+│                  │     │                  │
+│   VITE_API_URL ──┼────►│   CORS_ORIGIN ──┼────► Frontend URL
+│   = api.mesame.com│     │                  │
+└──────────────────┘     └──────────────────┘
 ```
 
 ## Directory Structure
@@ -35,167 +126,196 @@ MeSame is built with a modern TypeScript stack, designed for local-first operati
 ```
 mesame/
 ├── src/                    # Backend (Node.js + Fastify)
-│   ├── app.ts              # Fastify app setup
-│   ├── server.ts           # Server entry point
-│   ├── config.ts           # Environment variables
-│   ├── db.ts               # Prisma client
-│   ├── routes/             # API routes
-│   │   ├── health.ts       # Health check endpoint
-│   │   ├── proxy.ts        # LLM proxy endpoint
-│   │   ├── sources.ts      # Source documents CRUD
-│   │   ├── styleProfile.ts # Style profile CRUD
-│   │   └── ui.ts           # Static UI serving
-│   ├── services/           # Business logic
-│   │   ├── fileParser.ts   # Document parsing (PDF, MD, TXT)
-│   │   ├── styleAnalyzer.ts # NLP analysis (TF-IDF, N-Grams)
-│   │   ├── personaPromptGenerator.ts # System Prompt generation
-│   │   ├── styleInjector.ts # Inject style into LLM requests
-│   │   ├── llmProvider.ts   # Multi-provider LLM abstraction
-│   │   ├── styleProfileService.ts # Style profile management
-│   │   └── sourceService.ts # Source document management
-│   └── types/              # TypeScript types
-├── electron/               # Electron desktop app
-│   ├── main.ts             # Electron main process
-│   ├── preload.ts          # Preload script (IPC bridge)
-│   └── renderer/           # React frontend
-│       ├── src/
-│       │   ├── pages/      # UI pages (Chat, Sources, Settings)
-│       │   ├── components/ # Reusable UI components
-│       │   ├── hooks/      # React hooks
-│       │   └── services/   # API clients
-│       ├── index.html      # Entry HTML
-│       └── vite.config.ts  # Vite build config
-├── prisma/                 # Database
-│   ├── schema.prisma       # Database schema
-│   └── dev.db              # SQLite database file
-├── tests/                  # E2E tests (Playwright)
-└── package.json            # Dependencies and scripts
+│   ├── llm-server.ts        # LLM proxy server entry point
+│   ├── web-server.ts        # Web API server entry point
+│   ├── app.ts               # Combined server (CLI mode)
+│   ├── config.ts            # Environment variables
+│   ├── corsConfig.ts         # CORS configuration
+│   ├── db.ts                 # Prisma client
+│   ├── routes/               # API routes
+│   │   ├── health.ts         # Health check endpoint
+│   │   ├── proxy.ts          # LLM proxy endpoint
+│   │   ├── sources.ts        # Source documents CRUD
+│   │   ├── styleProfile.ts   # Style profile CRUD
+│   │   ├── settings.ts       # User settings (language)
+│   │   ├── providers.ts      # Provider management
+│   │   └── ui.ts             # Static UI serving
+│   └── services/             # Business logic
+│       ├── fileParser.ts     # Document parsing (PDF, MD, TXT)
+│       ├── styleAnalyzer.ts  # NLP analysis (TF-IDF, N-Grams)
+│       ├── personaPromptGenerator.ts # System Prompt generation
+│       ├── styleInjector.ts  # Inject style into LLM requests
+│       ├── llmProvider.ts    # Multi-provider LLM abstraction
+│       ├── languageService.ts # Language preference management
+│       └── userSettingsService.ts # User settings management
+├── web/                     # Frontend (React + Vite)
+│   ├── src/
+│   │   ├── components/      # UI components
+│   │   │   ├── chat/         # Chat interface
+│   │   │   └── dashboard/    # Admin dashboard
+│   │   ├── config/          # API configuration
+│   │   │   └── api.ts        # Centralized API URLs
+│   │   ├── hooks/           # React hooks
+│   │   ├── services/        # API clients
+│   │   └── i18n.ts          # Internationalization
+│   ├── .env.example         # Frontend environment template
+│   └── README.md            # Frontend documentation
+├── prisma/                  # Database
+│   ├── schema.prisma        # Database schema
+│   └── dev.db               # SQLite database file
+├── docker-compose.yml       # Docker deployment
+├── Dockerfile               # Multi-stage build
+└── package.json             # Dependencies and scripts
 ```
 
 ## Core Components
 
-### 1. Fastify Backend (src/)
+### 1. Backend Servers
+
+**LLM Server** (`llm-server.ts`):
+- OpenAI-compatible proxy endpoint
+- Style injection into LLM requests
+- Streaming response handling
+
+**Web Server** (`web-server.ts`):
+- REST API for dashboard
+- Provider management
+- Source documents CRUD
+- Conversation history
+- Proxies `/v1/*` requests to LLM server
+
+### 2. Frontend (web/)
 
 **Tech Stack**:
-- **Fastify** — Fast, low-overhead web framework
-- **Prisma** — Type-safe ORM for SQLite
-- **LangChain.js** — LLM orchestration (supports OpenAI, Anthropic, Google, Ollama)
-
-**Key Routes**:
-
-| Route | Method | Description |
-|-------|--------|-------------|
-| `/health` | GET | Health check |
-| `/v1/chat/completions` | POST | OpenAI-compatible proxy endpoint |
-| `/api/sources` | GET, POST, DELETE | Manage source documents |
-| `/api/style-profile` | GET, POST | Manage style profile |
-| `/` | GET | Serve React UI (static files) |
-
-### 2. Style Analysis Pipeline (services/)
-
-**Components**:
-
-1. **fileParser.ts** — Extracts text from PDF, MD, TXT
-   - Uses `pdf-parse` for PDF files
-   - Native parsing for Markdown and plain text
-
-2. **styleAnalyzer.ts** — NLP analysis
-   - **TF-IDF** (Term Frequency-Inverse Document Frequency) for keyword extraction
-   - **N-Grams** (bigrams, trigrams) for phrase detection
-   - **Metrics**: Average sentence length, lexical richness (type-token ratio)
-   - Uses `natural` and `compromise` libraries
-
-3. **personaPromptGenerator.ts** — System Prompt synthesis
-   - Combines extracted patterns into a coherent style description
-   - Generates instructions for LLM to mimic user's style
-
-4. **styleInjector.ts** — Request modification
-   - Intercepts OpenAI-compatible requests
-   - Prepends style System Prompt to messages
-   - Forwards modified request to target LLM
-
-5. **llmProvider.ts** — Multi-provider abstraction
-   - Unified interface for OpenAI, Anthropic, Google, Ollama
-   - Handles streaming (SSE) responses
-   - LangChain-based implementation
-
-### 3. Electron Desktop App (electron/)
-
-**Tech Stack**:
-- **Electron** — Cross-platform desktop framework
 - **React** — UI library
-- **Vite** — Fast build tool
-- **Tailwind CSS + Shadcn/UI** — Styling
+- **Vite** — Build tool
+- **Mantine** — UI components
+- **Tailwind CSS** — Styling
+- **React Router** — Navigation
+- **i18next** — Internationalization
 
-**Main Process (main.ts)**:
-- Creates BrowserWindow
-- Starts embedded Fastify server
-- Handles IPC communication
+**Key Features**:
+- CDN-ready static build
+- Configurable API URL via `VITE_API_URL`
+- Real-time streaming chat (SSE)
+- Responsive dashboard
 
-**Renderer Process (renderer/)**:
-- React-based admin dashboard
-- Pages: Chat, Sources, Style Profile, Logs, Settings
-- Real-time streaming chat interface (SSE)
-
-### 4. Database (Prisma + SQLite)
-
-**Schema**:
+### 3. Database Schema
 
 ```prisma
 model Source {
-  id         String   @id @default(uuid())
-  filename   String
-  content    String   // Extracted text
-  createdAt  DateTime @default(now())
+  id        String          @id @default(uuid())
+  title     String
+  content   String
+  createdAt DateTime        @default(now())
+  profiles  ProfileSource[]
 }
 
 model StyleProfile {
-  id            String   @id @default(uuid())
-  systemPrompt  String   // Generated style prompt
-  patterns      String   // JSON: TF-IDF keywords, N-Grams
-  metrics       String   // JSON: sentence length, lexical richness
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id            String          @id @default(uuid())
+  name          String
+  personaPrompt String
+  metrics       String
+  isActive      Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  sources       ProfileSource[]
+}
+
+model Provider {
+  id          Int      @id @default(autoincrement())
+  type        String
+  name        String   @unique
+  displayName String
+  baseUrl     String
+  apiKey      String?
+  enabled     Boolean  @default(false)
+  priority    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  title     String
+  messages  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserSettings {
+  id       Int    @id @default(1)
+  language String @default("en")
 }
 ```
 
-**Operations**:
-- `db:generate` — Generate Prisma client from schema
-- `db:push` — Sync schema to SQLite file
-- `db:seed` — Insert sample data
-- `db:studio` — Open Prisma Studio (GUI for database)
+## Environment Variables
+
+### Backend (Server)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `MESAME_LLM_PORT` | `3000` | LLM proxy server port |
+| `MESAME_LLM_HOST` | `0.0.0.0` | LLM server host |
+| `MESAME_WEB_PORT` | `3001` | Web API server port |
+| `MESAME_WEB_HOST` | `0.0.0.0` | Web server host |
+| `MESAME_LLM_URL` | `http://localhost:3000` | LLM server URL (for web server) |
+| `MESAME_LOG_LEVEL` | `info` | Logging level |
+| `CORS_ORIGIN` | `*` (all) | Allowed origins for CORS |
+| `DATABASE_URL` | `file:./data/mesame.db` | SQLite database path |
+
+### Frontend (Web)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_API_URL` | (empty) | Backend API URL for CDN deployment |
+
+**Development**: Leave `VITE_API_URL` empty — Vite proxies requests to backend.
+
+**Production (CDN)**: Set `VITE_API_URL=https://api.mesame.com`
 
 ## Data Flow
 
 ### Style Analysis Flow
 
 ```
-User uploads document
+User uploads document (PDF, MD, TXT)
          ↓
 fileParser.ts → Extract text
          ↓
-styleAnalyzer.ts → Analyze patterns
+styleAnalyzer.ts → Analyze patterns (TF-IDF, N-Grams)
          ↓
 personaPromptGenerator.ts → Generate System Prompt
          ↓
-Save to StyleProfile table (DB)
+Save to StyleProfile table (SQLite)
 ```
 
-### Proxy Request Flow
+### Chat Request Flow
 
 ```
-Client sends POST /v1/chat/completions
+User sends chat message (POST /v1/chat/completions)
          ↓
-styleInjector.ts → Fetch style profile from DB
+Web Server receives request
          ↓
-Inject System Prompt into messages
+Proxy to LLM Server (http://llm:3000/v1/chat/completions)
          ↓
-llmProvider.ts → Forward to target LLM
+LLM Server:
+  1. Fetch active style profile from database
+  2. Fetch user's language preference
+  3. Inject style + language into system prompt
+  4. Forward to configured LLM provider
+  5. Stream response (SSE)
          ↓
-Stream response back to client (SSE)
+Return streaming response to user
 ```
 
 ## Tech Choices
+
+### Why Two Servers?
+
+- **Separation of concerns**: LLM proxy is stateless, Web API has database
+- **Scalability**: LLM server can be scaled independently
+- **Security**: API keys only in LLM server, database only in web server
 
 ### Why Fastify?
 
@@ -209,74 +329,50 @@ Stream response back to client (SSE)
 - **Zero Config** — Single file, no server
 - **Prisma Support** — Type-safe queries
 
-### Why LangChain?
+### Why React + Vite?
 
-- **Multi-Provider** — Single API for OpenAI, Anthropic, Google, Ollama
-- **Streaming** — Native SSE support
-- **Ecosystem** — Rich tooling for LLM orchestration
-
-### Why Electron?
-
-- **Cross-Platform** — Single codebase for Windows, macOS, Linux
-- **Embedded Server** — No separate backend process
-- **Native Integration** — Access to OS APIs (file system, notifications)
+- **Fast Development** — Hot reload, fast builds
+- **CDN-Ready** — Static files can be deployed anywhere
+- **Modern Stack** — TypeScript, Tailwind, component libraries
 
 ## Testing
-
-**Unit Tests** (Vitest):
-- `src/services/**/*.test.ts` — Business logic tests
-- Coverage: TF-IDF, N-Grams, style injection, LLM providers
-
-**E2E Tests** (Playwright):
-- `tests/**/*.spec.ts` — Full app workflows
-- Coverage: Document upload, style analysis, chat interface
-
-**Run Tests**:
 
 ```bash
 npm run test              # Unit tests
 npm run test:coverage     # Unit tests with coverage
-npm run test:e2e          # E2E tests
-```
-
-## Build Pipeline
-
-**Backend Build**:
-```bash
-npm run build             # Compile TypeScript to dist/
-```
-
-**Electron Build**:
-```bash
-npm run build:all         # Build backend + Electron + renderer
-npm run pack              # Package without distributing
-npm run dist              # Build installers (AppImage, DMG, EXE)
-```
-
-**Validation**:
-```bash
+npm run test:e2e          # E2E tests (Playwright)
 npm run validate          # QA + typecheck + tests
 ```
 
-## Deployment
+## Build & Deployment
 
-### Server-Only (CLI)
+### Development
 
-1. Build: `npm run build`
-2. Start: `npm start`
-3. Access: `http://localhost:3000`
+```bash
+npm run dev               # Start both servers with hot reload
+npm run dev:llm           # Start LLM server only
+npm run dev:web           # Start web server + Vite frontend
+```
 
-### Electron Desktop App
+### Production (Docker)
 
-1. Build: `npm run dist`
-2. Output: `dist/electron-app/`
-3. Distribute: `.AppImage`, `.dmg`, `.exe` installers
+```bash
+docker compose up -d      # Start services
+docker compose logs -f    # View logs
+docker compose down       # Stop services
+```
+
+### Production (Manual)
+
+```bash
+npm run build:all        # Build backend + frontend
+npm run llm              # Start LLM server (dist/server/llm-server.js)
+npm run web              # Start web server (dist/server/web-server.js)
+```
 
 ## Security Considerations
 
-- **Local-Only** — Server binds to `127.0.0.1` (no external access)
-- **No Auth** — Proxy does not validate API keys (assumes trusted local environment)
-- **Document Privacy** — All analysis happens locally (no cloud upload)
-- **API Key Storage** — Stored in environment variables or Electron secure storage
-
-> For production deployment, consider adding authentication and HTTPS support.
+- **CORS Configuration** — Restrict origins in production via `CORS_ORIGIN`
+- **Local-First** — Database never leaves your machine
+- **API Key Isolation** — Keys stored only in LLM server
+- **No Telemetry** — No usage data sent externally

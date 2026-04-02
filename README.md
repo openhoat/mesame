@@ -37,35 +37,47 @@ MeSame captures **your** writing style — tone, syntax, vocabulary patterns —
 - **Universal Proxy**: OpenAI-compatible API proxy — swap your endpoint URL and any app gets your style
 - **Multi-Provider Support**: Works with OpenAI (GPT-4o, GPT-4), Claude (Anthropic), Google AI (Gemini), and Ollama (local models)
 - **Admin Dashboard**: Import sources, visualize detected patterns, manage API keys, browse chat logs
-- **Electron App**: Cross-platform desktop application with embedded chat interface
 - **Real-time Streaming**: Server-Sent Events (SSE) support for streaming responses
-- **Anonymization**: Optional regex-based rules to mask sensitive data before sending to LLM
+- **Multi-language**: Supports 10+ languages for style detection and responses
+- **CDN-Ready Frontend**: Deploy the web UI to any static hosting (Vercel, Netlify, Cloudflare Pages)
 
 ## 🏗️ Architecture
 
-### MeSame Engine (Local)
+### Two-Server Design
 
-1. **Document Parsing**: Extracts text from PDF, Markdown, and plain text files
-2. **Statistical Analysis**: TF-IDF word frequencies and N-Gram key expressions
-3. **Linguistic Metrics**: Sentence length, lexical richness, tone detection
-4. **Prompt Generation**: Automatic synthesis of a style System Prompt
+```
+┌─────────────────────┐     ┌─────────────────────┐
+│   Frontend (Web)    │     │   Backend (API)     │
+│   React + Vite      │     │   Fastify + Node.js  │
+│                     │     │                     │
+│   Port: any (CDN)   │────►│   Port: 3001        │
+│   VITE_API_URL      │     │                     │
+└─────────────────────┘     └──────────┬──────────┘
+                                       │
+                                       │ Proxy /v1/*
+                                       ▼
+                            ┌─────────────────────┐
+                            │   LLM Proxy Server  │
+                            │   Port: 3000       │
+                            │                     │
+                            │   Style Injection  │
+                            │   Multi-Provider   │
+                            └─────────────────────┘
+```
 
-### MeSame Proxy (Gateway)
+### Key Benefits
 
-OpenAI-compatible intermediate server:
-1. **Intercept**: Receives `POST /v1/chat/completions` requests
-2. **Inject**: Adds the style profile to System Prompt context
-3. **Route**: Forwards to target LLM (Cloud API or Local via Ollama)
-4. **Stream**: Handles real-time response streaming (SSE)
+- **Separation of Concerns**: LLM proxy is stateless, API server manages database
+- **Scalability**: Deploy frontend on CDN, backend on your infrastructure
+- **Security**: CORS configuration, no external database required
 
 ## 🛠️ Tech Stack
 
 | Component | Technology |
 | :--- | :--- |
 | **Language** | TypeScript (Fullstack) |
-| **Frontend** | React.js + Vite + Tailwind CSS + Shadcn/UI |
+| **Frontend** | React + Vite + Mantine + Tailwind CSS |
 | **Backend** | Node.js + Fastify (Proxy & API) |
-| **Desktop** | Electron (Cross-platform) |
 | **AI Orchestration** | LangChain.js |
 | **NLP Local** | Natural & Compromise.js |
 | **Database** | SQLite + Prisma ORM |
@@ -73,17 +85,23 @@ OpenAI-compatible intermediate server:
 
 ## 📥 Quick Install
 
-### Option A — Download Prebuilt Binaries
+### Option A — Docker (Recommended)
 
-Download the latest release for your platform:
+```bash
+# Clone the repository
+git clone https://github.com/openhoat/mesame.git
+cd mesame
 
-| Platform | Format | Download |
-|----------|--------|----------|
-| **Linux** | AppImage | [MeSame-0.1.0.AppImage](https://github.com/openhoat/mesame/releases/latest/download/MeSame-0.1.0.AppImage) |
-| **macOS** | DMG (ARM) | [MeSame-0.1.0-arm64.dmg](https://github.com/openhoat/mesame/releases/latest/download/MeSame-0.1.0-arm64.dmg) |
-| **Windows** | Installer | [MeSame.Setup.0.1.0.exe](https://github.com/openhoat/mesame/releases/latest/download/MeSame.Setup.0.1.0.exe) |
+# Start both services
+docker compose up -d
 
-> See all versions on the [Releases page](https://github.com/openhoat/mesame/releases).
+# View logs
+docker compose logs -f
+```
+
+**Services:**
+- **LLM API**: `http://localhost:3000` — OpenAI-compatible proxy endpoint
+- **Web Dashboard**: `http://localhost:3001` — Admin interface for configuring providers
 
 ### Option B — Run from Source
 
@@ -91,6 +109,12 @@ Download the latest release for your platform:
 git clone https://github.com/openhoat/mesame.git
 cd mesame
 npm install
+```
+
+**Initialize database:**
+```bash
+npm run db:generate
+npm run db:push
 ```
 
 **Start the LLM API server:**
@@ -113,30 +137,6 @@ npm run dev
 **Prerequisites**: Node.js 22+, npm
 
 > See the [Getting Started guide](https://openhoat.github.io/mesame/guide/getting-started) for detailed setup instructions including provider configuration.
-
-### Option C — Docker
-
-Run both services with Docker Compose:
-
-```bash
-# Build and start both LLM and Web services
-docker compose up -d
-
-# View logs
-docker compose logs -f
-
-# Stop services
-docker compose down
-```
-
-**Services:**
-- **LLM API**: `http://localhost:3000` — OpenAI-compatible proxy endpoint
-- **Web Dashboard**: `http://localhost:3001` — Admin interface for configuring providers
-
-**Architecture:**
-- Both services share a SQLite database (persisted in a Docker volume)
-- Providers are configured via the web dashboard (stored in database)
-- The web service proxies `/v1/chat/completions` and `/v1/models` to the LLM service
 
 ## 💻 CLI Usage
 
@@ -211,6 +211,7 @@ CLI options override environment variables. If no CLI option is provided, MeSame
 | `MESAME_WEB_PORT` | Web server port | `3001` |
 | `MESAME_WEB_HOST` | Web server host | `0.0.0.0` |
 | `MESAME_LLM_URL` | LLM server URL (for proxy) | `http://localhost:3000` |
+| `CORS_ORIGIN` | Allowed CORS origins | `*` (all origins) |
 
 **Provider Configuration (CLI only):**
 | Variable | Description | Default |
@@ -228,12 +229,30 @@ CLI options override environment variables. If no CLI option is provided, MeSame
 | `ANTHROPIC_API_KEY` | Anthropic API key |
 | `GOOGLE_API_KEY` | Google AI API key |
 
+## 🌐 CDN Deployment
+
+The frontend can be deployed to any static hosting service:
+
+```bash
+# Build with API URL
+VITE_API_URL=https://api.mesame.com npm run build:web
+
+# Output: dist/web/
+# Deploy to Vercel, Netlify, Cloudflare Pages, etc.
+```
+
+**Backend CORS Configuration:**
+
+```bash
+# In backend environment
+CORS_ORIGIN=https://app.mesame.com
+```
+
 ## 📖 Documentation
 
 - [Getting Started](https://openhoat.github.io/mesame/guide/getting-started) — Installation and provider setup
 - [Usage](https://openhoat.github.io/mesame/guide/usage) — How to use the admin dashboard and configure style profiles
 - [Configuration](https://openhoat.github.io/mesame/guide/configuration) — Provider settings and environment variables
-- [Build Executables](https://openhoat.github.io/mesame/guide/build) — Package the app for distribution
 - [Architecture](https://openhoat.github.io/mesame/guide/architecture) — Project structure and design overview
 - [Troubleshooting](https://openhoat.github.io/mesame/guide/troubleshooting) — Common issues and solutions
 - [Contributing](https://openhoat.github.io/mesame/guide/contributing) — How to contribute to the project
@@ -246,8 +265,8 @@ MeSame is designed with a local-first philosophy to protect your data.
 - **Zero-Cloud Analysis**: Document parsing and style analysis run entirely on your machine.
 - **Local-First**: The proxy server binds to `127.0.0.1` by default, ensuring no external network access.
 - **Data Protection**: Your style profiles are stored in a local SQLite database. No telemetry or usage data is collected.
-- **Anonymization**: Optional regex-based rules allow you to mask sensitive information before it's sent to any LLM provider.
-- **API Keys**: Keys are stored locally in environment files or via Electron's secure storage.
+- **CORS Protection**: Configure allowed origins for production deployment.
+- **API Keys**: Keys are stored locally in environment files or database.
 
 For security vulnerabilities, please contact: openhoat@gmail.com
 
