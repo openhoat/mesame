@@ -7,7 +7,7 @@ services:
     container_name: mesame-llm
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3001:3001"
     volumes:
       - mesame-data:/app/data
     environment:
@@ -16,7 +16,7 @@ services:
       - "host.docker.internal:host-gateway"
     command: ["npm", "run", "llm"]
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -30,12 +30,12 @@ services:
     container_name: mesame-web
     restart: unless-stopped
     ports:
-      - "3001:3001"
+      - "3000:3000"
     volumes:
       - mesame-data:/app/data
     environment:
       - DATABASE_URL=file:/app/data/mesame.db
-      - MESAME_LLM_URL=http://llm:3000
+      - MESAME_LLM_URL=http://llm:3001
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command: ["npm", "run", "web"]
@@ -43,7 +43,7 @@ services:
       llm:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3001/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -57,14 +57,14 @@ flowchart TB
     subgraph WebServer["Backend API"]
         direction TB
         WS["Fastify + Node.js"]
-        WP["Port: 3001"]
+        WP["Port: 3000"]
     end
 
     subgraph LLMProxy["LLM Proxy Server"]
         direction TB
         LP["Style Injection"]
         LM["Multi-Provider"]
-        LPort["Port: 3000"]
+        LPort["Port: 3001"]
     end
 
     Frontend -->|"HTTP/REST"| WebServer
@@ -106,8 +106,8 @@ docker compose logs -f
 ```
 
 **Services:**
-- **LLM API**: `http://localhost:3000` — OpenAI-compatible proxy endpoint
-- **Web Dashboard**: `http://localhost:3001` — Admin interface for configuring providers
+- **Web Dashboard**: `http://localhost:3000` — Admin interface for configuring providers
+- **LLM API**: `http://localhost:3001` — OpenAI-compatible proxy endpoint
 
 ### Option B — Run from Source
 
@@ -168,7 +168,7 @@ mesame [options]
 
 | Option | Alias | Description | Default |
 |--------|-------|-------------|---------|
-| `--port <number>` | `-p` | Port to listen on | `3000` |
+| `--port <number>` | `-p` | Port to listen on | `3001` |
 | `--host <string>` | `-h` | Host to bind to | `localhost` |
 | `--provider <provider>` | | LLM provider (`openai`, `anthropic`, `google`, `ollama`, `mock`) | `ollama` |
 | `--model <string>` | `-m` | Model to use | `gpt-4o` (varies by provider) |
@@ -181,7 +181,7 @@ mesame [options]
 ### Examples
 
 ```bash
-# Start with default settings (Ollama on port 3000)
+# Start with default settings (Ollama on port 3001)
 mesame
 
 # Start on custom port and host
@@ -207,16 +207,16 @@ CLI options override environment variables. If no CLI option is provided, MeSame
 **LLM API Server:**
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `MESAME_LLM_PORT` | LLM server port | `3000` |
-| `MESAME_LLM_HOST` | LLM server host | `0.0.0.0` |
+| `MESAME_LLM_PORT` | LLM server port | `3001` |
+| `MESAME_LLM_HOST` | LLM server host | `localhost` |
 | `MESAME_LOG_LEVEL` | Logging level | `info` |
 
 **Web Dashboard:**
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `MESAME_WEB_PORT` | Web server port | `3001` |
-| `MESAME_WEB_HOST` | Web server host | `0.0.0.0` |
-| `MESAME_LLM_URL` | LLM server URL (for proxy) | `http://localhost:3000` |
+| `MESAME_WEB_PORT` | Web server port | `3000` |
+| `MESAME_WEB_HOST` | Web server host | `localhost` |
+| `MESAME_LLM_URL` | LLM server URL (for proxy) | `http://localhost:3001` |
 | `CORS_ORIGIN` | Allowed CORS origins | `*` (all origins) |
 
 **Provider Configuration (CLI only):**

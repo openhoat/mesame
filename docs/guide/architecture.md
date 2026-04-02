@@ -71,11 +71,11 @@ flowchart LR
     end
 
     subgraph LLMDev["LLM Server"]
-        LS["localhost:3000"]
+        LS["localhost:3001"]
     end
 
     subgraph WebDev["Web Server"]
-        WS["localhost:3001"]
+        WS["localhost:3000"]
     end
 
     VP1 --> LS
@@ -90,12 +90,12 @@ flowchart TB
     subgraph Docker["Docker Compose"]
         subgraph LLMContainer["LLM Service"]
             LLM["mesame-llm:latest"]
-            LLMP["Port 3000"]
+            LLMP["Port 3001"]
         end
 
         subgraph WebContainer["Web Service"]
             WEB["mesame-web:latest"]
-            WEBP["Port 3001"]
+            WEBP["Port 3000"]
         end
 
         subgraph Volume["Shared Volume"]
@@ -118,7 +118,7 @@ flowchart TB
 services:
   llm:
     image: mesame-llm:latest
-    ports: ["3000:3000"]
+    ports: ["3001:3001"]
     volumes: ["mesame-data:/app/data"]
     environment:
       - DATABASE_URL=file:/app/data/mesame.db
@@ -126,11 +126,11 @@ services:
 
   web:
     image: mesame-web:latest
-    ports: ["3001:3001"]
+    ports: ["3000:3000"]
     volumes: ["mesame-data:/app/data"]
     environment:
       - DATABASE_URL=file:/app/data/mesame.db
-      - MESAME_LLM_URL=http://llm:3000
+      - MESAME_LLM_URL=http://llm:3001
       - CORS_ORIGIN=https://app.mesame.com
     depends_on:
       llm: { condition: service_healthy }
@@ -288,11 +288,11 @@ model UserSettings {
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `MESAME_LLM_PORT` | `3000` | LLM proxy server port |
-| `MESAME_LLM_HOST` | `0.0.0.0` | LLM server host |
-| `MESAME_WEB_PORT` | `3001` | Web API server port |
-| `MESAME_WEB_HOST` | `0.0.0.0` | Web server host |
-| `MESAME_LLM_URL` | `http://localhost:3000` | LLM server URL (for web server) |
+| `MESAME_LLM_PORT` | `3001` | LLM proxy server port |
+| `MESAME_LLM_HOST` | `localhost` | LLM server host |
+| `MESAME_WEB_PORT` | `3000` | Web API server port |
+| `MESAME_WEB_HOST` | `localhost` | Web server host |
+| `MESAME_LLM_URL` | `http://localhost:3001` | LLM server URL (for web server) |
 | `MESAME_LOG_LEVEL` | `info` | Logging level |
 | `CORS_ORIGIN` | `*` (all) | Allowed origins for CORS |
 | `DATABASE_URL` | `file:./data/mesame.db` | SQLite database path |

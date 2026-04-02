@@ -28,8 +28,8 @@ describe('config', () => {
     const { loadConfig } = await import('./config.js')
     const cfg = loadConfig()
 
-    expect(cfg.llmPort).toBe(3000)
-    expect(cfg.llmHost).toBe('0.0.0.0')
+    expect(cfg.llmPort).toBe(3001)
+    expect(cfg.llmHost).toBe('localhost')
     expect(cfg.provider).toBe('ollama')
     expect(cfg.targetBaseUrl).toBe('http://localhost:11434')
     expect(cfg.targetApiKey).toBeUndefined()

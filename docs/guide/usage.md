@@ -6,8 +6,7 @@ The MeSame admin dashboard provides a complete interface for managing your style
 
 ### Accessing the Dashboard
 
-- **Electron App**: Dashboard is built-in at launch
-- **Web UI**: Navigate to `http://localhost:3000` after starting the server
+- **Web UI**: Navigate to `http://localhost:3000` after starting the server (or your configured web server port)
 
 ### Navigation
 
@@ -119,13 +118,13 @@ Use logs to:
 MeSame provides an OpenAI-compatible proxy at:
 
 ```
-http://localhost:3000/v1/chat/completions
+http://localhost:3001/v1/chat/completions
 ```
 
 ### Example: curl
 
 ```bash
-curl http://localhost:3000/v1/chat/completions \
+curl http://localhost:3001/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "gpt-4o",
@@ -141,7 +140,7 @@ curl http://localhost:3000/v1/chat/completions \
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:3000/v1",
+    base_url="http://localhost:3001/v1",
     api_key="dummy"  # Not checked by proxy
 )
 
@@ -161,7 +160,7 @@ print(response.choices[0].message.content)
 import OpenAI from 'openai'
 
 const client = new OpenAI({
-  baseURL: 'http://localhost:3000/v1',
+  baseURL: 'http://localhost:3001/v1',
   apiKey: 'dummy' // Not checked by proxy
 })
 
@@ -181,7 +180,7 @@ console.log(response.choices[0].message.content)
 from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(
-    base_url="http://localhost:3000/v1",
+    base_url="http://localhost:3001/v1",
     api_key="dummy",
     model="gpt-4o"
 )

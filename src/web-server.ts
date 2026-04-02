@@ -5,7 +5,7 @@ import { parseCorsOrigin } from './corsConfig.js'
 import { prisma } from './db.js'
 
 // LLM server URL for proxying requests
-const LLM_URL = process.env.MESAME_LLM_URL || 'http://localhost:3000'
+const LLM_URL = process.env.MESAME_LLM_URL || 'http://localhost:3001'
 
 async function loadEnvIfNeeded(): Promise<void> {
   // Load environment variables from .env.test if in test mode
@@ -21,8 +21,8 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
   logger.info('Building Web Server...')
 
   // Web server port (different from proxy)
-  const webPort = Number(process.env.MESAME_WEB_PORT) || 3001
-  const webHost = process.env.MESAME_WEB_HOST ?? '0.0.0.0'
+  const webPort = Number(process.env.MESAME_WEB_PORT) || 3000
+  const webHost = process.env.MESAME_WEB_HOST ?? 'localhost'
 
   const logLevel = process.env.MESAME_LOG_LEVEL ?? 'info'
   const loggerConfig =

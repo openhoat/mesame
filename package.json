@@ -110,11 +110,13 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "4.7.0",
     "@vitest/coverage-v8": "^4.1.2",
+    "mermaid": "11.14.0",
     "prisma": "7.6.0",
     "tailwindcss": "4.2.2",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
     "vitepress": "1.6.4",
+    "vitepress-plugin-mermaid": "2.0.17",
     "vitest": "^4.1.2"
   },
   "wireit": {

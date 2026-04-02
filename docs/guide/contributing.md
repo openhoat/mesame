@@ -135,14 +135,14 @@ Then open a Pull Request on GitHub with:
 ### Running the App
 
 ```bash
-# Backend only
+# Start both servers (LLM + Web)
 npm run dev
 
-# Electron app
-npm run dev:electron
+# Start LLM server only
+npm run dev:llm
 
-# Frontend only (for UI development)
-npm run dev:renderer
+# Start Web server only
+npm run dev:web
 ```
 
 ### Testing
@@ -211,7 +211,7 @@ See the [Architecture guide](/guide/architecture) for a detailed overview.
 **Key directories**:
 
 - `src/` — Backend (Fastify server)
-- `electron/` — Electron main and renderer
+- `web/` — Frontend (React + Vite)
 - `prisma/` — Database schema and migrations
 - `tests/` — E2E tests (Playwright)
 

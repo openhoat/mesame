@@ -67,7 +67,7 @@ async function main() {
     update: {
       type: 'mock',
       displayName: 'Mock Provider',
-      baseUrl: 'http://localhost:3000',
+      baseUrl: 'http://localhost:3001',
       enabled: true,
       priority: 0,
     },
@@ -75,7 +75,7 @@ async function main() {
       type: 'mock',
       name: 'mock',
       displayName: 'Mock Provider',
-      baseUrl: 'http://localhost:3000',
+      baseUrl: 'http://localhost:3001',
       enabled: true,
       priority: 0,
     },

@@ -8,8 +8,8 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), '')
 
-  const llmPort = Number(env.MESAME_LLM_PORT) || 3000
-  const webPort = Number(env.MESAME_WEB_PORT) || 3001
+  const llmPort = Number(env.MESAME_LLM_PORT) || 3001
+  const webPort = Number(env.MESAME_WEB_PORT) || 3000
   const devPort = Number(env.MESAME_DEV_PORT) || 5173
 
   return {

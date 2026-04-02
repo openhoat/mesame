@@ -2,34 +2,29 @@
 
 ## Quick Install
 
-Download the latest release for your platform:
-
-| Platform | Format | Download |
-|----------|--------|----------|
-| **Linux** | AppImage | [MeSame-0.1.0.AppImage](https://github.com/openhoat/mesame/releases/latest/download/MeSame-0.1.0.AppImage) |
-| **macOS** | DMG (ARM) | [MeSame-0.1.0-arm64.dmg](https://github.com/openhoat/mesame/releases/latest/download/MeSame-0.1.0-arm64.dmg) |
-| **Windows** | Installer | [MeSame.Setup.0.1.0.exe](https://github.com/openhoat/mesame/releases/latest/download/MeSame.Setup.0.1.0.exe) |
-
-> See all versions on the [Releases page](https://github.com/openhoat/mesame/releases).
-
-### Linux (AppImage)
+### Docker (Recommended)
 
 ```bash
-chmod +x MeSame-0.1.0.AppImage
-./MeSame-0.1.0.AppImage
+# Clone the repository
+git clone https://github.com/openhoat/mesame.git
+cd mesame
+
+# Start both services
+docker compose up -d
+
+# View logs
+docker compose logs -f
 ```
 
-### macOS
+**Services:**
+- **Web Dashboard**: `http://localhost:3000` — Admin interface for configuring providers
+- **LLM API**: `http://localhost:3001` — OpenAI-compatible proxy endpoint
 
-Open the `.dmg` file and drag MeSame to your Applications folder.
-
-### Windows
-
-Run the `MeSame.Setup.0.1.0.exe` installer and follow the steps.
-
-## Development Setup
+### Run from Source
 
 If you want to run MeSame from source:
+
+## Development Setup
 
 ### Prerequisites
 
@@ -107,42 +102,31 @@ npm run db:push
 
 ### Run the Application
 
-#### Option A — Server Only (CLI)
+#### Option A — Both Servers (Recommended for Development)
 
 ```bash
 npm run dev
 ```
 
-Server will start at `http://localhost:3000`.
+This starts both the LLM proxy server and the web dashboard with hot reload:
+- **Web Dashboard**: `http://localhost:3000`
+- **LLM API**: `http://localhost:3001`
 
-#### Option B — Electron Desktop App
+#### Option B — Individual Servers
 
+Terminal 1 (LLM Server):
 ```bash
-npm run dev:electron
+npm run dev:llm
 ```
 
-This will:
-1. Build the renderer (React UI)
-2. Build the Electron main process
-3. Launch the Electron window
-
-#### Option C — Development with Hot Reload
-
-Terminal 1 (Backend):
+Terminal 2 (Web Server):
 ```bash
-npm run dev
+npm run dev:web
 ```
-
-Terminal 2 (Frontend):
-```bash
-npm run dev:renderer
-```
-
-Then open `http://localhost:5173` in your browser.
 
 ## First Use
 
-1. **Launch MeSame** (Electron app or web UI at `http://localhost:3000`)
+1. **Launch MeSame** — Open `http://localhost:3000` in your browser
 2. **Configure Provider** — Go to Admin → Settings and select your LLM provider
 3. **Upload Documents** — Go to Admin → Sources and import your documents (PDF, MD, TXT)
 4. **Analyze Style** — Click "Analyze" to generate your style profile

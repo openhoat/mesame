@@ -24,8 +24,8 @@ features:
     details: Works with OpenAI, Claude, Google AI (Gemini), and Ollama. Switch providers without losing your personalization.
   - title: OpenAI-Compatible Proxy
     details: Drop-in replacement for any OpenAI-compatible app. Just change the base URL and your style follows.
-  - title: Electron Desktop App
-    details: Cross-platform desktop application with admin dashboard, chat interface, and real-time logs.
+  - title: Web Dashboard
+    details: Modern web interface for managing sources, style profiles, and chat — accessible from any browser.
 ---
 
 ## Why MeSame?

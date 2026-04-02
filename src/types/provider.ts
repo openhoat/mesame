@@ -48,7 +48,7 @@ export const PROVIDER_TYPES: Record<ProviderType, ProviderTypeInfo> = {
   mock: {
     type: 'mock',
     displayName: 'Mock Provider',
-    defaultBaseUrl: 'http://localhost:3000',
+    defaultBaseUrl: 'http://localhost:3001',
     requiresApiKey: false,
   },
 }

@@ -34,7 +34,7 @@ const PROVIDER_CONFIGS: Record<Provider, ProviderConfig> = {
   },
   mock: {
     name: 'Mock',
-    defaultBaseUrl: 'http://localhost:3000',
+    defaultBaseUrl: 'http://localhost:3001',
     apiKeyEnvVar: '',
     requiresApiKey: false,
   },
@@ -95,8 +95,8 @@ export function loadConfig(): AppConfig {
   const defaultModel = provider === 'ollama' ? 'gemma3:1b' : 'gpt-4o'
 
   return {
-    llmPort: Number(process.env.MESAME_LLM_PORT) || 3000,
-    llmHost: process.env.MESAME_LLM_HOST ?? '0.0.0.0',
+    llmPort: Number(process.env.MESAME_LLM_PORT) || 3001,
+    llmHost: process.env.MESAME_LLM_HOST ?? 'localhost',
     provider,
     targetBaseUrl: process.env.MESAME_TARGET_BASE_URL ?? providerConfig.defaultBaseUrl,
     targetApiKey: getProviderApiKey(provider),

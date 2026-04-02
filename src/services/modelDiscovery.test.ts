@@ -78,7 +78,7 @@ describe('modelDiscovery', () => {
         type: 'openai' as const,
         name: 'mock',
         displayName: 'Mock',
-        baseUrl: 'http://localhost:3000',
+        baseUrl: 'http://localhost:3001',
         apiKey: null,
         enabled: true,
         priority: 3,
@@ -89,7 +89,7 @@ describe('modelDiscovery', () => {
       const models = await listProviderModels(provider)
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'http://localhost:3000/v1/models',
+        'http://localhost:3001/v1/models',
         expect.objectContaining({
           headers: expect.objectContaining({
             'Content-Type': 'application/json',

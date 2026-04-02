@@ -99,7 +99,7 @@ async function uiRoutes(fastify: FastifyInstance): Promise<void> {
         <body style="font-family: sans-serif; background: #1a1a2e; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
           <div style="text-align: center;">
             <h1>MeSame</h1>
-            <p>Server running at <a href="http://localhost:3000/health" style="color: #667eea;">/health</a></p>
+            <p>Server running at <a href="http://localhost:3001/health" style="color: #667eea;">/health</a></p>
             <p style="color: #94a3b8; font-size: 0.9rem;">Renderer not found at: ${rendererPath}</p>
           </div>
         </body>

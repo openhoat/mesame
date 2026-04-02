@@ -140,11 +140,14 @@ export MESAME_MODEL=gemini-1.5-pro
 **Solution**: Ensure server is running:
 
 ```bash
-# Check server is running
+# Check LLM server is running
+curl http://localhost:3001/health
+
+# Check Web server is running
 curl http://localhost:3000/health
 
 # Verify endpoint exists
-curl -X POST http://localhost:3000/v1/chat/completions \
+curl -X POST http://localhost:3001/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model":"gpt-4o","messages":[{"role":"user","content":"test"}]}'
 ```
@@ -181,28 +184,15 @@ curl http://localhost:3000/api/style-profile
 
 ## Frontend Issues
 
-### Electron App Won't Start
-
-**Error**: `Error: Cannot find module 'electron'`
-
-**Solution**: Rebuild Electron:
-
-```bash
-rm -rf node_modules package-lock.json
-npm install
-npm run build:all
-npm run dev:electron
-```
-
 ### UI Not Loading
 
 **Error**: Blank screen or `Failed to load resource`
 
-**Solution**: Rebuild renderer:
+**Solution**: Rebuild frontend:
 
 ```bash
-npm run build:renderer
-npm run dev:electron
+npm run build:web
+npm run dev
 ```
 
 ### Chat Streaming Not Working
@@ -230,16 +220,6 @@ npm run db:generate  # For Prisma types
 npm run typecheck    # Verify no errors
 ```
 
-### Electron Build Fails
-
-**Error**: `Application entry file "dist/electron/main.js" does not exist`
-
-**Solution**: Build Electron main process:
-
-```bash
-npm run build:electron
-```
-
 ### Vite Build Error
 
 **Error**: `Could not resolve 'X'`
@@ -247,7 +227,7 @@ npm run build:electron
 **Solution**: Check Vite config and rebuild:
 
 ```bash
-npm run build:renderer
+npm run build:web
 ```
 
 ## Performance Issues
