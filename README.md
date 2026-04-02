@@ -91,6 +91,22 @@ flowchart TB
 | **Database** | SQLite + Prisma ORM |
 | **Testing** | Vitest (Unit) + Playwright (E2E) |
 
+## 🗺️ Roadmap
+
+### Planned Features
+
+- **Interactive Questionnaire** — Build your digital twin profile through guided questions
+- **Voice Discussion** — Alternative questionnaire experience with voice input
+- **Mobile Support** — Responsive design and optimized mobile web experience
+- **Keyboard Shortcuts** — Navigate chat interface efficiently
+- **Drag & Drop Upload** — Import documents with a simple drag and drop
+- **Real-time Logs** — WebSocket-based live logging dashboard
+
+### Under Consideration
+
+- **LLM Optimizations** — Prompt compression, caching, and token efficiency improvements
+- **OpenAPI Specification** — Swagger documentation for the proxy API
+
 ## 📥 Quick Install
 
 ### Option A — Docker (Recommended)
