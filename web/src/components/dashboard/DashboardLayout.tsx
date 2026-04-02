@@ -43,29 +43,30 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <AppShell
       navbar={{
-        width: sidebarOpen ? 250 : 80,
+        width: sidebarOpen ? 280 : 80,
         breakpoint: 'sm',
       }}
-      padding="md"
+      padding={{ base: 'sm', md: 'md' }}
     >
       <AppShell.Navbar p="md">
         {/* Logo & Toggle */}
         <AppShell.Section>
           <Group justify="space-between" mb="md">
             {sidebarOpen && (
-              <Text fw={700} size="lg">
+              <Text fw={700} size="lg" className="hidden sm:block">
                 {t('common.appName')}
               </Text>
             )}
             <ActionIcon
               onClick={() => setSidebarOpen(!sidebarOpen)}
               variant="subtle"
+              size="lg"
               style={{
                 marginLeft: sidebarOpen ? 0 : 'auto',
                 marginRight: sidebarOpen ? 0 : 'auto',
               }}
             >
-              {sidebarOpen ? <X size={16} /> : <Menu size={16} />}
+              {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
             </ActionIcon>
           </Group>
         </AppShell.Section>
@@ -81,7 +82,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               active={location.pathname === item.path}
               label={sidebarOpen ? t(item.labelKey) : undefined}
               leftSection={item.icon}
-              style={{ borderRadius: 'var(--mantine-radius-default)' }}
+              style={{ borderRadius: 'var(--mantine-radius-default)', minHeight: '44px' }}
             />
           ))}
         </AppShell.Section>

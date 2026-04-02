@@ -23,38 +23,28 @@ export function ChatHeader({
 }: ChatHeaderProps) {
   const { t } = useTranslation()
   return (
-    <header
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        padding: '12px 20px',
-        background: 'rgba(0, 0, 0, 0.3)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-        flexShrink: 0,
-      }}
-    >
+    <header className="flex items-center gap-3 md:gap-4 px-4 py-3 md:px-5 md:py-4 bg-black/30 border-b border-white/8 shrink-0">
       <img
         src="/app-images/MeSame_icon.png"
         alt={t('chat.header.appName')}
-        style={{ width: '32px', height: '32px', borderRadius: '8px' }}
+        className="w-8 h-8 rounded-lg"
         onError={e => {
           e.currentTarget.style.display = 'none'
         }}
       />
-      <Text size="lg" fw={600} c="white">
+      <Text size="md" fw={600} c="white" className="hidden sm:block">
         {t('chat.header.appName')}
       </Text>
-      <Text size="xs" c="dimmed" ml={8}>
+      <Text size="xs" c="dimmed" ml={4} className="hidden md:block">
         {t('chat.header.tagline')}
       </Text>
-      <div style={{ flex: 1 }} />
+      <div className="flex-1" />
       <Group gap="xs">
         <ModelSelector
           value={selectedModel}
           onChange={onModelChange}
           placeholder={t('chat.selectModel') || 'Select model'}
-          size="xs"
+          size="sm"
         />
         {onNewConversation && (
           <ActionIcon

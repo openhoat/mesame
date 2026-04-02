@@ -68,10 +68,12 @@ export function DashboardHome() {
   }, [])
 
   return (
-    <Stack gap="lg">
+    <Stack gap="md">
       <div>
-        <Title order={1}>{t('dashboard.title')}</Title>
-        <Text c="dimmed">{t('dashboard.subtitle')}</Text>
+        <Title order={2}>{t('dashboard.title')}</Title>
+        <Text c="dimmed" size="sm">
+          {t('dashboard.subtitle')}
+        </Text>
       </div>
 
       {/* Stats Grid */}

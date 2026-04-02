@@ -22,7 +22,7 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
 
   if (messages.length === 0) {
     return (
-      <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-4 scrollbar-thin">
         <WelcomeScreen />
       </div>
     )
@@ -31,7 +31,7 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 scroll-smooth scrollbar-thin"
+      className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-3 md:gap-4 scroll-smooth scrollbar-thin"
     >
       {messages.map(msg => (
         <ChatMessage key={msg.id} message={msg} />
