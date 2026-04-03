@@ -2,6 +2,9 @@
 
 ## 03/04/2026
 
+- **[14:38:06] ✨ [FEAT]** use environment variable for docker registry
+- **[14:32:02] 🔧 [CHORE]** clean up package.json and update docker-compose labels
+- **[14:31:48] 🔧 [CHORE]** update changelog with buildx setup script
 - **[14:29:44] 🔧 [CHORE]** update changelog with buildx setup script
 - **[14:29:29] ✨ [FEAT]** add script to setup docker buildx for multi-arch builds
 - **[14:27:10] 🔧 [CHORE]** update changelog with multi-platform build support
