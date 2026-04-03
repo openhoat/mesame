@@ -64,12 +64,14 @@ services:
     command: ["npm", "run", "start:web"]
     labels:
       - traefik.enable=true
+      - traefik.http.middlewares.mesame-auth.basicauth.users=${MESAME_BASIC_AUTH_HASHES:-admin:$$apr1$$7Lagqqm3$$8J0zXmzTzODskKekVsCxP1}
       - traefik.http.services.mesame-web-svc.loadbalancer.server.port=3000
       - traefik.http.routers.mesame-web-https.rule=Host(`${MESAME_WEB_VIRTUAL_HOST:-mesame.localdomain}`)
       - traefik.http.routers.mesame-web-https.entrypoints=websecure
       - traefik.http.routers.mesame-web-https.tls=true
       - traefik.http.routers.mesame-web-https.tls.certresolver=letsencrypt
       - traefik.http.routers.mesame-web-https.service=mesame-web-svc
+      - traefik.http.routers.mesame-web-https.middlewares=mesame-auth
       - traefik.http.routers.mesame-web-http.rule=Host(`${MESAME_WEB_VIRTUAL_HOST:-mesame.localdomain}`)
       - traefik.http.routers.mesame-web-http.entrypoints=web
       - traefik.http.routers.mesame-web-http.middlewares=redirect-web-secure@file
