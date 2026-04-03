@@ -2,6 +2,8 @@
 
 ## 03/04/2026
 
+- **[14:40:39] ✨ [FEAT]** remove hardcoded registry and use environment variable only
+- **[14:38:28] 🔧 [CHORE]** update changelog with docker registry environment variable support
 - **[14:38:06] ✨ [FEAT]** use environment variable for docker registry
 - **[14:32:02] 🔧 [CHORE]** clean up package.json and update docker-compose labels
 - **[14:31:48] 🔧 [CHORE]** update changelog with buildx setup script
