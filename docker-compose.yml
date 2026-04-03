@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: headwood.ddns.net:5000/mesame:latest
+    image: ${MESAME_DOCKER_REGISTRY:-headwood.ddns.net:5000}/mesame:latest
     container_name: mesame-llm
     restart: unless-stopped
     expose:
@@ -37,7 +37,7 @@ services:
       - traefik.http.routers.mesame-llm-http.middlewares=redirect-web-secure@file
 
   web:
-    image: headwood.ddns.net:5000/mesame:latest
+    image: ${MESAME_DOCKER_REGISTRY:-headwood.ddns.net:5000}/mesame:latest
     container_name: mesame-web
     restart: unless-stopped
     expose:
