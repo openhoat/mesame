@@ -26,7 +26,7 @@ interface ServerConfig {
   maxTokens: number
 }
 
-export function ServerConfig() {
+export const ServerConfig = () => {
   const { t } = useTranslation()
   const [config, setConfig] = useState<ServerConfig>({
     llmHost: 'localhost',

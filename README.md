@@ -5,7 +5,7 @@
 ![Node.js](https://img.shields.io/badge/Node.js-22-339933.svg?logo=node.js&logoColor=white)
 ![Tested with Vitest](https://img.shields.io/badge/tested%20with-Vitest-6E9F18.svg?logo=vitest&logoColor=white)
 [![GitHub Stars](https://img.shields.io/github/stars/openhoat/mesame?style=social)](https://github.com/openhoat/mesame/stargazers)
-[![GitHub forks](https://img.shields.io/badge/github/forks/openhoat/mesame?style=social)](https://github.com/openhoat/mesame/network/members)
+[![GitHub forks](https://img.shields.io/github/forks/openhoat/mesame?style=social)](https://github.com/openhoat/mesame/network/members)
 [![GitHub issues](https://img.shields.io/github/issues/openhoat/mesame)](https://github.com/openhoat/mesame/issues)
 
 > **"The AI that writes like me, for me."**
