@@ -2,6 +2,8 @@
 
 ## 03/04/2026
 
+- **[14:47:16] 🔧 [CHORE]** ignore buildx-config.toml in docker context
+- **[14:40:58] 🔧 [CHORE]** update changelog with registry cleanup
 - **[14:40:39] ✨ [FEAT]** remove hardcoded registry and use environment variable only
 - **[14:38:28] 🔧 [CHORE]** update changelog with docker registry environment variable support
 - **[14:38:06] ✨ [FEAT]** use environment variable for docker registry
