@@ -84,3 +84,6 @@ docs/.vitepress/cache
 
 # Local environment configuration (should not be committed)
 .env
+
+# Docker Buildx
+buildx-config.toml
