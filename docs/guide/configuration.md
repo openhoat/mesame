@@ -10,8 +10,11 @@ All MeSame-specific variables are prefixed with `MESAME_`.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `MESAME_PORT` | `3000` | Server port |
-| `MESAME_HOST` | `127.0.0.1` | Server host (local-only by default) |
+| `MESAME_WEB_PORT` | `3000` | Web dashboard port |
+| `MESAME_WEB_HOST` | `localhost` | Web server host (use `0.0.0.0` for Docker) |
+| `MESAME_LLM_PORT` | `3001` | LLM proxy server port |
+| `MESAME_LLM_HOST` | `localhost` | LLM server host (use `0.0.0.0` for Docker) |
+| `MESAME_LLM_URL` | `http://localhost:3001` | LLM server URL (for web server to proxy) |
 | `MESAME_LOG_LEVEL` | `info` | Log level (`debug`, `info`, `warn`, `error`, `silent`) |
 
 ### Provider Configuration
@@ -146,6 +149,74 @@ export MESAME_MODEL=llama3.2:3b
 
 ```bash
 export MESAME_TARGET_BASE_URL=http://your-ollama-server:11434
+```
+
+**Docker with Ollama on host**:
+
+When running MeSame in Docker and Ollama on the host machine, use `host.docker.internal`:
+
+```bash
+export MESAME_TARGET_BASE_URL=http://host.docker.internal:11434
+```
+
+And add to your `docker-compose.yml`:
+
+```yaml
+services:
+  llm:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+```
+
+### Docker with Traefik
+
+For production deployments with [Traefik](https://traefik.io/) as reverse proxy:
+
+**Environment Variables:**
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `MESAME_WEB_VIRTUAL_HOST` | `mesame.localdomain` | Virtual host for web dashboard |
+| `MESAME_LLM_VIRTUAL_HOST` | `mesame-llm.localdomain` | Virtual host for LLM API |
+
+**Example `docker-compose.yml` with Traefik:**
+
+```yaml
+services:
+  llm:
+    image: mesame:latest
+    expose: ["3001"]
+    environment:
+      - MESAME_LLM_HOST=0.0.0.0
+      - MESAME_LLM_VIRTUAL_HOST=mesame-llm.example.com
+    networks:
+      - traefik_proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mesame-llm.rule=Host(`mesame-llm.example.com`)
+      - traefik.http.routers.mesame-llm.tls=true
+      - traefik.http.routers.mesame-llm.tls.certresolver=letsencrypt
+
+  web:
+    image: mesame:latest
+    expose: ["3000"]
+    environment:
+      - MESAME_WEB_HOST=0.0.0.0
+      - MESAME_LLM_URL=http://llm:3001
+      - MESAME_WEB_VIRTUAL_HOST=mesame.example.com
+    depends_on:
+      - llm
+    networks:
+      - traefik_proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mesame-web.rule=Host(`mesame.example.com`)
+      - traefik.http.routers.mesame-web.tls=true
+      - traefik.http.routers.mesame-web.tls.certresolver=letsencrypt
+
+networks:
+  traefik_proxy:
+    external: true
 ```
 
 ## Admin Dashboard Settings
