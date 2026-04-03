@@ -38,7 +38,7 @@ npm run docs:preview
   - `usage.md` — Using MeSame
   - `configuration.md` — Configuration options
   - `architecture.md` — Project architecture
-  - `build.md` — Building executables
+  - `build.md` — Build and deployment
   - `troubleshooting.md` — Common issues
   - `contributing.md` — Contribution guide
 - `.vitepress/config.mts` — VitePress configuration
