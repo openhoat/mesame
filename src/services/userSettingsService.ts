@@ -9,11 +9,11 @@ export async function getUserSettings() {
   })
 
   if (!settings) {
-    // Create default settings
+    // Create default settings (no language preference by default)
     settings = await prisma.userSettings.create({
       data: {
         id: 1,
-        language: 'en',
+        language: null,
       },
     })
   }
@@ -24,7 +24,7 @@ export async function getUserSettings() {
 /**
  * Update user settings
  */
-export async function updateUserSettings(data: { language?: string }) {
+export async function updateUserSettings(data: { language?: string | null }) {
   // Ensure the single row exists
   await getUserSettings()
 

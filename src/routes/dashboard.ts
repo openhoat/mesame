@@ -4,7 +4,7 @@ import { logBuffer } from '../services/logBuffer.js'
 
 interface DashboardStats {
   totalRequests: number
-  activeProfiles: number
+  totalProfiles: number
   avgResponseTime: number
   uptime: string
   recentActivity: ActivityItem[]
@@ -69,10 +69,8 @@ export const dashboardRoute: FastifyPluginAsync = async app => {
       // Get total requests (count of conversations)
       const totalRequests = await prisma.conversation.count()
 
-      // Get active profiles
-      const activeProfiles = await prisma.styleProfile.count({
-        where: { isActive: true },
-      })
+      // Get total profiles
+      const totalProfiles = await prisma.styleProfile.count()
 
       // Calculate average response time from logs
       const logs = logBuffer.getAll()
@@ -92,7 +90,7 @@ export const dashboardRoute: FastifyPluginAsync = async app => {
 
       const stats: DashboardStats = {
         totalRequests,
-        activeProfiles,
+        totalProfiles,
         avgResponseTime,
         uptime,
         recentActivity,

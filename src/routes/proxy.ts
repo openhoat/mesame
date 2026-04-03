@@ -2,6 +2,7 @@ import type { AIMessageChunk } from '@langchain/core/messages'
 import type { FastifyPluginAsync } from 'fastify'
 import { getPreferredLanguage } from '../services/languageService.js'
 import { convertToLangChainMessages, getChatModelFromModelId } from '../services/llmProvider.js'
+import { logBuffer } from '../services/logBuffer.js'
 import { listAllModels } from '../services/modelDiscovery.js'
 import { injectStylePrompt } from '../services/styleInjector.js'
 import { getActiveStyleProfile } from '../services/styleProfileService.js'
@@ -38,6 +39,7 @@ export const proxyRoute: FastifyPluginAsync = async app => {
 
   app.post<{ Body: ChatCompletionRequest }>('/v1/chat/completions', async (request, reply) => {
     const body = request.body
+    const startTime = Date.now()
 
     // Validate required model field (OpenAI API compliance)
     if (!body.model) {
@@ -104,8 +106,24 @@ export const proxyRoute: FastifyPluginAsync = async app => {
         // Send final chunk
         reply.raw.write('data: [DONE]\n\n')
         reply.raw.end()
+
+        // Log successful streaming completion
+        const responseTime = Date.now() - startTime
+        logBuffer.add({
+          timestamp: new Date().toISOString(),
+          level: 'info',
+          message: `chat completion with model ${body.model}`,
+          responseTime,
+        })
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+        // Log error
+        logBuffer.add({
+          timestamp: new Date().toISOString(),
+          level: 'error',
+          message: `chat completion error with model ${body.model}: ${errorMessage}`,
+        })
 
         if (headersSent) {
           // Headers already sent, send error as SSE event
@@ -138,6 +156,16 @@ export const proxyRoute: FastifyPluginAsync = async app => {
     // Non-streaming response
     try {
       const response = await chatModel.invoke(langchainMessages)
+
+      // Log successful non-streaming completion
+      const responseTime = Date.now() - startTime
+      logBuffer.add({
+        timestamp: new Date().toISOString(),
+        level: 'info',
+        message: `chat completion with model ${body.model}`,
+        responseTime,
+      })
+
       return {
         id: `chatcmpl-${Date.now()}`,
         object: 'chat.completion',
@@ -161,6 +189,14 @@ export const proxyRoute: FastifyPluginAsync = async app => {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+      // Log error
+      logBuffer.add({
+        timestamp: new Date().toISOString(),
+        level: 'error',
+        message: `chat completion error with model ${body.model}: ${errorMessage}`,
+      })
+
       reply.status(500)
       return reply.send({
         error: {

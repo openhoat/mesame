@@ -8,6 +8,7 @@ import {
   getConversationById,
   updateConversation,
 } from '../services/conversationService.js'
+import { createSource } from '../services/sourceService.js'
 
 interface ConversationParams {
   id: string
@@ -122,6 +123,45 @@ export const conversationsRoute: FastifyPluginAsync = async app => {
       throw error
     }
   })
+
+  // Convert conversation to source
+  app.post<{ Params: ConversationParams }>(
+    '/v1/conversations/:id/source',
+    async (request, reply) => {
+      request.log.info(
+        `[Conversations API] Converting conversation to source: ${request.params.id}`
+      )
+      const conversation = await getConversationById(request.params.id)
+
+      if (!conversation) {
+        request.log.warn(`[Conversations API] Conversation not found: ${request.params.id}`)
+        return reply.status(404).send({ error: 'Conversation not found' })
+      }
+
+      try {
+        // Convert messages to natural text
+        const content = conversation.messages
+          .map((msg: { role: string; content: string }) => {
+            const roleLabel = msg.role === 'user' ? 'Moi' : 'Assistant'
+            return `${roleLabel} : ${msg.content}`
+          })
+          .join('\n\n')
+
+        // Create source from conversation
+        const source = await createSource({
+          title: `Conversation: ${conversation.title || 'Sans titre'}`,
+          content,
+        })
+
+        request.log.info(`[Conversations API] ✅ Source created from conversation: ${source.id}`)
+        return reply.status(201).send(source)
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        request.log.error(`[Conversations API] ❌ Failed to convert conversation: ${errorMessage}`)
+        throw error
+      }
+    }
+  )
 
   // Export all conversations
   app.get('/v1/conversations/export', async request => {

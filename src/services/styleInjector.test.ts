@@ -20,7 +20,7 @@ describe('injectStylePrompt', () => {
       expect(result).toHaveLength(3)
       expect(result[0]?.role).toBe('system')
       expect(result[0]?.content).toContain('MeSame')
-      expect(result[0]?.content).toContain('Language: You MUST respond in English')
+      expect(result[0]?.content).toContain('Language preference: Respond in English')
       expect(result[1]).toEqual(messages[0])
       expect(result[2]).toEqual(messages[1])
     })
@@ -36,17 +36,29 @@ describe('injectStylePrompt', () => {
       expect(result).toHaveLength(3)
       expect(result[0]?.role).toBe('system')
       expect(result[0]?.content).toContain(styleProfile.personaPrompt)
-      expect(result[0]?.content).toContain('Language: You MUST respond in French')
+      expect(result[0]?.content).toContain('Language preference: Respond in French')
       expect(result[1]).toEqual(messages[0])
       expect(result[2]).toEqual(messages[1])
     })
 
-    test('should default to English when no language specified', () => {
+    test('should not include language instruction when no language specified', () => {
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }]
+
+      const result = injectStylePrompt(messages, styleProfile, null)
+
+      // Should NOT contain language instruction
+      expect(result[0]?.content).toContain(styleProfile.personaPrompt)
+      expect(result[0]?.content).not.toContain('Language: You MUST respond')
+    })
+
+    test('should default to no language instruction when no language parameter', () => {
       const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }]
 
       const result = injectStylePrompt(messages, styleProfile)
 
-      expect(result[0]?.content).toContain('Language: You MUST respond in English')
+      // Should NOT contain language instruction (default is null)
+      expect(result[0]?.content).toContain(styleProfile.personaPrompt)
+      expect(result[0]?.content).not.toContain('Language: You MUST respond')
     })
 
     test('should support different languages', () => {
@@ -54,7 +66,7 @@ describe('injectStylePrompt', () => {
 
       const result = injectStylePrompt(messages, styleProfile, 'es')
 
-      expect(result[0]?.content).toContain('Language: You MUST respond in Spanish')
+      expect(result[0]?.content).toContain('Language preference: Respond in Spanish')
     })
   })
 
@@ -73,7 +85,7 @@ describe('injectStylePrompt', () => {
       expect(result[0]?.content).toContain(existingPrompt)
       expect(result[0]?.content).toContain('---')
       expect(result[0]?.content).toContain(styleProfile.personaPrompt)
-      expect(result[0]?.content).toContain('Language: You MUST respond in French')
+      expect(result[0]?.content).toContain('Language preference: Respond in French')
       expect(result[1]).toEqual(messages[1])
     })
 
@@ -119,7 +131,7 @@ Your responses should be:
       const result = injectStylePrompt(messages, complexProfile, 'fr')
 
       expect(result[0]?.content).toContain(complexProfile.personaPrompt)
-      expect(result[0]?.content).toContain('Language: You MUST respond in French')
+      expect(result[0]?.content).toContain('Language preference: Respond in French')
     })
 
     test('should inject default prompt when personaPrompt is empty', () => {
@@ -129,7 +141,17 @@ Your responses should be:
 
       // Should inject default system prompt
       expect(result[0]?.content).toContain('MeSame')
-      expect(result[0]?.content).toContain('Language: You MUST respond in English')
+      expect(result[0]?.content).toContain('Language preference: Respond in English')
+    })
+
+    test('should work without language instruction when null is passed', () => {
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }]
+
+      const result = injectStylePrompt(messages, styleProfile, null)
+
+      // Should contain persona but no language instruction
+      expect(result[0]?.content).toContain(styleProfile.personaPrompt)
+      expect(result[0]?.content).not.toContain('Language: You MUST respond')
     })
   })
 })

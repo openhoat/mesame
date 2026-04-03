@@ -2,8 +2,10 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { buildApp } from '../app.js'
 import { resetConfig } from '../config.js'
 import * as conversationService from '../services/conversationService.js'
+import * as sourceService from '../services/sourceService.js'
 
 vi.mock('../services/conversationService.js')
+vi.mock('../services/sourceService.js')
 vi.mock('../services/styleProfileService.js', () => ({
   ensureDefaultProfile: vi.fn().mockResolvedValue(undefined),
 }))
@@ -240,6 +242,57 @@ describe('conversations route', () => {
         id: 'conv-1',
         title: 'Conversation 1',
       })
+    })
+  })
+
+  describe('POST /v1/conversations/:id/source', () => {
+    test('should convert conversation to source', async () => {
+      const mockConversation = {
+        id: 'conv-1',
+        title: 'Test Conversation',
+        messages: [
+          { role: 'user' as const, content: 'Hello' },
+          { role: 'assistant' as const, content: 'Hi there!' },
+        ],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      const mockSource = {
+        id: 'source-1',
+        title: 'Conversation: Test Conversation',
+        content: 'Moi : Hello\n\nAssistant : Hi there!',
+        createdAt: new Date(),
+      }
+
+      vi.mocked(conversationService.getConversationById).mockResolvedValueOnce(mockConversation)
+      vi.mocked(sourceService.createSource).mockResolvedValueOnce(mockSource)
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/v1/conversations/conv-1/source',
+      })
+
+      expect(response.statusCode).toBe(201)
+      expect(response.json()).toMatchObject({
+        id: 'source-1',
+        title: 'Conversation: Test Conversation',
+      })
+      expect(sourceService.createSource).toHaveBeenCalledWith({
+        title: 'Conversation: Test Conversation',
+        content: 'Moi : Hello\n\nAssistant : Hi there!',
+      })
+    })
+
+    test('should return 404 when conversation not found', async () => {
+      vi.mocked(conversationService.getConversationById).mockResolvedValueOnce(null)
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/v1/conversations/nonexistent/source',
+      })
+
+      expect(response.statusCode).toBe(404)
+      expect(response.json()).toEqual({ error: 'Conversation not found' })
     })
   })
 })

@@ -66,21 +66,21 @@ describe('Dashboard Route', () => {
 
       // Verify response structure
       expect(data).toHaveProperty('totalRequests')
-      expect(data).toHaveProperty('activeProfiles')
+      expect(data).toHaveProperty('totalProfiles')
       expect(data).toHaveProperty('avgResponseTime')
       expect(data).toHaveProperty('uptime')
       expect(data).toHaveProperty('recentActivity')
 
       // Verify types
       expect(typeof data.totalRequests).toBe('number')
-      expect(typeof data.activeProfiles).toBe('number')
+      expect(typeof data.totalProfiles).toBe('number')
       expect(typeof data.avgResponseTime).toBe('number')
       expect(typeof data.uptime).toBe('string')
       expect(Array.isArray(data.recentActivity)).toBe(true)
 
       // Verify values
       expect(data.totalRequests).toBe(10)
-      expect(data.activeProfiles).toBe(2)
+      expect(data.totalProfiles).toBe(2)
     })
 
     test('should return uptime in correct format', async () => {

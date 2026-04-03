@@ -72,8 +72,8 @@
     "stats": {
       "totalRequests": "Requêtes totales",
       "totalRequestsChange": "+12% depuis la dernière heure",
-      "activeProfiles": "Styles actifs",
-      "activeProfilesDescription": "Styles d'écriture configurés",
+      "totalProfiles": "Styles",
+      "totalProfilesDescription": "Styles d'écriture configurés",
       "avgResponseTime": "Temps de réponse moyen",
       "avgResponseTimeChange": "-23ms depuis hier",
       "serverUptime": "Uptime",
@@ -100,14 +100,16 @@
       "debug": "Debug"
     },
     "serverSettings": {
-      "title": "Serveur",
-      "subtitle": "Configuration de base",
+      "title": "Proxy LLM",
+      "subtitle": "Configuration du serveur proxy LLM",
+      "proxyUrl": "URL du proxy",
+      "proxyUrlDescription": "Utilisez cette URL comme base URL dans votre client LLM",
       "port": "Port",
       "portDescription": "Le port sur lequel le serveur écoute",
       "logLevel": "Niveau de log",
       "logLevelDescription": "Verbosité des logs du serveur",
       "language": "Langue",
-      "languageDescription": "Langue pour les réponses de l'assistant"
+      "languageDescription": "Langue préférée pour les réponses du LLM (optionnel)"
     },
     "llmSource": {
       "title": "Fournisseurs",
@@ -312,6 +314,7 @@
     "system": "Système"
   },
   "languages": {
+    "none": "Aucune (laisser le LLM décider)",
     "en": "English",
     "fr": "Français (French)",
     "es": "Español (Spanish)",

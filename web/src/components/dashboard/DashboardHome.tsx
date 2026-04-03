@@ -6,7 +6,7 @@ import { API } from '@/config/api'
 
 interface Stats {
   totalRequests: number
-  activeProfiles: number
+  totalProfiles: number
   avgResponseTime: number
   uptime: string
 }
@@ -35,7 +35,7 @@ export function DashboardHome() {
   const { t } = useTranslation()
   const [stats, setStats] = useState<Stats>({
     totalRequests: 0,
-    activeProfiles: 0,
+    totalProfiles: 0,
     avgResponseTime: 0,
     uptime: '0h 0m',
   })
@@ -50,7 +50,7 @@ export function DashboardHome() {
           const data = await response.json()
           setStats({
             totalRequests: data.totalRequests,
-            activeProfiles: data.activeProfiles,
+            totalProfiles: data.totalProfiles,
             avgResponseTime: data.avgResponseTime,
             uptime: data.uptime,
           })
@@ -99,15 +99,15 @@ export function DashboardHome() {
           <Paper shadow="sm" p="md" withBorder>
             <Group justify="space-between" mb="xs">
               <Text size="sm" fw={500}>
-                {t('dashboard.stats.activeProfiles')}
+                {t('dashboard.stats.totalProfiles')}
               </Text>
               <FileText size={16} opacity={0.6} />
             </Group>
             <Text size="xl" fw={700}>
-              {stats.activeProfiles}
+              {stats.totalProfiles}
             </Text>
             <Text size="xs" c="dimmed">
-              {t('dashboard.stats.activeProfilesDescription')}
+              {t('dashboard.stats.totalProfilesDescription')}
             </Text>
           </Paper>
         </Grid.Col>
