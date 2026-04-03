@@ -1,4 +1,4 @@
-import { PDFParse } from 'pdf-parse'
+import { extractText as extractPdf } from 'unpdf'
 
 export type SupportedMimeType = 'text/plain' | 'text/markdown' | 'application/pdf'
 
@@ -42,10 +42,12 @@ export async function extractText(
 }
 
 async function extractPdfText(buffer: Buffer): Promise<string> {
-  const parser = new PDFParse({ data: new Uint8Array(buffer) })
-  const result = await parser.getText()
-  await parser.destroy()
-  return result.text.trim()
+  const { text } = await extractPdf(new Uint8Array(buffer))
+  // unpdf returns a string or an array of strings depending on the version/config
+  if (Array.isArray(text)) {
+    return text.join('\n').trim()
+  }
+  return (text as string).trim()
 }
 
 export function deriveTitleFromFilename(filename: string): string {

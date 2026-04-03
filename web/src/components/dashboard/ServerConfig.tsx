@@ -20,6 +20,7 @@ import i18n from '../../i18n'
 interface ServerConfig {
   llmHost: string
   llmPort: number
+  llmUrl: string
   logLevel: string
   language: string | null
   cacheEnabled: boolean
@@ -31,6 +32,7 @@ export const ServerConfig = () => {
   const [config, setConfig] = useState<ServerConfig>({
     llmHost: 'localhost',
     llmPort: 3001,
+    llmUrl: 'http://localhost:3001',
     logLevel: 'info',
     language: null,
     cacheEnabled: true,
@@ -64,6 +66,7 @@ export const ServerConfig = () => {
             ...prev,
             llmHost: serverConfig.llmHost as string,
             llmPort: serverConfig.llmPort as number,
+            llmUrl: serverConfig.llmUrl as string,
             logLevel: serverConfig.logLevel as string,
             language: serverConfig.language as string | null,
             cacheEnabled: serverConfig.cacheEnabled as boolean,
@@ -81,9 +84,6 @@ export const ServerConfig = () => {
     loadConfig()
   }, [])
 
-  // Compute proxy URL
-  const proxyUrl = `http://${config.llmHost}:${config.llmPort}`
-
   const handleChange = (key: keyof ServerConfig, value: string | number | boolean | null) => {
     setConfig(prev => ({ ...prev, [key]: value }))
     setHasChanges(true)
@@ -92,7 +92,7 @@ export const ServerConfig = () => {
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      // Save language preference to server
+      // Save settings to server
       const response = await fetch(API.settings(), {
         method: 'PUT',
         headers: {
@@ -100,6 +100,7 @@ export const ServerConfig = () => {
         },
         body: JSON.stringify({
           language: config.language,
+          llmUrl: config.llmUrl,
         }),
       })
       if (!response.ok) {
@@ -118,6 +119,7 @@ export const ServerConfig = () => {
     setConfig({
       llmHost: 'localhost',
       llmPort: 3001,
+      llmUrl: `http://localhost:3001`,
       logLevel: 'info',
       language: null,
       cacheEnabled: true,
@@ -184,8 +186,9 @@ export const ServerConfig = () => {
             <TextInput
               label={t('config.serverSettings.proxyUrl')}
               description={t('config.serverSettings.proxyUrlDescription')}
-              value={proxyUrl}
-              readOnly
+              value={config.llmUrl}
+              onChange={e => handleChange('llmUrl', e.currentTarget.value)}
+              placeholder="http://localhost:3001"
             />
 
             <Select

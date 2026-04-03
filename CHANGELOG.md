@@ -2,6 +2,9 @@
 
 ## 03/04/2026
 
+- **[17:37:24] ✨ [FEAT]** allow dynamic LLM proxy URL and fix SIGILL crashes
+- **[14:50:10] 🔧 [CHORE]** cleanup .dockerignore for buildx-config.toml
+- **[14:49:21] 🔧 [CHORE]** update changelog with buildx config ignore rule
 - **[14:49:07] 🔧 [CHORE]** ignore buildx-config.toml in git
 - **[14:47:44] 🔧 [CHORE]** update changelog with buildx ignore rule
 - **[14:47:16] 🔧 [CHORE]** ignore buildx-config.toml in docker context

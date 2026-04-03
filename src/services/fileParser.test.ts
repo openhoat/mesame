@@ -6,14 +6,8 @@ import {
   isSupportedFile,
 } from './fileParser.js'
 
-vi.mock('pdf-parse', () => ({
-  // biome-ignore lint/complexity/useArrowFunction: Vitest 4 requires function keyword for class mocks
-  PDFParse: vi.fn().mockImplementation(function () {
-    return {
-      getText: vi.fn().mockResolvedValue({ text: 'Extracted PDF content\n' }),
-      destroy: vi.fn().mockResolvedValue(undefined),
-    }
-  }),
+vi.mock('unpdf', () => ({
+  extractText: vi.fn().mockResolvedValue({ text: 'Extracted PDF content\n' }),
 }))
 
 describe('fileParser', () => {

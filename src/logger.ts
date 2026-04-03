@@ -22,6 +22,15 @@ class LogBufferStream extends Writable {
 }
 
 export function createLogger(logLevel: string = 'info') {
+  const isProduction = process.env.NODE_ENV === 'production'
+
+  if (isProduction) {
+    // In production, we avoid pino.transport/multistream to be as stable as possible on old CPUs/Alpine
+    // and to avoid the Fastify initialization error.
+    return pino({ level: logLevel }, process.stdout)
+  }
+
+  // Development: Use pino-pretty AND LogBufferStream
   const prettyStream = pino.transport({
     target: 'pino-pretty',
     options: {
@@ -32,16 +41,46 @@ export function createLogger(logLevel: string = 'info') {
     },
   })
 
-  // Stream 2: custom stream for log buffer
   const bufferStream = new LogBufferStream()
 
-  // Use pino.multistream for multiple destinations
-  const streams = [
-    { level: logLevel, stream: prettyStream },
-    { level: logLevel, stream: bufferStream },
-  ]
+  return pino(
+    { level: logLevel },
+    pino.multistream([
+      { level: logLevel, stream: prettyStream },
+      { level: logLevel, stream: bufferStream },
+    ])
+  )
+}
 
-  return pino({ level: logLevel }, pino.multistream(streams))
+/**
+ * Returns a logger configuration compatible with Fastify
+ */
+export function getFastifyLoggerConfig(logLevel: string = 'info') {
+  const isProduction = process.env.NODE_ENV === 'production'
+
+  if (isProduction) {
+    return { level: logLevel }
+  }
+
+  // In development, we use pino.multistream to have both console (pretty) and logBuffer
+  const prettyStream = pino.transport({
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+      translateTime: 'SYS:standard',
+      ignore: 'pid,hostname',
+    },
+  })
+
+  const bufferStream = new LogBufferStream()
+
+  return {
+    level: logLevel,
+    stream: pino.multistream([
+      { level: logLevel, stream: prettyStream },
+      { level: logLevel, stream: bufferStream },
+    ]),
+  }
 }
 
 export const logger = createLogger(process.env.MESAME_LOG_LEVEL || 'info')
@@ -58,7 +97,7 @@ export function logConfiguration(config: AppConfig): void {
   logger.info('📡 LLM Server:')
   logger.info(`   • Host: ${config.llmHost}`)
   logger.info(`   • Port: ${config.llmPort}`)
-  logger.info(`   • URL:  http://${config.llmHost}:${config.llmPort}`)
+  logger.info(`   • Proxy URL: ${config.llmUrl}`)
   logger.info('')
 
   logger.info('🤖 LLM Provider:')

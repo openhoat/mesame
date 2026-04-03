@@ -10,6 +10,7 @@ export async function configRoute(app: FastifyInstance): Promise<void> {
     return reply.send({
       llmPort: config.llmPort,
       llmHost: config.llmHost,
+      llmUrl: userSettings.llmUrl || config.llmUrl,
       provider: config.provider,
       targetBaseUrl: config.targetBaseUrl,
       model: config.model,

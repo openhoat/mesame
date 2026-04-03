@@ -1,13 +1,12 @@
+import { resolve } from 'node:path'
 import cors from '@fastify/cors'
 import websocket from '@fastify/websocket'
 import type { FastifyError, FastifyInstance } from 'fastify'
 import Fastify from 'fastify'
+import { config } from './config.js'
 import { parseCorsOrigin } from './corsConfig.js'
 import { prisma } from './db.js'
 import { logBuffer } from './services/logBuffer.js'
-
-// LLM server URL for proxying requests
-const LLM_URL = process.env.MESAME_LLM_URL || 'http://localhost:3001'
 
 async function loadEnvIfNeeded(): Promise<void> {
   // Load environment variables from .env.test if in test mode
@@ -18,7 +17,7 @@ async function loadEnvIfNeeded(): Promise<void> {
 }
 
 export const buildWebApp = async (): Promise<FastifyInstance> => {
-  const { logger } = await import('./logger.js')
+  const { logger, getFastifyLoggerConfig } = await import('./logger.js')
 
   logger.info('Building Web Server...')
 
@@ -27,23 +26,9 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
   const webHost = process.env.MESAME_WEB_HOST ?? 'localhost'
 
   const logLevel = process.env.MESAME_LOG_LEVEL ?? 'info'
-  const loggerConfig =
-    logLevel === 'silent'
-      ? false
-      : {
-          level: logLevel,
-          transport: {
-            target: 'pino-pretty',
-            options: {
-              colorize: true,
-              translateTime: 'SYS:standard',
-              ignore: 'pid,hostname',
-            },
-          },
-        }
 
   const app = Fastify({
-    logger: loggerConfig,
+    logger: getFastifyLoggerConfig(logLevel),
   })
 
   // Handle 404 errors
@@ -81,7 +66,7 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
     done()
   })
 
-  // Import and register routes
+  // Import routes
   const { configRoute } = await import('./routes/config.js')
   const { conversationsRoute } = await import('./routes/conversations.js')
   const { dashboardRoute } = await import('./routes/dashboard.js')
@@ -94,6 +79,7 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
   const { styleProfileRoute } = await import('./routes/styleProfile.js')
   const { uiRoutes } = await import('./routes/ui.js')
 
+  // Register routes
   await app.register(configRoute)
   await app.register(conversationsRoute)
   await app.register(dashboardRoute)
@@ -107,12 +93,16 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
   await app.register(uiRoutes)
 
   // Proxy LLM routes to LLM server
-  appLogger.info(`Proxying /v1/chat/completions and /v1/models to ${LLM_URL}`)
+  appLogger.info(`Proxying /v1/chat/completions and /v1/models to ${config.llmUrl}`)
 
   // Proxy POST /v1/chat/completions
   app.post('/v1/chat/completions', async (request, reply) => {
     try {
-      const response = await fetch(`${LLM_URL}/v1/chat/completions`, {
+      const { getUserSettings } = await import('./services/userSettingsService.js')
+      const userSettings = await getUserSettings()
+      const targetUrl = userSettings.llmUrl || config.llmUrl
+
+      const response = await fetch(`${targetUrl}/v1/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +145,11 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
   // Proxy GET /v1/models
   app.get('/v1/models', async (_request, reply) => {
     try {
-      const response = await fetch(`${LLM_URL}/v1/models`)
+      const { getUserSettings } = await import('./services/userSettingsService.js')
+      const userSettings = await getUserSettings()
+      const targetUrl = userSettings.llmUrl || config.llmUrl
+
+      const response = await fetch(`${targetUrl}/v1/models`)
       const data = await response.text()
       return reply.status(response.status).send(data)
     } catch (error) {
@@ -208,9 +202,14 @@ export const startWebServer = async (): Promise<void> => {
 }
 
 // Only start server if this file is run directly
-if (process.argv[1] === import.meta.filename) {
+const isMain = process.argv[1] && resolve(process.argv[1]) === import.meta.filename
+if (isMain) {
+  process.stdout.write(`>>> [MAIN] Starting MeSame Web Server from ${import.meta.filename}\n`)
   startWebServer().catch(err => {
-    process.stderr.write(`${String(err)}\n`)
+    process.stderr.write(`>>> [CRITICAL ERROR] Failed to start Web Server: ${String(err)}\n`)
+    if (err instanceof Error && err.stack) {
+      process.stderr.write(`${err.stack}\n`)
+    }
     process.exit(1)
   })
 }

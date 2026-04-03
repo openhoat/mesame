@@ -86,4 +86,4 @@ docs/.vitepress/cache
 .env
 
 # Docker Buildx
-buildx-config.toml
+/buildx-config.toml

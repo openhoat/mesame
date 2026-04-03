@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import cors from '@fastify/cors'
 import type { FastifyError, FastifyInstance } from 'fastify'
 import Fastify from 'fastify'
@@ -13,28 +14,13 @@ async function loadEnvIfNeeded(): Promise<void> {
 }
 
 export const buildLLMApp = async (): Promise<FastifyInstance> => {
-  const { logger, logConfiguration } = await import('./logger.js')
+  const { logger, logConfiguration, getFastifyLoggerConfig } = await import('./logger.js')
 
   logger.info('Building LLM API Server...')
   logConfiguration(config)
 
-  const loggerConfig =
-    config.logLevel === 'silent'
-      ? false
-      : {
-          level: config.logLevel,
-          transport: {
-            target: 'pino-pretty',
-            options: {
-              colorize: true,
-              translateTime: 'SYS:standard',
-              ignore: 'pid,hostname',
-            },
-          },
-        }
-
   const app = Fastify({
-    logger: loggerConfig,
+    logger: getFastifyLoggerConfig(config.logLevel),
   })
 
   // Handle 404 errors
@@ -84,16 +70,19 @@ export const startLLMServer = async (): Promise<void> => {
   await app.listen({ port: config.llmPort, host: config.llmHost })
 
   logger.level = logLevel
-  logger.info(`🚀 LLM API Server listening at http://${config.llmHost}:${config.llmPort}`)
-  logger.info(
-    `📡 OpenAI-compatible endpoint: http://${config.llmHost}:${config.llmPort}/v1/chat/completions`
-  )
+  logger.info(`🚀 LLM API Server listening at ${config.llmUrl}`)
+  logger.info(`📡 OpenAI-compatible endpoint: ${config.llmUrl}/v1/chat/completions`)
 }
 
 // Only start server if this file is run directly
-if (process.argv[1] === import.meta.filename) {
+const isMain = process.argv[1] && resolve(process.argv[1]) === import.meta.filename
+if (isMain) {
+  process.stdout.write(`>>> [MAIN] Starting MeSame LLM Server from ${import.meta.filename}\n`)
   startLLMServer().catch(err => {
-    process.stderr.write(`${String(err)}\n`)
+    process.stderr.write(`>>> [CRITICAL ERROR] Failed to start LLM Server: ${String(err)}\n`)
+    if (err instanceof Error && err.stack) {
+      process.stderr.write(`${err.stack}\n`)
+    }
     process.exit(1)
   })
 }

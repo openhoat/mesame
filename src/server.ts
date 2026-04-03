@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { buildApp } from './app.js'
 import { config } from './config.js'
 
@@ -29,7 +30,8 @@ export const startServer = async (): Promise<void> => {
 }
 
 // Only start server if this file is run directly (not imported)
-if (process.argv[1] === import.meta.filename) {
+const isMain = process.argv[1] && resolve(process.argv[1]) === import.meta.filename
+if (isMain) {
   startServer().catch(err => {
     process.stderr.write(`${String(err)}\n`)
     process.exit(1)

@@ -43,6 +43,7 @@ const PROVIDER_CONFIGS: Record<Provider, ProviderConfig> = {
 export interface AppConfig {
   llmPort: number
   llmHost: string
+  llmUrl: string
   provider: Provider
   targetBaseUrl: string
   targetApiKey: string | undefined
@@ -94,9 +95,14 @@ export function loadConfig(): AppConfig {
   // Default model based on provider
   const defaultModel = provider === 'ollama' ? 'gemma3:1b' : 'gpt-4o'
 
+  const llmPort = Number(process.env.MESAME_LLM_PORT) || 3001
+  const llmHost = process.env.MESAME_LLM_HOST ?? 'localhost'
+  const llmUrl = process.env.MESAME_LLM_URL || `http://${llmHost}:${llmPort}`
+
   return {
-    llmPort: Number(process.env.MESAME_LLM_PORT) || 3001,
-    llmHost: process.env.MESAME_LLM_HOST ?? 'localhost',
+    llmPort,
+    llmHost,
+    llmUrl,
     provider,
     targetBaseUrl: process.env.MESAME_TARGET_BASE_URL ?? providerConfig.defaultBaseUrl,
     targetApiKey: getProviderApiKey(provider),
