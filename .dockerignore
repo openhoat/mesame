@@ -42,3 +42,9 @@ docs/
 .github/
 .gitlab-ci.yml
 .travis.yml
+
+# Docker Buildx
+buildx-config.toml
+
+# Docker Buildx
+buildx-config.toml
