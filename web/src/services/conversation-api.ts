@@ -97,3 +97,15 @@ export function downloadConversationsAsJson(data: ExportData): void {
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
 }
+
+export async function convertConversationToSource(
+  id: string
+): Promise<{ id: string; title: string }> {
+  const response = await fetch(API.conversationToSource(id), {
+    method: 'POST',
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to convert conversation to source: ${response.statusText}`)
+  }
+  return response.json()
+}

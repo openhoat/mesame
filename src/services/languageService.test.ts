@@ -30,25 +30,26 @@ describe('languageService', () => {
     expect(language).toBe('fr')
   })
 
-  test('should fallback to config language if no settings', async () => {
+  test('should return null when no language preference is set', async () => {
     const { getUserSettings } = await import('./userSettingsService.js')
     vi.mocked(getUserSettings).mockResolvedValueOnce({
       id: 1,
-      language: 'en',
+      language: null,
     })
 
     const language = await getPreferredLanguage()
 
-    expect(language).toBe('en')
+    // No language preference means let the LLM decide
+    expect(language).toBeNull()
   })
 
-  test('should fallback to config language on database error', async () => {
+  test('should fallback to null on database error when config is en', async () => {
     const { getUserSettings } = await import('./userSettingsService.js')
     vi.mocked(getUserSettings).mockRejectedValueOnce(new Error('Database error'))
 
     const language = await getPreferredLanguage()
 
-    // Should fallback to config language
-    expect(language).toBe('en')
+    // Should fallback to null (no preference) since config.language is 'en'
+    expect(language).toBeNull()
   })
 })

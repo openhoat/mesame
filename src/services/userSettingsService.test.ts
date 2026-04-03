@@ -18,20 +18,20 @@ describe('userSettingsService', () => {
     vi.clearAllMocks()
   })
 
-  test('should create default settings if not exists', async () => {
+  test('should create default settings with null language if not exists', async () => {
     vi.mocked(prisma.userSettings.findUnique).mockResolvedValueOnce(null)
     vi.mocked(prisma.userSettings.create).mockResolvedValueOnce({
       id: 1,
-      language: 'en',
+      language: null,
     })
 
     const settings = await getUserSettings()
 
     expect(settings).toBeDefined()
     expect(settings.id).toBe(1)
-    expect(settings.language).toBe('en')
+    expect(settings.language).toBeNull()
     expect(prisma.userSettings.create).toHaveBeenCalledWith({
-      data: { id: 1, language: 'en' },
+      data: { id: 1, language: null },
     })
   })
 
@@ -63,6 +63,25 @@ describe('userSettingsService', () => {
     expect(prisma.userSettings.update).toHaveBeenCalledWith({
       where: { id: 1 },
       data: { language: 'es' },
+    })
+  })
+
+  test('should clear language preference (set to null)', async () => {
+    vi.mocked(prisma.userSettings.findUnique).mockResolvedValueOnce({
+      id: 1,
+      language: 'en',
+    })
+    vi.mocked(prisma.userSettings.update).mockResolvedValueOnce({
+      id: 1,
+      language: null,
+    })
+
+    const updated = await updateUserSettings({ language: null })
+
+    expect(updated.language).toBeNull()
+    expect(prisma.userSettings.update).toHaveBeenCalledWith({
+      where: { id: 1 },
+      data: { language: null },
     })
   })
 

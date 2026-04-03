@@ -21,7 +21,7 @@ const LANGUAGE_NAMES: Record<string, string> = {
  */
 function buildLanguageInstruction(preferredLanguage: string): string {
   const languageName = LANGUAGE_NAMES[preferredLanguage] || 'English'
-  return `Language: You MUST respond in ${languageName}. This is the user's preferred language. Always respond in ${languageName} regardless of the language used in the user's message.`
+  return `Language preference: Respond in ${languageName}.`
 }
 
 /**
@@ -37,12 +37,21 @@ No unnecessary formalities, just helpful answers with a smile.`
 export function injectStylePrompt(
   messages: ChatMessage[],
   styleProfile: StyleProfile | null,
-  preferredLanguage: string = 'en'
+  preferredLanguage: string | null = null
 ): ChatMessage[] {
   // Build the complete system prompt
   const basePrompt = styleProfile?.personaPrompt || getDefaultPersonaPrompt()
-  const languageInstruction = buildLanguageInstruction(preferredLanguage)
-  const fullPrompt = `${basePrompt}\n\n${languageInstruction}`
+
+  // Only add language instruction if a preferred language is set
+  const languageInstruction = preferredLanguage ? buildLanguageInstruction(preferredLanguage) : ''
+
+  // Combine all parts
+  const parts = [basePrompt]
+  if (languageInstruction) {
+    parts.push(languageInstruction)
+  }
+
+  const fullPrompt = parts.join('\n\n')
 
   const existingSystem = messages.find(m => m.role === 'system')
 

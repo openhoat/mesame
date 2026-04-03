@@ -62,6 +62,6 @@ model Conversation {
 }
 
 model UserSettings {
-  id       Int    @id @default(1)
-  language String @default("en")
+  id       Int     @id @default(1)
+  language String?
 }

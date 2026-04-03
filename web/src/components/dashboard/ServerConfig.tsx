@@ -7,6 +7,7 @@ import {
   Stack,
   Switch,
   Text,
+  TextInput,
   Title,
 } from '@mantine/core'
 import { AlertCircle, RotateCcw, Save } from 'lucide-react'
@@ -17,9 +18,10 @@ import { API } from '@/config/api'
 import i18n from '../../i18n'
 
 interface ServerConfig {
+  llmHost: string
   llmPort: number
   logLevel: string
-  language: string
+  language: string | null
   cacheEnabled: boolean
   maxTokens: number
 }
@@ -27,9 +29,10 @@ interface ServerConfig {
 export function ServerConfig() {
   const { t } = useTranslation()
   const [config, setConfig] = useState<ServerConfig>({
-    llmPort: 3000,
+    llmHost: 'localhost',
+    llmPort: 3001,
     logLevel: 'info',
-    language: 'en',
+    language: null,
     cacheEnabled: true,
     maxTokens: 4096,
   })
@@ -59,9 +62,10 @@ export function ServerConfig() {
         setConfig(prev => {
           const newConfig = {
             ...prev,
+            llmHost: serverConfig.llmHost as string,
             llmPort: serverConfig.llmPort as number,
             logLevel: serverConfig.logLevel as string,
-            language: serverConfig.language as string,
+            language: serverConfig.language as string | null,
             cacheEnabled: serverConfig.cacheEnabled as boolean,
             maxTokens: serverConfig.maxTokens as number,
           }
@@ -77,7 +81,10 @@ export function ServerConfig() {
     loadConfig()
   }, [])
 
-  const handleChange = (key: keyof ServerConfig, value: string | number | boolean) => {
+  // Compute proxy URL
+  const proxyUrl = `http://${config.llmHost}:${config.llmPort}`
+
+  const handleChange = (key: keyof ServerConfig, value: string | number | boolean | null) => {
     setConfig(prev => ({ ...prev, [key]: value }))
     setHasChanges(true)
   }
@@ -109,9 +116,10 @@ export function ServerConfig() {
   const handleReset = () => {
     // Reset to defaults
     setConfig({
-      llmPort: 3000,
+      llmHost: 'localhost',
+      llmPort: 3001,
       logLevel: 'info',
-      language: 'en',
+      language: null,
       cacheEnabled: true,
       maxTokens: 4096,
     })
@@ -163,7 +171,7 @@ export function ServerConfig() {
       </Paper>
 
       <Group>
-        {/* Server Settings */}
+        {/* Proxy Settings */}
         <Paper shadow="sm" p="md" withBorder style={{ flex: 1 }}>
           <Stack gap="md">
             <div>
@@ -173,11 +181,11 @@ export function ServerConfig() {
               </Text>
             </div>
 
-            <NumberInput
-              label={t('config.serverSettings.port')}
-              description={t('config.serverSettings.portDescription')}
-              value={config.llmPort}
-              onChange={value => handleChange('llmPort', Number(value))}
+            <TextInput
+              label={t('config.serverSettings.proxyUrl')}
+              description={t('config.serverSettings.proxyUrlDescription')}
+              value={proxyUrl}
+              readOnly
             />
 
             <Select
@@ -196,9 +204,10 @@ export function ServerConfig() {
             <Select
               label={t('config.serverSettings.language')}
               description={t('config.serverSettings.languageDescription')}
-              value={config.language}
-              onChange={value => value && handleChange('language', value)}
+              value={config.language ?? ''}
+              onChange={value => handleChange('language', value || null)}
               data={[
+                { value: '', label: t('languages.none') },
                 { value: 'en', label: t('languages.en') },
                 { value: 'fr', label: t('languages.fr') },
                 { value: 'es', label: t('languages.es') },

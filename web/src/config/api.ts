@@ -59,4 +59,5 @@ export const API = {
   conversations: () => apiUrl('/v1/conversations'),
   conversationById: (id: string) => apiUrl(`/v1/conversations/${id}`),
   conversationsExport: () => apiUrl('/v1/conversations/export'),
+  conversationToSource: (id: string) => apiUrl(`/v1/conversations/${id}/source`),
 } as const
