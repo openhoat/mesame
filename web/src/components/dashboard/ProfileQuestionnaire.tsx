@@ -1,37 +1,24 @@
-import {
-  Button,
-  Divider,
-  Group,
-  Paper,
-  Progress,
-  Radio,
-  Stack,
-  Text,
-  Textarea,
-  TextInput,
-  Title,
-} from '@mantine/core'
+import { Button, Chip, Group, Paper, Stack, Text, Textarea, Title } from '@mantine/core'
 import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react'
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { ModelSelector } from '@/components/ModelSelector'
 import { API } from '@/config/api'
 
 interface QuestionnaireAnswers {
-  // Step 1: Identity
-  name: string
-  role: string
-  expertise: string
+  // Step 1: Passions & Interests
+  passions: string[]
+  talkAbout: string
+  hobbies: string
 
-  // Step 2: Writing Style
-  tone: 'formal' | 'neutral' | 'casual' | ''
-  complexity: 'simple' | 'moderate' | 'complex' | ''
-  preferences: string
+  // Step 2: Tone & Communication
+  tone: 'enthusiastic' | 'calm' | 'direct' | 'narrative' | 'analytical' | 'humorous' | ''
+  complexityReaction: 'explain-simply' | 'deep-dive' | 'ask-questions' | 'give-opinion' | ''
+  favoritePhrase: string
 
-  // Step 3: Values & Philosophy
-  values: string
-  approach: string
-  examples: string
+  // Step 3: Philosophy & Examples (optional)
+  motivations: string
+  philosophy: string
+  passionExample: string
+  frustrations: string
 }
 
 interface ProfileQuestionnaireProps {
@@ -40,74 +27,123 @@ interface ProfileQuestionnaireProps {
 }
 
 export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionnaireProps) => {
-  const { t } = useTranslation()
   const [step, setStep] = useState(1)
   const [answers, setAnswers] = useState<QuestionnaireAnswers>({
-    name: '',
-    role: '',
-    expertise: '',
+    passions: [],
+    talkAbout: '',
+    hobbies: '',
     tone: '',
-    complexity: '',
-    preferences: '',
-    values: '',
-    approach: '',
-    examples: '',
+    complexityReaction: '',
+    favoritePhrase: '',
+    motivations: '',
+    philosophy: '',
+    passionExample: '',
+    frustrations: '',
   })
-  const [selectedModel, setSelectedModel] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
 
-  const totalSteps = 4
+  const totalSteps = 3
   const progress = (step / totalSteps) * 100
 
-  const updateAnswer = (field: keyof QuestionnaireAnswers, value: string) => {
+  const updateAnswer = (field: keyof QuestionnaireAnswers, value: string | string[]) => {
     setAnswers(prev => ({ ...prev, [field]: value }))
+  }
+
+  const togglePassion = (passion: string) => {
+    setAnswers(prev => ({
+      ...prev,
+      passions: prev.passions.includes(passion)
+        ? prev.passions.filter(p => p !== passion)
+        : [...prev.passions, passion],
+    }))
   }
 
   const canProceed = () => {
     switch (step) {
       case 1:
-        return answers.name.trim() && answers.role.trim() && answers.expertise.trim()
+        return answers.passions.length > 0 && answers.talkAbout.trim() && answers.hobbies.trim()
       case 2:
-        return answers.tone && answers.complexity
+        return answers.tone && answers.complexityReaction && answers.favoritePhrase.trim()
       case 3:
-        return answers.values.trim() && answers.approach.trim()
-      case 4:
-        return true
+        return true // Optional step
       default:
         return false
     }
   }
 
   const generateSourceContent = (): string => {
-    const sections = [
-      '# Digital Twin Profile',
-      '',
-      '## Personal Identity',
-      `Name: ${answers.name}`,
-      `Role: ${answers.role}`,
-      `Domain of Expertise: ${answers.expertise}`,
-      '',
-      '## Writing Style',
-      `Tone: ${answers.tone}`,
-      `Complexity Level: ${answers.complexity}`,
-    ]
+    const parts: string[] = []
 
-    if (answers.preferences.trim()) {
-      sections.push(`Style Preferences: ${answers.preferences}`)
+    // Opening with passions
+    const passionLabels: Record<string, string> = {
+      technology: 'la technologie',
+      science: 'la science',
+      art: "l'art",
+      business: 'le business',
+      nature: 'la nature',
+      sport: 'le sport',
+      culture: 'la culture',
+      other: 'autres',
+    }
+    const passionTexts = answers.passions.map(p => passionLabels[p] || p)
+    parts.push(`Je suis quelqu'un de passionné par ${passionTexts.join(', ')}.`)
+
+    // What I like to talk about
+    if (answers.talkAbout.trim()) {
+      parts.push(answers.talkAbout.trim())
     }
 
-    sections.push(
-      '',
-      '## Values & Philosophy',
-      `Core Values: ${answers.values}`,
-      `Approach: ${answers.approach}`
-    )
-
-    if (answers.examples.trim()) {
-      sections.push('', '## Communication Examples', answers.examples)
+    // Hobbies
+    if (answers.hobbies.trim()) {
+      parts.push(`Mes centres d'intérêt : ${answers.hobbies.trim()}.`)
     }
 
-    return sections.join('\n')
+    // Tone and communication style
+    const toneMap: Record<string, string> = {
+      enthusiastic: 'enthousiaste et énergique',
+      calm: 'calme et réfléchi',
+      direct: 'direct et concret',
+      narrative: 'narratif et storyteller',
+      analytical: 'analytique et précis',
+      humorous: 'humoristique et léger',
+    }
+
+    const complexityMap: Record<string, string> = {
+      'explain-simply': "J'aime expliquer les choses simplement avec des exemples concrets.",
+      'deep-dive': "J'aime approfondir les sujets avec des détails techniques.",
+      'ask-questions': 'Je pose des questions pour clarifier avant de répondre.',
+      'give-opinion': 'Je donne mon opinion franchement et directement.',
+    }
+
+    parts.push(`Mon ton est naturellement ${toneMap[answers.tone] || 'neutre'}.`)
+    parts.push(complexityMap[answers.complexityReaction] || '')
+
+    // Favorite phrase
+    if (answers.favoritePhrase.trim()) {
+      parts.push(`Une phrase qui me ressemble : "${answers.favoritePhrase.trim()}"`)
+    }
+
+    // Motivations
+    if (answers.motivations.trim()) {
+      parts.push(answers.motivations.trim())
+    }
+
+    // Philosophy
+    if (answers.philosophy.trim()) {
+      parts.push(answers.philosophy.trim())
+    }
+
+    // Passion example
+    if (answers.passionExample.trim()) {
+      parts.push(`Quand j'explique un concept qui me passionne : ${answers.passionExample.trim()}`)
+    }
+
+    // Frustrations
+    if (answers.frustrations.trim()) {
+      parts.push(`Ce qui me frustre : ${answers.frustrations.trim()}`)
+    }
+
+    return parts.filter(Boolean).join(' ')
   }
 
   const handleCreate = async () => {
@@ -119,7 +155,7 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: `Digital Twin - ${answers.name}`,
+          title: `Profil Digital Twin`,
           content: sourceContent,
         }),
       })
@@ -133,9 +169,8 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: `${answers.name}'s Digital Twin`,
+          name: 'Mon Digital Twin',
           sourceIds: [source.id],
-          modelId: selectedModel,
         }),
       })
 
@@ -154,38 +189,49 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
       case 1:
         return (
           <Stack gap="md">
-            <Title order={3}>{t('questionnaire.step1.title') || 'Tell us about yourself'}</Title>
-            <Text c="dimmed">
-              {t('questionnaire.step1.subtitle') || 'Help us understand your identity and role'}
-            </Text>
+            <Title order={3}>Vos passions et intérêts</Title>
+            <Text c="dimmed">Qu'est-ce qui vous passionne et vous anime ?</Text>
 
-            <TextInput
-              label={t('questionnaire.step1.name') || 'Name'}
-              placeholder={t('questionnaire.step1.namePlaceholder') || 'Your name or alias'}
-              value={answers.name}
-              onChange={e => updateAnswer('name', e.target.value)}
-              required
-            />
+            <div>
+              <Text size="sm" fw={500} mb="xs">
+                Qu'est-ce qui vous passionne ?
+              </Text>
+              <Group gap="xs">
+                {['technology', 'science', 'art', 'business', 'nature', 'sport', 'culture'].map(
+                  passion => (
+                    <Chip
+                      key={passion}
+                      checked={answers.passions.includes(passion)}
+                      onClick={() => togglePassion(passion)}
+                    >
+                      {passion === 'technology' && 'Technologie'}
+                      {passion === 'science' && 'Science'}
+                      {passion === 'art' && 'Art'}
+                      {passion === 'business' && 'Business'}
+                      {passion === 'nature' && 'Nature'}
+                      {passion === 'sport' && 'Sport'}
+                      {passion === 'culture' && 'Culture'}
+                    </Chip>
+                  )
+                )}
+              </Group>
+            </div>
 
-            <TextInput
-              label={t('questionnaire.step1.role') || 'Role / Title'}
-              placeholder={
-                t('questionnaire.step1.rolePlaceholder') || 'e.g., Software Engineer, Writer, CEO'
-              }
-              value={answers.role}
-              onChange={e => updateAnswer('role', e.target.value)}
+            <Textarea
+              label="De quoi aimez-vous parler ?"
+              placeholder="J'aime parler de nouvelles technologies, d'innovation..."
+              value={answers.talkAbout}
+              onChange={e => updateAnswer('talkAbout', e.target.value)}
+              minRows={2}
               required
             />
 
             <Textarea
-              label={t('questionnaire.step1.expertise') || 'Domain of Expertise'}
-              placeholder={
-                t('questionnaire.step1.expertisePlaceholder') ||
-                'Describe your areas of knowledge and experience'
-              }
-              value={answers.expertise}
-              onChange={e => updateAnswer('expertise', e.target.value)}
-              minRows={3}
+              label="Vos centres d'intérêt et hobbies"
+              placeholder="Lecture, voyages, photographie, jeux vidéo..."
+              value={answers.hobbies}
+              onChange={e => updateAnswer('hobbies', e.target.value)}
+              minRows={2}
               required
             />
           </Stack>
@@ -194,81 +240,67 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
       case 2:
         return (
           <Stack gap="md">
-            <Title order={3}>{t('questionnaire.step2.title') || 'Define your writing style'}</Title>
-            <Text c="dimmed">
-              {t('questionnaire.step2.subtitle') || 'How do you prefer to communicate?'}
-            </Text>
+            <Title order={3}>Ton et communication</Title>
+            <Text c="dimmed">Comment communiquez-vous naturellement ?</Text>
 
             <div>
               <Text size="sm" fw={500} mb="xs">
-                {t('questionnaire.step2.tone') || 'Tone'}
+                Votre ton naturel ?
               </Text>
-              <Radio.Group value={answers.tone} onChange={value => updateAnswer('tone', value)}>
-                <Stack gap="xs">
-                  <Radio
-                    value="formal"
-                    label={
-                      t('questionnaire.step2.toneFormal') || 'Formal - Professional and polished'
-                    }
-                  />
-                  <Radio
-                    value="neutral"
-                    label={
-                      t('questionnaire.step2.toneNeutral') || 'Neutral - Balanced and objective'
-                    }
-                  />
-                  <Radio
-                    value="casual"
-                    label={
-                      t('questionnaire.step2.toneCasual') || 'Casual - Friendly and conversational'
-                    }
-                  />
-                </Stack>
-              </Radio.Group>
+              <Group gap="xs">
+                {[
+                  { value: 'enthusiastic', label: 'Enthousiaste' },
+                  { value: 'calm', label: 'Calme' },
+                  { value: 'direct', label: 'Direct' },
+                  { value: 'narrative', label: 'Narratif' },
+                  { value: 'analytical', label: 'Analytique' },
+                  { value: 'humorous', label: 'Humoristique' },
+                ].map(tone => (
+                  <Chip
+                    key={tone.value}
+                    checked={answers.tone === tone.value}
+                    onClick={() => updateAnswer('tone', tone.value as QuestionnaireAnswers['tone'])}
+                  >
+                    {tone.label}
+                  </Chip>
+                ))}
+              </Group>
             </div>
 
             <div>
               <Text size="sm" fw={500} mb="xs">
-                {t('questionnaire.step2.complexity') || 'Complexity Level'}
+                Face à un sujet complexe, vous ?
               </Text>
-              <Radio.Group
-                value={answers.complexity}
-                onChange={value => updateAnswer('complexity', value)}
-              >
-                <Stack gap="xs">
-                  <Radio
-                    value="simple"
-                    label={
-                      t('questionnaire.step2.complexitySimple') || 'Simple - Clear and accessible'
+              <Group gap="xs">
+                {[
+                  { value: 'explain-simply', label: 'Expliquez simplement' },
+                  { value: 'deep-dive', label: 'Approfondissez' },
+                  { value: 'ask-questions', label: 'Posez des questions' },
+                  { value: 'give-opinion', label: 'Donnez votre avis' },
+                ].map(reaction => (
+                  <Chip
+                    key={reaction.value}
+                    checked={answers.complexityReaction === reaction.value}
+                    onClick={() =>
+                      updateAnswer(
+                        'complexityReaction',
+                        reaction.value as QuestionnaireAnswers['complexityReaction']
+                      )
                     }
-                  />
-                  <Radio
-                    value="moderate"
-                    label={
-                      t('questionnaire.step2.complexityModerate') ||
-                      'Moderate - Balanced with some detail'
-                    }
-                  />
-                  <Radio
-                    value="complex"
-                    label={
-                      t('questionnaire.step2.complexityComplex') ||
-                      'Complex - Technical and in-depth'
-                    }
-                  />
-                </Stack>
-              </Radio.Group>
+                  >
+                    {reaction.label}
+                  </Chip>
+                ))}
+              </Group>
             </div>
 
             <Textarea
-              label={t('questionnaire.step2.preferences') || 'Additional Preferences (Optional)'}
-              placeholder={
-                t('questionnaire.step2.preferencesPlaceholder') ||
-                'e.g., Use of metaphors, humor, storytelling'
-              }
-              value={answers.preferences}
-              onChange={e => updateAnswer('preferences', e.target.value)}
-              minRows={3}
+              label="Une phrase qui vous ressemble"
+              placeholder="La curiosité est le moteur de tout progrès."
+              value={answers.favoritePhrase}
+              onChange={e => updateAnswer('favoritePhrase', e.target.value)}
+              minRows={1}
+              required
             />
           </Stack>
         )
@@ -276,112 +308,39 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
       case 3:
         return (
           <Stack gap="md">
-            <Title order={3}>
-              {t('questionnaire.step3.title') || 'Your values and philosophy'}
-            </Title>
-            <Text c="dimmed">
-              {t('questionnaire.step3.subtitle') || 'What drives your thinking and decisions?'}
-            </Text>
+            <Title order={3}>Philosophie et exemples (optionnel)</Title>
+            <Text c="dimmed">Enrichissez votre profil avec plus de détails</Text>
 
             <Textarea
-              label={t('questionnaire.step3.values') || 'Core Values'}
-              placeholder={
-                t('questionnaire.step3.valuesPlaceholder') ||
-                'Describe the principles and values that guide you'
-              }
-              value={answers.values}
-              onChange={e => updateAnswer('values', e.target.value)}
-              minRows={3}
-              required
+              label="Qu'est-ce qui vous motive ?"
+              placeholder="Apprendre et découvrir de nouvelles choses..."
+              value={answers.motivations}
+              onChange={e => updateAnswer('motivations', e.target.value)}
+              minRows={2}
             />
 
             <Textarea
-              label={t('questionnaire.step3.approach') || 'Approach & Methodology'}
-              placeholder={
-                t('questionnaire.step3.approachPlaceholder') ||
-                'How do you approach problems and make decisions?'
-              }
-              value={answers.approach}
-              onChange={e => updateAnswer('approach', e.target.value)}
-              minRows={3}
-              required
+              label="Votre philosophie en 2-3 phrases"
+              placeholder="Je crois en l'apprentissage continu..."
+              value={answers.philosophy}
+              onChange={e => updateAnswer('philosophy', e.target.value)}
+              minRows={2}
             />
 
             <Textarea
-              label={t('questionnaire.step3.examples') || 'Communication Examples (Optional)'}
-              placeholder={
-                t('questionnaire.step3.examplesPlaceholder') ||
-                'Share examples of how you typically communicate or express ideas'
-              }
-              value={answers.examples}
-              onChange={e => updateAnswer('examples', e.target.value)}
-              minRows={4}
+              label="Comment présentez-vous un concept qui vous passionne ?"
+              placeholder="Imaginez un monde où... C'est ce que permet..."
+              value={answers.passionExample}
+              onChange={e => updateAnswer('passionExample', e.target.value)}
+              minRows={2}
             />
-          </Stack>
-        )
 
-      case 4:
-        return (
-          <Stack gap="md">
-            <Title order={3}>{t('questionnaire.step4.title') || 'Review & Create'}</Title>
-            <Text c="dimmed">
-              {t('questionnaire.step4.subtitle') || 'Review your profile and create it'}
-            </Text>
-
-            <Paper p="md" withBorder>
-              <Stack gap="sm">
-                <div>
-                  <Text size="xs" c="dimmed" tt="uppercase">
-                    {t('questionnaire.step4.identity') || 'Identity'}
-                  </Text>
-                  <Text fw={600}>{answers.name}</Text>
-                  <Text size="sm">{answers.role}</Text>
-                  <Text size="sm" c="dimmed">
-                    {answers.expertise}
-                  </Text>
-                </div>
-
-                <Divider />
-
-                <div>
-                  <Text size="xs" c="dimmed" tt="uppercase">
-                    {t('questionnaire.step4.style') || 'Style'}
-                  </Text>
-                  <Text size="sm">
-                    {t(
-                      `questionnaire.step2.tone${answers.tone.charAt(0).toUpperCase()}${answers.tone.slice(1)}`
-                    ) || answers.tone}{' '}
-                    •{' '}
-                    {t(
-                      `questionnaire.step2.complexity${answers.complexity.charAt(0).toUpperCase()}${answers.complexity.slice(1)}`
-                    ) || answers.complexity}
-                  </Text>
-                  {answers.preferences && (
-                    <Text size="sm" c="dimmed">
-                      {answers.preferences}
-                    </Text>
-                  )}
-                </div>
-
-                <Divider />
-
-                <div>
-                  <Text size="xs" c="dimmed" tt="uppercase">
-                    {t('questionnaire.step4.values') || 'Values'}
-                  </Text>
-                  <Text size="sm">{answers.values}</Text>
-                </div>
-              </Stack>
-            </Paper>
-
-            <Divider />
-
-            <ModelSelector
-              value={selectedModel}
-              onChange={setSelectedModel}
-              label={t('questionnaire.step4.model') || 'Model for generation'}
-              placeholder={t('questionnaire.step4.modelPlaceholder') || 'Select model'}
-              size="sm"
+            <Textarea
+              label="Un sujet qui vous énerve ou vous frustre"
+              placeholder="Les gens qui refusent d'apprendre de leurs erreurs..."
+              value={answers.frustrations}
+              onChange={e => updateAnswer('frustrations', e.target.value)}
+              minRows={2}
             />
           </Stack>
         )
@@ -396,13 +355,23 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
       <div>
         <Group justify="space-between" mb="xs">
           <Text size="sm" fw={500}>
-            {t('questionnaire.step') || 'Step'} {step} {t('questionnaire.of') || 'of'} {totalSteps}
+            Étape {step} sur {totalSteps}
           </Text>
           <Text size="sm" c="dimmed">
             {Math.round(progress)}%
           </Text>
         </Group>
-        <Progress value={progress} size="sm" />
+        <div style={{ width: '100%', height: 4, backgroundColor: '#e9ecef', borderRadius: 2 }}>
+          <div
+            style={{
+              width: `${progress}%`,
+              height: '100%',
+              backgroundColor: '#228be6',
+              borderRadius: 2,
+              transition: 'width 0.3s',
+            }}
+          />
+        </div>
       </div>
 
       <Paper p="xl" withBorder>
@@ -421,7 +390,7 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
             }
           }}
         >
-          {step === 1 ? t('common.cancel') || 'Cancel' : t('common.back') || 'Back'}
+          {step === 1 ? 'Annuler' : 'Retour'}
         </Button>
 
         {step < totalSteps ? (
@@ -430,7 +399,7 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
             onClick={() => setStep(step + 1)}
             disabled={!canProceed()}
           >
-            {t('common.next') || 'Next'}
+            Suivant
           </Button>
         ) : (
           <Button
@@ -440,7 +409,7 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
             loading={creating}
             disabled={creating}
           >
-            {t('questionnaire.createProfile') || 'Create Profile'}
+            Créer le profil
           </Button>
         )}
       </Group>
