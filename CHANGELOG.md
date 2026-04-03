@@ -2,6 +2,8 @@
 
 ## 03/04/2026
 
+- **[14:29:29] ✨ [FEAT]** add script to setup docker buildx for multi-arch builds
+- **[14:27:10] 🔧 [CHORE]** update changelog with multi-platform build support
 - **[14:26:46] ✨ [FEAT]** enable multi-platform docker builds with buildx
 - **[11:32:02] 🎨 [STYLE]** enforce TypeScript arrow function rule and fix badge
 - **[11:20:21] ✨ [FEAT]** redesign questionnaire to capture personality instead of CV
