@@ -46,5 +46,3 @@ docs/
 # Docker Buildx
 buildx-config.toml
 
-# Docker Buildx
-buildx-config.toml
