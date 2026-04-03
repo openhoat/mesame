@@ -2,6 +2,7 @@
 
 ## 03/04/2026
 
+- **[14:29:44] 🔧 [CHORE]** update changelog with buildx setup script
 - **[14:29:29] ✨ [FEAT]** add script to setup docker buildx for multi-arch builds
 - **[14:27:10] 🔧 [CHORE]** update changelog with multi-platform build support
 - **[14:26:46] ✨ [FEAT]** enable multi-platform docker builds with buildx
