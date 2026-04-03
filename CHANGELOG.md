@@ -1,7 +1,17 @@
 # Changelog
 
+## 03/04/2026
+
+- **[14:26:46] ✨ [FEAT]** enable multi-platform docker builds with buildx
+- **[11:32:02] 🎨 [STYLE]** enforce TypeScript arrow function rule and fix badge
+- **[11:20:21] ✨ [FEAT]** redesign questionnaire to capture personality instead of CV
+- **[11:11:55] ✨ [FEAT]** improve style system and add conversation-to-source feature
+- **[09:26:34] 📝 [DOCS]** fix build.md description (was 'Building executables')
+- **[09:22:54] 🐛 [FIX]** improve Docker configuration and documentation
+
 ## 02/04/2026
 
+- **[19:03:03] 🔧 [CHORE]** update kanban and changelog after drag-drop-upload merge
 - **[18:57:47] ✨ [FEAT]** add drag-and-drop file upload support to chat interface
 - **[18:43:26] 🐛 [FIX]** prevent dashboard content from overflowing vertically
 - **[18:41:02] 🐛 [FIX]** improve dashboard mobile UX - add scrollbar and fix table overflow
