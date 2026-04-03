@@ -18,16 +18,17 @@ export async function settingsRoutes(app: FastifyInstance): Promise<void> {
       const data = request.body
 
       // Validate language if provided (null is allowed to clear the preference)
-    if (data.language !== undefined && data.language !== null) {
-      const validLanguages = ['en', 'fr', 'es', 'de', 'it', 'pt', 'ru', 'ja', 'zh', 'ko']
-      if (!validLanguages.includes(data.language)) {
-        return reply.status(400).send({
-          error: `Invalid language. Valid languages: ${validLanguages.join(', ')}`,
-        })
+      if (data.language !== undefined && data.language !== null) {
+        const validLanguages = ['en', 'fr', 'es', 'de', 'it', 'pt', 'ru', 'ja', 'zh', 'ko']
+        if (!validLanguages.includes(data.language)) {
+          return reply.status(400).send({
+            error: `Invalid language. Valid languages: ${validLanguages.join(', ')}`,
+          })
+        }
       }
-    }
 
-    const settings = await updateUserSettings(data)
-    return settings
-  })
+      const settings = await updateUserSettings(data)
+      return settings
+    }
+  )
 }
