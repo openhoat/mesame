@@ -8,11 +8,9 @@
 
 <!-- Medium Priority -->
 - [ ] **[FEAT]** Implement keyboard shortcuts in chat interface (P2)
-- [ ] **[FEAT]** Add interactive questionnaire for building user's digital twin profile (P2)
 - [ ] **[FEAT]** Add voice discussion as alternative questionnaire experience (P2)
 - [ ] **[ARCHITECTURE]** Migrate to PostgreSQL for improved scalability and vector support (P2)
 - [ ] **[PERF]** Research and implement LLM request optimizations (compression, prompt caching, token efficiency) - explore techniques used in similar projects like prompt compression, context window management, and evaluate if RTK (Retaining Token Knowledge) or similar approaches could improve performance (P2)
-- [ ] **[DEVOPS]** Setup Husky pre-commit hooks for code quality (P2)
 - [ ] **[DEVOPS]** Add backup/restore documentation for SQLite database (P2)
 - [ ] **[DOCS]** Document keyboard navigation for accessibility (P2)
 <!-- Low Priority -->

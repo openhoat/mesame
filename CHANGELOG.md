@@ -1,5 +1,10 @@
 # Changelog
 
+## 04/04/2026
+
+- **[08:24:27] 🔧 [CHORE]** setup husky pre-commit hooks with lint-staged and commitlint
+- **[08:20:04] 🐛 [FIX]** use dynamic viewport height for mobile chat input visibility
+
 ## 03/04/2026
 
 - **[17:39:44] 🎨 [STYLE]** fix formatting in user settings routes and service
