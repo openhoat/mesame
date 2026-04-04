@@ -22,7 +22,13 @@ export function ThemeToggle({ variant = 'icon' }: ThemeToggleProps) {
 
   if (variant === 'icon') {
     return (
-      <ActionIcon onClick={toggleColorScheme} variant="subtle" title={t('theme.toggle')} size="lg">
+      <ActionIcon
+        onClick={toggleColorScheme}
+        variant="subtle"
+        title={t('theme.toggle')}
+        aria-label={t('theme.toggle')}
+        size="lg"
+      >
         {icon}
       </ActionIcon>
     )
@@ -35,7 +41,12 @@ export function ThemeToggle({ variant = 'icon' }: ThemeToggleProps) {
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
-        <ActionIcon variant="subtle" title={t('theme.selectTheme')} size="lg">
+        <ActionIcon
+          variant="subtle"
+          title={t('theme.selectTheme')}
+          aria-label={t('theme.selectTheme')}
+          size="lg"
+        >
           {icon}
         </ActionIcon>
       </Menu.Target>

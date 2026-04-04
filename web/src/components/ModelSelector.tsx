@@ -85,6 +85,7 @@ export function ModelSelector({
       clearable={false}
       searchable
       leftSection={<Bot size={16} />}
+      aria-label={placeholder}
       styles={{
         input: {
           minWidth: '200px',
