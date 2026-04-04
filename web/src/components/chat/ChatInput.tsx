@@ -1,4 +1,4 @@
-import { type KeyboardEvent, useRef, useState } from 'react'
+import { type KeyboardEvent, useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAutoResize } from '@/hooks/use-auto-resize'
 
@@ -7,7 +7,7 @@ interface ChatInputProps {
   disabled: boolean
 }
 
-export function ChatInput({ onSend, disabled }: ChatInputProps) {
+export const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
   const { t } = useTranslation()
   const [value, setValue] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -15,21 +15,24 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
 
   const canSend = value.trim().length > 0 && !disabled
 
-  function handleSend() {
+  const handleSend = useCallback(() => {
     if (!canSend) return
     onSend(value.trim())
     setValue('')
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
     }
-  }
+  }, [canSend, onSend, value])
 
-  function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
-  }
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        handleSend()
+      }
+    },
+    [handleSend]
+  )
 
   return (
     <form

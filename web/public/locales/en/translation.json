@@ -49,6 +49,15 @@
     "streaming": "Typing...",
     "errorSending": "Error sending message",
     "retryMessage": "Retry",
+    "shortcuts": {
+      "title": "Keyboard Shortcuts",
+      "showHelp": "Show keyboard shortcuts",
+      "newConversation": "New conversation",
+      "toggleHistory": "Toggle conversation history",
+      "focusInput": "Focus message input",
+      "closePanel": "Close current panel",
+      "footer": "Press Esc to close this dialog"
+    },
     "fileUpload": {
       "dropHere": "Drop files here",
       "uploading": "Uploading files...",
