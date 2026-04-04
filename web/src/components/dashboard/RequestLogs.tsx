@@ -110,7 +110,12 @@ export function RequestLogs() {
 
       {/* Logs Table */}
       <Paper shadow="sm" p="md" withBorder>
-        <Stack gap="md">
+        <Stack
+          gap="md"
+          role="log"
+          aria-live="polite"
+          aria-label={t('logs.recentRequests') || 'Recent requests'}
+        >
           <div>
             <Title order={3}>{t('logs.recentRequests')}</Title>
             <Text size="sm" c="dimmed">

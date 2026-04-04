@@ -77,7 +77,7 @@ export function DashboardHome() {
       </div>
 
       {/* Stats Grid */}
-      <Grid>
+      <Grid aria-label={t('dashboard.stats.title') || 'Dashboard statistics'}>
         <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
           <Paper shadow="sm" p="md" withBorder>
             <Group justify="space-between" mb="xs">
@@ -149,7 +149,11 @@ export function DashboardHome() {
 
       {/* Recent Activity */}
       <Paper shadow="sm" p="md" withBorder>
-        <Stack gap="md">
+        <Stack
+          gap="md"
+          aria-live="polite"
+          aria-label={t('dashboard.recentActivity.title') || 'Recent activity'}
+        >
           <div>
             <Title order={3}>{t('dashboard.recentActivity.title')}</Title>
             <Text size="sm" c="dimmed">

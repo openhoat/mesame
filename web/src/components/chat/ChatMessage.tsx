@@ -11,7 +11,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
   const isError = message.role === 'error'
 
   return (
-    <div
+    <article
+      aria-label={isUser ? 'User message' : isError ? 'Error message' : 'Assistant message'}
       data-role={message.role}
       className={cn(
         'message flex gap-2 md:gap-3 max-w-[90%] md:max-w-[85%] animate-fade-in',
@@ -47,6 +48,6 @@ export function ChatMessage({ message }: ChatMessageProps) {
         {message.content}
         {message.isStreaming && <StreamingCursor />}
       </div>
-    </div>
+    </article>
   )
 }

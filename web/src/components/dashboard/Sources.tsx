@@ -320,6 +320,7 @@ export function Sources() {
                         variant="subtle"
                         onClick={() => handleDeleteSource(source.id)}
                         disabled={loading}
+                        aria-label={t('sources.buttons.delete') || `Delete ${source.title}`}
                       >
                         <Trash2 size={14} />
                       </ActionIcon>

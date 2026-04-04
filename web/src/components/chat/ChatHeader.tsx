@@ -51,6 +51,7 @@ export function ChatHeader({
             onClick={onNewConversation}
             variant="subtle"
             title="New conversation"
+            aria-label={t('chat.header.newConversation') || 'New conversation'}
             size="lg"
           >
             <Plus size={20} />
@@ -61,6 +62,7 @@ export function ChatHeader({
             onClick={onOpenHistory}
             variant="subtle"
             title="Conversation history"
+            aria-label={t('chat.header.conversationHistory') || 'Conversation history'}
             size="lg"
           >
             <History size={20} />
@@ -72,6 +74,7 @@ export function ChatHeader({
           variant="subtle"
           data-testid="open-dashboard"
           title={t('chat.header.openDashboard')}
+          aria-label={t('chat.header.openDashboard') || 'Open dashboard'}
           size="lg"
         >
           <Settings size={20} />

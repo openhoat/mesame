@@ -296,6 +296,7 @@ export function StyleProfiles() {
                       size="lg"
                       onClick={() => handleRegenerateProfile(profile.id)}
                       loading={regeneratingId === profile.id}
+                      aria-label={t('profiles.buttons.regenerate') || `Regenerate ${profile.name}`}
                     >
                       {regeneratingId === profile.id ? (
                         <Loader2 size={16} className="animate-spin" />
@@ -308,6 +309,7 @@ export function StyleProfiles() {
                       color="gray"
                       size="lg"
                       onClick={() => handleEditProfile(profile)}
+                      aria-label={t('profiles.buttons.edit') || `Edit ${profile.name}`}
                     >
                       <Edit size={16} />
                     </ActionIcon>
@@ -316,6 +318,7 @@ export function StyleProfiles() {
                       color="red"
                       size="lg"
                       onClick={() => handleDeleteProfile(profile.id)}
+                      aria-label={t('profiles.buttons.delete') || `Delete ${profile.name}`}
                     >
                       <Trash2 size={16} />
                     </ActionIcon>

@@ -312,7 +312,12 @@ export function Providers() {
           <Text c="dimmed">{t('providers.subtitle')}</Text>
         </div>
         <Group gap="xs">
-          <ActionIcon variant="subtle" onClick={handleRefreshModels} loading={refreshing}>
+          <ActionIcon
+            variant="subtle"
+            onClick={handleRefreshModels}
+            loading={refreshing}
+            aria-label={t('providers.refreshModels') || 'Refresh models'}
+          >
             <RefreshCw size={16} />
           </ActionIcon>
           <Button leftSection={<Plus size={16} />} onClick={() => handleOpenModal()}>
@@ -393,16 +398,29 @@ export function Providers() {
                             onClick={() => handleTestProvider(provider)}
                             loading={testingProvider === provider.name}
                             title={t('providers.testConnection')}
+                            aria-label={
+                              t('providers.testConnection') ||
+                              `Test ${provider.displayName} connection`
+                            }
                           >
                             <Play size={16} />
                           </ActionIcon>
-                          <ActionIcon variant="subtle" onClick={() => handleOpenModal(provider)}>
+                          <ActionIcon
+                            variant="subtle"
+                            onClick={() => handleOpenModal(provider)}
+                            aria-label={
+                              t('providers.editProvider') || `Edit ${provider.displayName}`
+                            }
+                          >
                             <Settings size={16} />
                           </ActionIcon>
                           <ActionIcon
                             variant="subtle"
                             color="red"
                             onClick={() => handleDelete(provider)}
+                            aria-label={
+                              t('providers.deleteProvider') || `Delete ${provider.displayName}`
+                            }
                           >
                             <Trash size={16} />
                           </ActionIcon>

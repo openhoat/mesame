@@ -46,7 +46,7 @@ export function ChatLayout() {
       accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"
       disabled={isStreaming}
     >
-      <div className="flex flex-col h-dvh overflow-hidden">
+      <main className="flex flex-col h-dvh overflow-hidden">
         <ChatHeader
           isConnected={isConnected}
           selectedModel={selectedModel}
@@ -65,7 +65,7 @@ export function ChatLayout() {
             currentConversationId={currentConversationId}
           />
         )}
-      </div>
+      </main>
     </FileDropZone>
   )
 }
