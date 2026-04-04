@@ -46,7 +46,7 @@ export function ChatLayout() {
       accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"
       disabled={isStreaming}
     >
-      <div className="flex flex-col h-screen overflow-hidden">
+      <div className="flex flex-col h-dvh overflow-hidden">
         <ChatHeader
           isConnected={isConnected}
           selectedModel={selectedModel}
