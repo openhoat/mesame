@@ -35,7 +35,10 @@ export default defineConfig(
         },
         {
           text: 'Reference',
-          items: [{ text: 'Architecture', link: '/guide/architecture' }],
+          items: [
+            { text: 'Architecture', link: '/guide/architecture' },
+            { text: 'Keyboard Navigation', link: '/guide/keyboard-navigation' },
+          ],
         },
         {
           text: 'Help',
