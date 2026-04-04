@@ -49,6 +49,15 @@
     "streaming": "En cours de frappe...",
     "errorSending": "Erreur lors de l'envoi du message",
     "retryMessage": "Réessayer",
+    "shortcuts": {
+      "title": "Raccourcis clavier",
+      "showHelp": "Afficher les raccourcis clavier",
+      "newConversation": "Nouvelle conversation",
+      "toggleHistory": "Basculer l'historique des conversations",
+      "focusInput": "Focus sur la zone de message",
+      "closePanel": "Fermer le panneau actuel",
+      "footer": "Appuyez sur Échap pour fermer cette boîte de dialogue"
+    },
     "fileUpload": {
       "dropHere": "Déposez vos fichiers ici",
       "uploading": "Téléchargement des fichiers...",

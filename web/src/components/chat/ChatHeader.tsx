@@ -1,5 +1,5 @@
 import { ActionIcon, Group, Text } from '@mantine/core'
-import { History, Plus, Settings } from 'lucide-react'
+import { History, Keyboard, Plus, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { ModelSelector } from '@/components/ModelSelector'
@@ -12,15 +12,17 @@ interface ChatHeaderProps {
   onModelChange: (modelId: string) => void
   onOpenHistory?: () => void
   onNewConversation?: () => void
+  onToggleShortcuts?: () => void
 }
 
-export function ChatHeader({
+export const ChatHeader = ({
   isConnected,
   selectedModel,
   onModelChange,
   onOpenHistory,
   onNewConversation,
-}: ChatHeaderProps) {
+  onToggleShortcuts,
+}: ChatHeaderProps) => {
   const { t } = useTranslation()
   return (
     <header className="flex items-center gap-3 md:gap-4 px-4 py-3 md:px-5 md:py-4 bg-black/30 border-b border-white/8 shrink-0">
@@ -66,6 +68,18 @@ export function ChatHeader({
             size="lg"
           >
             <History size={20} />
+          </ActionIcon>
+        )}
+        {onToggleShortcuts && (
+          <ActionIcon
+            onClick={onToggleShortcuts}
+            variant="subtle"
+            title={t('chat.shortcuts.showHelp')}
+            aria-label={t('chat.shortcuts.showHelp')}
+            size="lg"
+            className="hidden sm:flex"
+          >
+            <Keyboard size={20} />
           </ActionIcon>
         )}
         <ActionIcon
