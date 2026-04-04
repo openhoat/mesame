@@ -9,9 +9,15 @@ export function StatusIndicator({ isConnected }: StatusIndicatorProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="flex items-center gap-1.5 text-xs text-muted-foreground px-2.5 py-1 rounded-full bg-white/5">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-label={isConnected ? t('status.connected') : t('status.disconnected')}
+      className="flex items-center gap-1.5 text-xs text-muted-foreground px-2.5 py-1 rounded-full bg-white/5"
+    >
       <span
         id="status-dot"
+        aria-hidden="true"
         className={cn(
           'w-1.5 h-1.5 rounded-full',
           isConnected ? 'bg-green-500 animate-pulse connected' : 'bg-red-500 disconnected'

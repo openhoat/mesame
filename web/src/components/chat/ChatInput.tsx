@@ -32,7 +32,11 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   }
 
   return (
-    <div className="px-4 py-3 md:px-5 md:py-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-black/20 border-t border-white/[0.08] shrink-0">
+    <form
+      aria-label={t('chat.formAriaLabel') || 'Chat message form'}
+      onSubmit={e => e.preventDefault()}
+      className="px-4 py-3 md:px-5 md:py-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-black/20 border-t border-white/[0.08] shrink-0"
+    >
       <div className="flex gap-2 md:gap-3 items-end max-w-[900px] mx-auto">
         <textarea
           id="input"
@@ -43,6 +47,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             resize()
           }}
           onKeyDown={handleKeyDown}
+          aria-label={t('chat.inputAriaLabel') || 'Type your message'}
           placeholder={t('chat.placeholder')}
           rows={1}
           className="flex-1 bg-white/[0.06] border border-white/[0.12] rounded-xl px-4 py-3 text-slate-200 text-sm resize-none outline-none leading-relaxed max-h-[200px] min-h-[44px] transition-colors focus:border-accent/50 placeholder:text-slate-600 font-[inherit]"
@@ -52,6 +57,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           type="button"
           onClick={handleSend}
           disabled={!canSend}
+          aria-label={t('chat.sendAriaLabel') || 'Send message'}
           className="w-10 h-10 md:w-11 md:h-11 rounded-xl border-none bg-gradient-to-br from-accent to-accent-secondary text-white cursor-pointer flex items-center justify-center shrink-0 transition-all hover:enabled:opacity-90 active:enabled:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <svg
@@ -73,6 +79,6 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
       <p className="text-center text-[0.65rem] md:text-[0.7rem] text-slate-600 mt-1.5">
         {t('chat.sendInstructions')}
       </p>
-    </div>
+    </form>
   )
 }

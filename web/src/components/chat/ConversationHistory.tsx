@@ -98,7 +98,12 @@ export function ConversationHistory({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Conversation History"
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex"
+    >
       <div className="bg-white dark:bg-gray-900 w-80 h-full shadow-xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
@@ -159,7 +164,7 @@ export function ConversationHistory({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <nav aria-label="Conversation list" className="flex-1 overflow-y-auto p-4">
           {loading && (
             <div className="text-center text-gray-500 dark:text-gray-400">Loading...</div>
           )}
@@ -181,6 +186,8 @@ export function ConversationHistory({
                     onSelect(conv)
                     onClose()
                   }}
+                  aria-label={`${conv.title}, ${conv.messages.length} messages`}
+                  aria-current={conv.id === currentConversationId ? 'true' : undefined}
                   className={`w-full text-left p-3 rounded-lg cursor-pointer transition-colors ${
                     conv.id === currentConversationId
                       ? 'bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700'
@@ -252,7 +259,7 @@ export function ConversationHistory({
               ))}
             </div>
           )}
-        </div>
+        </nav>
       </div>
 
       {/* Backdrop to close sidebar */}

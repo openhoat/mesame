@@ -54,12 +54,32 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     >
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
-          <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
+          <Burger
+            opened={mobileOpened}
+            onClick={toggleMobile}
+            hiddenFrom="sm"
+            size="sm"
+            aria-label={
+              mobileOpened
+                ? t('nav.closeMenu') || 'Close navigation menu'
+                : t('nav.openMenu') || 'Open navigation menu'
+            }
+          />
           <Text fw={700} size="lg" className="hidden sm:block">
             {t('common.appName')}
           </Text>
           <Group>
-            <ActionIcon onClick={toggleDesktop} variant="subtle" size="lg" visibleFrom="sm">
+            <ActionIcon
+              onClick={toggleDesktop}
+              variant="subtle"
+              size="lg"
+              visibleFrom="sm"
+              aria-label={
+                desktopCollapsed
+                  ? t('nav.expandSidebar') || 'Expand sidebar'
+                  : t('nav.collapseSidebar') || 'Collapse sidebar'
+              }
+            >
               {desktopCollapsed ? <ChevronsRight size={18} /> : <ChevronsLeft size={18} />}
             </ActionIcon>
             <ThemeToggle variant="menu" />
@@ -67,7 +87,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="md">
+      <AppShell.Navbar p="md" aria-label={t('nav.dashboardNavigation') || 'Dashboard navigation'}>
         <AppShell.Section grow>
           {navItems.map(item => (
             <NavLink

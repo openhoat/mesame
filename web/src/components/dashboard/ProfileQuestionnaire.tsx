@@ -361,7 +361,14 @@ export const ProfileQuestionnaire = ({ onComplete, onCancel }: ProfileQuestionna
             {Math.round(progress)}%
           </Text>
         </Group>
-        <div style={{ width: '100%', height: 4, backgroundColor: '#e9ecef', borderRadius: 2 }}>
+        <div
+          role="progressbar"
+          aria-valuenow={Math.round(progress)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={`Step ${step} of ${totalSteps}`}
+          style={{ width: '100%', height: 4, backgroundColor: '#e9ecef', borderRadius: 2 }}
+        >
           <div
             style={{
               width: `${progress}%`,

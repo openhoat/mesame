@@ -31,6 +31,9 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
   return (
     <div
       ref={containerRef}
+      role="log"
+      aria-live="polite"
+      aria-label="Chat messages"
       className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-3 md:gap-4 scroll-smooth scrollbar-thin"
     >
       {messages.map(msg => (
