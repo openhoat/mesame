@@ -2,6 +2,12 @@
 
 ## 04/04/2026
 
+- **[09:09:09] 🐛 [FIX]** restore original title attributes for e2e test compatibility
+- **[08:58:19] ✨ [FEAT]** add keyboard shortcuts to chat interface
+- **[09:09:42] ✨ [FEAT]** add aria-label to themetoggle and modelselector
+- **[09:00:23] ✨ [FEAT]** add aria labels to chat and dashboard components
+- **[08:57:23] 📝 [DOCS]** add keyboard navigation documentation
+- **[08:30:04] 🔧 [CHORE]** update kanban and changelog post-merge
 - **[08:24:27] 🔧 [CHORE]** setup husky pre-commit hooks with lint-staged and commitlint
 - **[08:20:04] 🐛 [FIX]** use dynamic viewport height for mobile chat input visibility
 
