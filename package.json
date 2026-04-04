@@ -60,7 +60,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:watch": "vitest",
     "typecheck": "wireit",
-    "validate": "wireit"
+    "validate": "wireit",
+    "prepare": "husky"
   },
   "dependencies": {
     "@fastify/cors": "11.2.0",
@@ -109,6 +110,8 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "4.7.0",
     "@vitest/coverage-v8": "^4.1.2",
+    "husky": "9.1.7",
+    "lint-staged": "16.4.0",
     "mermaid": "11.14.0",
     "tailwindcss": "4.2.2",
     "tsx": "4.21.0",
@@ -117,6 +120,11 @@
     "vitepress-plugin-mermaid": "2.0.17",
     "vitest": "^4.1.2",
     "wireit": "0.14.12"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs,json,css}": [
+      "biome check --write --no-errors-on-unmatched"
+    ]
   },
   "wireit": {
     "build": {
