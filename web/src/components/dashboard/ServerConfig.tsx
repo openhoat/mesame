@@ -101,6 +101,7 @@ export const ServerConfig = () => {
         body: JSON.stringify({
           language: config.language,
           llmUrl: config.llmUrl,
+          logLevel: config.logLevel,
         }),
       })
       if (!response.ok) {

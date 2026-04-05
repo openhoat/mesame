@@ -66,4 +66,5 @@ model UserSettings {
   id       Int     @id @default(1)
   language String?
   llmUrl   String?
+  logLevel String?
 }

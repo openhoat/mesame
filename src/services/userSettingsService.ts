@@ -27,6 +27,7 @@ export async function getUserSettings() {
 export async function updateUserSettings(data: {
   language?: string | null
   llmUrl?: string | null
+  logLevel?: string | null
 }) {
   // Ensure the single row exists
   await getUserSettings()
