@@ -45,6 +45,7 @@ vi.mock('../services/userSettingsService.js', () => ({
     id: 1,
     language: null,
     llmUrl: null,
+    logLevel: null,
     optimizationsEnabled: false,
     slidingWindowSize: 10,
   }),

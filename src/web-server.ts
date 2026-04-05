@@ -172,6 +172,15 @@ export const buildWebApp = async (): Promise<FastifyInstance> => {
   const { ensureDefaultProfile } = await import('./services/styleProfileService.js')
   await ensureDefaultProfile()
 
+  // Apply log level from database settings if available
+  const { getUserSettings } = await import('./services/userSettingsService.js')
+  const { setLogLevel } = await import('./logger.js')
+  const userSettings = await getUserSettings()
+  if (userSettings.logLevel) {
+    setLogLevel(userSettings.logLevel, app)
+    appLogger.info(`Log level set to '${userSettings.logLevel}' from saved settings`)
+  }
+
   appLogger.info('✅ Web application built successfully')
 
   // Store port for access

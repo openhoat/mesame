@@ -99,6 +99,15 @@ export async function buildApp(): Promise<FastifyInstance> {
   // Auto-create default style profile on first startup
   await ensureDefaultProfile()
 
+  // Apply log level from database settings if available
+  const { getUserSettings } = await import('./services/userSettingsService.js')
+  const { setLogLevel } = await import('./logger.js')
+  const userSettings = await getUserSettings()
+  if (userSettings.logLevel) {
+    setLogLevel(userSettings.logLevel, app)
+    appLogger.info(`Log level set to '${userSettings.logLevel}' from saved settings`)
+  }
+
   appLogger.info('✅ Application built successfully')
   return app
 }

@@ -5,6 +5,18 @@ import * as styleProfileService from '../services/styleProfileService.js'
 
 vi.mock('../services/styleProfileService.js')
 
+// Mock userSettingsService
+vi.mock('../services/userSettingsService.js', () => ({
+  getUserSettings: vi.fn().mockResolvedValue({
+    id: 1,
+    language: null,
+    llmUrl: null,
+    logLevel: null,
+    optimizationsEnabled: false,
+    slidingWindowSize: 10,
+  }),
+}))
+
 describe('style profile route', () => {
   let app: Awaited<ReturnType<typeof buildApp>>
 

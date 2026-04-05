@@ -33,6 +33,16 @@ vi.mock('../db.js', () => ({
   prisma: {
     conversation: { count: vi.fn().mockResolvedValue(0) },
     styleProfile: { count: vi.fn().mockResolvedValue(0) },
+    userSettings: {
+      findUnique: vi.fn().mockResolvedValue({
+        id: 1,
+        language: null,
+        llmUrl: null,
+        logLevel: null,
+        optimizationsEnabled: false,
+        slidingWindowSize: 10,
+      }),
+    },
     $disconnect: vi.fn(),
   },
 }))

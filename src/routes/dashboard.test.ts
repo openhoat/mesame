@@ -29,6 +29,16 @@ vi.mock('../db.js', () => ({
     styleProfile: {
       count: vi.fn(),
     },
+    userSettings: {
+      findUnique: vi.fn().mockResolvedValue({
+        id: 1,
+        language: null,
+        llmUrl: null,
+        logLevel: null,
+        optimizationsEnabled: false,
+        slidingWindowSize: 10,
+      }),
+    },
     $disconnect: vi.fn(),
   },
 }))

@@ -10,6 +10,18 @@ vi.mock('../services/styleProfileService.js', () => ({
   ensureDefaultProfile: vi.fn().mockResolvedValue(undefined),
 }))
 
+// Mock userSettingsService
+vi.mock('../services/userSettingsService.js', () => ({
+  getUserSettings: vi.fn().mockResolvedValue({
+    id: 1,
+    language: null,
+    llmUrl: null,
+    logLevel: null,
+    optimizationsEnabled: false,
+    slidingWindowSize: 10,
+  }),
+}))
+
 describe('conversations route', () => {
   let app: Awaited<ReturnType<typeof buildApp>>
 
