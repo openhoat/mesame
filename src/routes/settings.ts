@@ -16,7 +16,13 @@ export async function settingsRoutes(app: FastifyInstance): Promise<void> {
 
   // PUT /api/settings - Update user settings
   app.put<{
-    Body: { language?: string | null; llmUrl?: string | null; logLevel?: string | null }
+    Body: {
+      language?: string | null
+      llmUrl?: string | null
+      logLevel?: string | null
+      optimizationsEnabled?: boolean
+      slidingWindowSize?: number
+    }
   }>('/api/settings', async (request, reply) => {
     const data = request.body
 
@@ -35,6 +41,15 @@ export async function settingsRoutes(app: FastifyInstance): Promise<void> {
       if (!VALID_LOG_LEVELS.includes(data.logLevel as (typeof VALID_LOG_LEVELS)[number])) {
         return reply.status(400).send({
           error: `Invalid log level. Valid levels: ${VALID_LOG_LEVELS.join(', ')}`,
+        })
+      }
+    }
+
+    // Validate slidingWindowSize if provided
+    if (data.slidingWindowSize !== undefined) {
+      if (!Number.isInteger(data.slidingWindowSize) || data.slidingWindowSize < 1) {
+        return reply.status(400).send({
+          error: 'slidingWindowSize must be a positive integer',
         })
       }
     }

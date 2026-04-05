@@ -28,6 +28,8 @@ export async function updateUserSettings(data: {
   language?: string | null
   llmUrl?: string | null
   logLevel?: string | null
+  optimizationsEnabled?: boolean
+  slidingWindowSize?: number
 }) {
   // Ensure the single row exists
   await getUserSettings()

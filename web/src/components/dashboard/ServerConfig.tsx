@@ -23,8 +23,8 @@ interface ServerConfig {
   llmUrl: string
   logLevel: string
   language: string | null
-  cacheEnabled: boolean
-  maxTokens: number
+  optimizationsEnabled: boolean
+  slidingWindowSize: number
 }
 
 export const ServerConfig = () => {
@@ -35,8 +35,8 @@ export const ServerConfig = () => {
     llmUrl: 'http://localhost:3001',
     logLevel: 'info',
     language: null,
-    cacheEnabled: true,
-    maxTokens: 4096,
+    optimizationsEnabled: false,
+    slidingWindowSize: 10,
   })
 
   const [hasChanges, setHasChanges] = useState(false)
@@ -61,20 +61,16 @@ export const ServerConfig = () => {
         // biome-ignore lint/suspicious/noExplicitAny: Config structure is dynamic
         const serverConfig: any = await response.json()
 
-        setConfig(prev => {
-          const newConfig = {
-            ...prev,
-            llmHost: serverConfig.llmHost as string,
-            llmPort: serverConfig.llmPort as number,
-            llmUrl: serverConfig.llmUrl as string,
-            logLevel: serverConfig.logLevel as string,
-            language: serverConfig.language as string | null,
-            cacheEnabled: serverConfig.cacheEnabled as boolean,
-            maxTokens: serverConfig.maxTokens as number,
-          }
-
-          return newConfig
-        })
+        setConfig(prev => ({
+          ...prev,
+          llmHost: serverConfig.llmHost as string,
+          llmPort: serverConfig.llmPort as number,
+          llmUrl: serverConfig.llmUrl as string,
+          logLevel: serverConfig.logLevel as string,
+          language: serverConfig.language as string | null,
+          optimizationsEnabled: serverConfig.optimizationsEnabled as boolean,
+          slidingWindowSize: serverConfig.slidingWindowSize as number,
+        }))
         setConfigLoaded(true)
       } catch (_error) {
         // Silently fail - config will use defaults
@@ -102,6 +98,8 @@ export const ServerConfig = () => {
           language: config.language,
           llmUrl: config.llmUrl,
           logLevel: config.logLevel,
+          optimizationsEnabled: config.optimizationsEnabled,
+          slidingWindowSize: config.slidingWindowSize,
         }),
       })
       if (!response.ok) {
@@ -120,11 +118,11 @@ export const ServerConfig = () => {
     setConfig({
       llmHost: 'localhost',
       llmPort: 3001,
-      llmUrl: `http://localhost:3001`,
+      llmUrl: 'http://localhost:3001',
       logLevel: 'info',
       language: null,
-      cacheEnabled: true,
-      maxTokens: 4096,
+      optimizationsEnabled: false,
+      slidingWindowSize: 10,
     })
     setHasChanges(true)
   }
@@ -237,18 +235,21 @@ export const ServerConfig = () => {
               </Text>
             </div>
 
-            <NumberInput
-              label={t('config.performance.maxTokens')}
-              description={t('config.performance.maxTokensDescription')}
-              value={config.maxTokens}
-              onChange={value => handleChange('maxTokens', Number(value))}
+            <Switch
+              label={t('config.performance.optimizations')}
+              description={t('config.performance.optimizationsDescription')}
+              checked={config.optimizationsEnabled}
+              onChange={e => handleChange('optimizationsEnabled', e.currentTarget.checked)}
             />
 
-            <Switch
-              label={t('config.performance.caching')}
-              description={t('config.performance.cachingDescription')}
-              checked={config.cacheEnabled}
-              onChange={e => handleChange('cacheEnabled', e.currentTarget.checked)}
+            <NumberInput
+              label={t('config.performance.slidingWindow')}
+              description={t('config.performance.slidingWindowDescription')}
+              value={config.slidingWindowSize}
+              onChange={value => handleChange('slidingWindowSize', Number(value))}
+              min={1}
+              max={100}
+              disabled={!config.optimizationsEnabled}
             />
           </Stack>
         </Paper>
