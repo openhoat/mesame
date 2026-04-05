@@ -39,6 +39,18 @@ vi.mock('../services/modelDiscovery.js', () => ({
   ]),
 }))
 
+// Mock the userSettingsService
+vi.mock('../services/userSettingsService.js', () => ({
+  getUserSettings: vi.fn().mockResolvedValue({
+    id: 1,
+    language: null,
+    llmUrl: null,
+    optimizationsEnabled: false,
+    slidingWindowSize: 10,
+  }),
+  updateUserSettings: vi.fn(),
+}))
+
 // Mock the providerRegistry service
 vi.mock('../services/providerRegistry.js', () => ({
   getAllProviders: vi.fn().mockResolvedValue([

@@ -4,8 +4,10 @@ import { getPreferredLanguage } from '../services/languageService.js'
 import { convertToLangChainMessages, getChatModelFromModelId } from '../services/llmProvider.js'
 import { logBuffer } from '../services/logBuffer.js'
 import { listAllModels } from '../services/modelDiscovery.js'
+import { applySlidingWindow } from '../services/slidingWindow.js'
 import { injectStylePrompt } from '../services/styleInjector.js'
 import { getActiveStyleProfile } from '../services/styleProfileService.js'
+import { getUserSettings } from '../services/userSettingsService.js'
 import type {
   ChatCompletionRequest,
   ModelsListResponse,
@@ -60,8 +62,14 @@ export const proxyRoute: FastifyPluginAsync = async app => {
     const preferredLanguage = await getPreferredLanguage()
     const modifiedMessages = injectStylePrompt(body.messages, styleProfile, preferredLanguage)
 
+    // Apply sliding window if optimizations are enabled
+    const settings = await getUserSettings()
+    const finalMessages = settings.optimizationsEnabled
+      ? applySlidingWindow(modifiedMessages, settings.slidingWindowSize)
+      : modifiedMessages
+
     // Convert OpenAI format to LangChain messages
-    const langchainMessages = convertToLangChainMessages(modifiedMessages)
+    const langchainMessages = convertToLangChainMessages(finalMessages)
 
     // Get LangChain chat model with the requested model (multi-provider)
     const chatModel = await getChatModelFromModelId(body.model, body.stream ?? false)

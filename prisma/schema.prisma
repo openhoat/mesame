@@ -63,8 +63,10 @@ model Conversation {
 }
 
 model UserSettings {
-  id       Int     @id @default(1)
-  language String?
-  llmUrl   String?
-  logLevel String?
+  id                    Int     @id @default(1)
+  language              String?
+  llmUrl                String?
+  logLevel              String?
+  optimizationsEnabled  Boolean @default(false)
+  slidingWindowSize     Int     @default(10)
 }

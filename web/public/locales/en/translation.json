@@ -129,10 +129,10 @@
     "performance": {
       "title": "Performance",
       "subtitle": "Optimize server performance",
-      "maxTokens": "Max Tokens",
-      "maxTokensDescription": "Maximum tokens per request",
-      "caching": "Enable Caching",
-      "cachingDescription": "Cache responses for better performance"
+      "optimizations": "Enable Optimizations",
+      "optimizationsDescription": "Enable performance optimizations like sliding window for conversation history",
+      "slidingWindow": "Sliding Window Size",
+      "slidingWindowDescription": "Number of recent exchanges to keep when sending context to the LLM"
     },
     "dangerZone": {
       "title": "Danger Zone",
