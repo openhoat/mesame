@@ -2,6 +2,8 @@
 
 ## 05/04/2026
 
+- **[08:57:05] 🐛 [FIX]** persist log level setting in database and apply at runtime
+- **[08:51:19] 🔧 [CHORE]** update kanban and changelog post-merge
 - **[08:47:16] 📝 [DOCS]** add backup and restore guide for sqlite database
 
 ## 04/04/2026
