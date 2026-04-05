@@ -30,6 +30,7 @@ export default defineConfig(
           items: [
             { text: 'Usage', link: '/guide/usage' },
             { text: 'Configuration', link: '/guide/configuration' },
+            { text: 'Backup & Restore', link: '/guide/backup-restore' },
             { text: 'Build Executables', link: '/guide/build' },
           ],
         },
