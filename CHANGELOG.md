@@ -1,7 +1,12 @@
 # Changelog
 
+## 05/04/2026
+
+- **[08:47:16] 📝 [DOCS]** add backup and restore guide for sqlite database
+
 ## 04/04/2026
 
+- **[09:26:09] 🔧 [CHORE]** update kanban and changelog post-merge
 - **[09:09:09] 🐛 [FIX]** restore original title attributes for e2e test compatibility
 - **[08:58:19] ✨ [FEAT]** add keyboard shortcuts to chat interface
 - **[09:09:42] ✨ [FEAT]** add aria-label to themetoggle and modelselector
