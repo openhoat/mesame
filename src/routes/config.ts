@@ -14,7 +14,7 @@ export async function configRoute(app: FastifyInstance): Promise<void> {
       provider: config.provider,
       targetBaseUrl: config.targetBaseUrl,
       model: config.model,
-      logLevel: config.logLevel,
+      logLevel: userSettings.logLevel || config.logLevel,
       language: userSettings.language, // Use language from user settings
       // Don't expose API keys
       hasApiKey: !!config.targetApiKey,

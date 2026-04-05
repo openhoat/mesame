@@ -85,6 +85,16 @@ export function getFastifyLoggerConfig(logLevel: string = 'info') {
 
 export const logger = createLogger(process.env.MESAME_LOG_LEVEL || 'info')
 
+/**
+ * Change log level at runtime for both the standalone logger and the Fastify app logger
+ */
+export const setLogLevel = (level: string, app?: { log: { level: string } }): void => {
+  logger.level = level
+  if (app) {
+    app.log.level = level
+  }
+}
+
 export function logConfiguration(config: AppConfig): void {
   const line = '─'.repeat(80)
 
