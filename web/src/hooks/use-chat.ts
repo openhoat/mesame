@@ -3,6 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { API } from '@/config/api'
 import { streamChatCompletion } from '@/services/chat-api'
 import {
+  createCheckpoint as apiCreateCheckpoint,
+  restoreCheckpoint as apiRestoreCheckpoint,
+  type Checkpoint,
+  fetchCheckpoints,
+} from '@/services/checkpoint-api'
+import {
   type Conversation,
   createConversation,
   updateConversation,
@@ -11,12 +17,12 @@ import type { ChatMessage, ConversationMessage } from '@/types/chat'
 
 let messageIdCounter = 0
 
-function nextId(): string {
+const nextId = (): string => {
   messageIdCounter += 1
   return `msg-${messageIdCounter}`
 }
 
-export function useChat() {
+export const useChat = () => {
   const { id: urlConversationId } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -27,8 +33,18 @@ export function useChat() {
   const [selectedModel, setSelectedModel] = useState<string | null>(() => {
     return localStorage.getItem('selectedModel')
   })
+  const [checkpoints, setCheckpoints] = useState<Checkpoint[]>([])
   const conversationRef = useRef<ConversationMessage[]>([])
   const streamingContentRef = useRef('')
+
+  const loadCheckpoints = useCallback(async (conversationId: string) => {
+    try {
+      const data = await fetchCheckpoints(conversationId)
+      setCheckpoints(data)
+    } catch {
+      // Silently fail - checkpoints are a convenience feature
+    }
+  }, [])
 
   const saveConversation = useCallback(async () => {
     // Use conversationRef.current instead of messages state
@@ -37,42 +53,45 @@ export function useChat() {
 
     if (currentMessages.length === 0) return
 
-    const title = generateConversationTitle(
-      currentMessages.map(msg => ({
-        id: `msg-${Date.now()}`,
-        role: msg.role,
-        content: msg.content,
-      }))
-    )
+    const title = generateConversationTitle(currentMessages)
 
     try {
-      if (currentConversationId) {
+      let convId = currentConversationId
+      const chatMessages: ChatMessage[] = currentMessages.map(msg => ({
+        id: `msg-${Date.now()}-${Math.random()}`,
+        role: (msg.role === 'system' ? 'assistant' : msg.role) as ChatMessage['role'],
+        content: msg.content,
+      }))
+
+      if (convId) {
         // Update existing conversation
-        await updateConversation(currentConversationId, {
-          messages: currentMessages.map(msg => ({
-            id: `msg-${Date.now()}-${Math.random()}`,
-            role: msg.role,
-            content: msg.content,
-          })),
-          title,
-        })
+        await updateConversation(convId, { messages: chatMessages, title })
       } else {
         // Create new conversation
-        const conversation = await createConversation({
-          title,
-          messages: currentMessages.map(msg => ({
-            id: `msg-${Date.now()}-${Math.random()}`,
-            role: msg.role,
-            content: msg.content,
-          })),
-        })
+        const conversation = await createConversation({ title, messages: chatMessages })
+        convId = conversation.id
         setCurrentConversationId(conversation.id)
         navigate(`/chat/${conversation.id}`, { replace: true })
+      }
+
+      // Auto-create checkpoint after saving
+      if (convId) {
+        try {
+          const messageIndex = currentMessages.length
+          const lastUserMsg = [...currentMessages].reverse().find(m => m.role === 'user')
+          const checkpointTitle = lastUserMsg
+            ? lastUserMsg.content.slice(0, 50) + (lastUserMsg.content.length > 50 ? '...' : '')
+            : `Checkpoint at ${messageIndex} messages`
+          await apiCreateCheckpoint(convId, messageIndex, checkpointTitle)
+          await loadCheckpoints(convId)
+        } catch {
+          // Silently fail
+        }
       }
     } catch {
       // Silently fail - conversation saving is a convenience feature
     }
-  }, [currentConversationId, navigate])
+  }, [currentConversationId, navigate, loadCheckpoints])
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -207,13 +226,44 @@ export function useChat() {
       if (urlConversationId !== conversation.id) {
         navigate(`/chat/${conversation.id}`)
       }
+
+      loadCheckpoints(conversation.id)
     },
-    [navigate, urlConversationId]
+    [navigate, urlConversationId, loadCheckpoints]
+  )
+
+  const handleRestoreCheckpoint = useCallback(
+    async (checkpointId: string) => {
+      if (!currentConversationId) return
+
+      try {
+        const result = await apiRestoreCheckpoint(currentConversationId, checkpointId)
+        const restoredMessages = (
+          result.conversation.messages as Array<{ role: string; content: string }>
+        ).map(msg => ({
+          id: nextId(),
+          role: msg.role as 'user' | 'assistant' | 'error',
+          content: msg.content,
+        }))
+        setMessages(restoredMessages)
+        conversationRef.current = restoredMessages
+          .filter(msg => msg.role !== 'error')
+          .map(msg => ({
+            role: msg.role as 'user' | 'assistant',
+            content: msg.content,
+          }))
+        await loadCheckpoints(currentConversationId)
+      } catch {
+        // Silently fail
+      }
+    },
+    [currentConversationId, loadCheckpoints]
   )
 
   const startNewConversation = useCallback(() => {
     setMessages([])
     setCurrentConversationId(undefined)
+    setCheckpoints([])
     conversationRef.current = []
     navigate('/chat')
   }, [navigate])
@@ -248,10 +298,12 @@ export function useChat() {
     startNewConversation,
     selectedModel,
     setModel,
+    checkpoints,
+    handleRestoreCheckpoint,
   }
 }
 
-function generateConversationTitle(messages: ChatMessage[]): string {
+const generateConversationTitle = (messages: ConversationMessage[]): string => {
   const firstUserMessage = messages.find(msg => msg.role === 'user')
   if (!firstUserMessage) return 'New conversation'
 

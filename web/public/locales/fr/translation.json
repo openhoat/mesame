@@ -58,6 +58,10 @@
       "closePanel": "Fermer le panneau actuel",
       "footer": "Appuyez sur Échap pour fermer cette boîte de dialogue"
     },
+    "checkpoints": {
+      "restore": "Restaurer",
+      "restoreTooltip": "Restaurer la conversation à ce point"
+    },
     "fileUpload": {
       "dropHere": "Déposez vos fichiers ici",
       "uploading": "Téléchargement des fichiers...",

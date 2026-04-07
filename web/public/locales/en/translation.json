@@ -58,6 +58,10 @@
       "closePanel": "Close current panel",
       "footer": "Press Esc to close this dialog"
     },
+    "checkpoints": {
+      "restore": "Restore",
+      "restoreTooltip": "Restore conversation to this point"
+    },
     "fileUpload": {
       "dropHere": "Drop files here",
       "uploading": "Uploading files...",

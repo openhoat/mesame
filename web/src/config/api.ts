@@ -60,4 +60,10 @@ export const API = {
   conversationById: (id: string) => apiUrl(`/v1/conversations/${id}`),
   conversationsExport: () => apiUrl('/v1/conversations/export'),
   conversationToSource: (id: string) => apiUrl(`/v1/conversations/${id}/source`),
+  checkpoints: (conversationId: string) =>
+    apiUrl(`/v1/conversations/${conversationId}/checkpoints`),
+  checkpointRestore: (conversationId: string, checkpointId: string) =>
+    apiUrl(`/v1/conversations/${conversationId}/checkpoints/${checkpointId}/restore`),
+  checkpointById: (conversationId: string, checkpointId: string) =>
+    apiUrl(`/v1/conversations/${conversationId}/checkpoints/${checkpointId}`),
 } as const
