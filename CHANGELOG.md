@@ -1,7 +1,18 @@
 # Changelog
 
+## 07/04/2026
+
+- **[09:16:14] 🐛 [FIX]** skip lifecycle scripts in docker production stage
+
+## 06/04/2026
+
+- **[06:23:20] 📦 [DEPS]** bump react-i18next from 16.6.5 to 17.0.2
+- **[06:22:52] 📦 [DEPS]** bump the minor-and-patch group with 10 updates
+
 ## 05/04/2026
 
+- **[09:53:32] 🐛 [FIX]** apply log level from database at startup and add missing columns
+- **[09:28:11] 🔧 [CHORE]** update kanban and changelog post-merge
 - **[09:22:02] ✨ [FEAT]** add sliding window optimization for conversation context
 - **[09:04:14] 🔧 [CHORE]** update kanban and changelog post-merge
 - **[08:57:05] 🐛 [FIX]** persist log level setting in database and apply at runtime
