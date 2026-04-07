@@ -8,7 +8,6 @@
 
 <!-- Medium Priority -->
 - [ ] **[PERFORMANCE]** Add provider-level prompt caching (Anthropic cache_control, OpenAI automatic) (P2)
-- [ ] **[FEAT]** Add conversation checkpoints to browse and restore chat history, inspired by Open WebUI (P2)
 - [ ] **[PERFORMANCE]** Forward temperature and max_tokens parameters to LLM providers (P2)
 - [ ] **[PERFORMANCE]** Extract token usage metrics from LLM provider responses (P2)
 - [ ] **[FEAT]** Add voice discussion as alternative questionnaire experience (P2)

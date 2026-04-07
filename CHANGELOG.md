@@ -2,6 +2,8 @@
 
 ## 07/04/2026
 
+- **[09:49:31] ✨ [FEAT]** add conversation checkpoints with auto-save and restore
+- **[09:21:32] 🔧 [CHORE]** update kanban and changelog post-merge
 - **[09:16:14] 🐛 [FIX]** skip lifecycle scripts in docker production stage
 
 ## 06/04/2026
