@@ -11,6 +11,11 @@ import { findProviderByType, getDefaultProvider } from './providerRegistry.js'
 
 export type LLMProvider = 'openai' | 'anthropic' | 'ollama' | 'google' | 'mock'
 
+export interface ModelOptions {
+  temperature?: number
+  maxTokens?: number
+}
+
 /**
  * Get the LangChain chat model for a specific provider
  */
@@ -19,11 +24,13 @@ export const createChatModelForProvider = (
   model: string,
   baseUrl: string,
   apiKey: string | null,
-  streaming = false
+  streaming = false,
+  options?: ModelOptions
 ): BaseChatModel => {
   const baseConfig = {
     model,
     streaming,
+    ...(options?.temperature !== undefined && { temperature: options.temperature }),
   }
 
   switch (providerName) {
@@ -33,6 +40,7 @@ export const createChatModelForProvider = (
     case 'anthropic':
       return new ChatAnthropic({
         ...baseConfig,
+        ...(options?.maxTokens !== undefined && { maxTokens: options.maxTokens }),
         anthropicApiKey: apiKey ?? undefined,
         clientOptions: {
           baseURL: baseUrl,
@@ -48,6 +56,7 @@ export const createChatModelForProvider = (
     case 'google':
       return new ChatGoogleGenerativeAI({
         ...baseConfig,
+        ...(options?.maxTokens !== undefined && { maxOutputTokens: options.maxTokens }),
         apiKey: apiKey ?? undefined,
         // Note: baseUrl is not typically used for Google GenAI, but we keep it for consistency
       })
@@ -55,6 +64,8 @@ export const createChatModelForProvider = (
     default:
       return new ChatOpenAI({
         ...baseConfig,
+        ...(options?.maxTokens !== undefined && { maxTokens: options.maxTokens }),
+        ...(streaming && { streamUsage: true }),
         openAIApiKey: apiKey ?? undefined,
         configuration: {
           baseURL: baseUrl,
@@ -83,7 +94,8 @@ export const getChatModel = (
  */
 export const getChatModelFromModelId = async (
   modelId: string,
-  streaming = false
+  streaming = false,
+  options?: ModelOptions
 ): Promise<BaseChatModel> => {
   // Get default provider for unprefixed models
   const defaultProvider = await getDefaultProvider()
@@ -113,8 +125,47 @@ export const getChatModelFromModelId = async (
     parsed.model,
     provider.baseUrl,
     provider.apiKey,
-    streaming
+    streaming,
+    options
   )
+}
+
+/**
+ * Resolve the provider type for a model ID without creating a model instance.
+ */
+export const resolveProviderType = async (modelId: string): Promise<LLMProvider> => {
+  const defaultProvider = await getDefaultProvider()
+  if (!defaultProvider) {
+    throw new Error('No provider configured. Please enable at least one provider.')
+  }
+  return parseModelId(modelId, defaultProvider.type).provider as LLMProvider
+}
+
+/**
+ * Apply Anthropic prompt caching to system messages.
+ * Marks system messages with cache_control for ephemeral caching.
+ * For non-Anthropic providers, returns messages unchanged.
+ */
+export const applyCacheControl = (
+  messages: BaseMessage[],
+  providerType: LLMProvider
+): BaseMessage[] => {
+  if (providerType !== 'anthropic') return messages
+
+  return messages.map(msg => {
+    if (msg instanceof SystemMessage && typeof msg.content === 'string') {
+      return new SystemMessage({
+        content: [
+          {
+            type: 'text' as const,
+            text: msg.content,
+            cache_control: { type: 'ephemeral' },
+          },
+        ],
+      })
+    }
+    return msg
+  })
 }
 
 /**

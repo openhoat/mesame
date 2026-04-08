@@ -5,6 +5,7 @@ import { ChatOllama } from '@langchain/ollama'
 import { ChatOpenAI } from '@langchain/openai'
 import { describe, expect, test, vi } from 'vitest'
 import {
+  applyCacheControl,
   convertToLangChainMessages,
   createChatModelForProvider,
   detectProviderType,
@@ -97,12 +98,64 @@ describe('llmProvider', () => {
       )
       expect(model).toBeInstanceOf(ChatOpenAI)
     })
+
+    test('should pass temperature and maxTokens options', () => {
+      const model = createChatModelForProvider(
+        'openai',
+        'gpt-4',
+        'https://api.openai.com',
+        'test-key',
+        false,
+        { temperature: 0.5, maxTokens: 200 }
+      )
+      expect(model).toBeInstanceOf(ChatOpenAI)
+    })
+
+    test('should pass options to Anthropic provider', () => {
+      const model = createChatModelForProvider(
+        'anthropic',
+        'claude-3',
+        'https://api.anthropic.com',
+        'test-key',
+        false,
+        { temperature: 0.8, maxTokens: 500 }
+      )
+      expect(model).toBeInstanceOf(ChatAnthropic)
+    })
   })
 
   describe('getChatModel', () => {
     test('should return a chat model instance', () => {
       const model = getChatModel('openai', 'gpt-4', 'https://api.openai.com', 'test-key', false)
       expect(model).toBeInstanceOf(ChatOpenAI)
+    })
+  })
+
+  describe('applyCacheControl', () => {
+    test('should add cache_control to system messages for Anthropic', () => {
+      const messages = [new SystemMessage('You are helpful'), new HumanMessage('Hello')]
+      const result = applyCacheControl(messages, 'anthropic')
+
+      expect(result[0]).toBeInstanceOf(SystemMessage)
+      expect(Array.isArray(result[0].content)).toBe(true)
+      const content = result[0].content as Array<{
+        type: string
+        text: string
+        cache_control?: unknown
+      }>
+      expect(content[0].cache_control).toEqual({ type: 'ephemeral' })
+      expect(content[0].text).toBe('You are helpful')
+      // HumanMessage should be unchanged
+      expect(result[1]).toBeInstanceOf(HumanMessage)
+      expect(result[1].content).toBe('Hello')
+    })
+
+    test('should not modify messages for non-Anthropic providers', () => {
+      const messages = [new SystemMessage('You are helpful'), new HumanMessage('Hello')]
+      const result = applyCacheControl(messages, 'openai')
+
+      expect(result[0].content).toBe('You are helpful')
+      expect(result).toEqual(messages)
     })
   })
 
