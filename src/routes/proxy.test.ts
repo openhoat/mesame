@@ -25,6 +25,8 @@ vi.mock('../services/llmProvider.js', () => ({
       role: msg.role,
     }))
   ),
+  resolveProviderType: vi.fn().mockResolvedValue('openai'),
+  applyCacheControl: vi.fn(messages => messages),
 }))
 
 // Mock the modelDiscovery service
@@ -91,6 +93,27 @@ vi.mock('../services/providerRegistry.js', () => ({
   }),
 }))
 
+// Mock the response cache
+vi.mock('../services/responseCache.js', () => ({
+  getCachedResponse: vi.fn().mockReturnValue(undefined),
+  setCachedResponse: vi.fn(),
+}))
+
+// Mock the conversation summarizer
+vi.mock('../services/conversationSummarizer.js', () => ({
+  summarizeDroppedMessages: vi.fn().mockResolvedValue(''),
+}))
+
+// Mock the token usage extractor
+vi.mock('../services/tokenUsage.js', () => ({
+  extractTokenUsage: vi.fn().mockReturnValue({
+    prompt_tokens: 10,
+    completion_tokens: 20,
+    total_tokens: 30,
+  }),
+  extractStreamingTokenUsage: vi.fn().mockReturnValue(undefined),
+}))
+
 describe('proxy route', () => {
   let app: Awaited<ReturnType<typeof buildApp>>
 
@@ -122,7 +145,28 @@ describe('proxy route', () => {
     const body = response.json()
     expect(body.choices[0].message.content).toBe('Hi there!')
     expect(body.choices[0].message.role).toBe('assistant')
+    expect(body.usage.prompt_tokens).toBe(10)
+    expect(body.usage.completion_tokens).toBe(20)
+    expect(body.usage.total_tokens).toBe(30)
     expect(mockInvoke).toHaveBeenCalledOnce()
+  })
+
+  test('should forward temperature and max_tokens to model', async () => {
+    mockInvoke.mockResolvedValueOnce(new AIMessage('Response'))
+
+    const { getChatModelFromModelId } = await import('../services/llmProvider.js')
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/v1/chat/completions',
+      payload: { ...requestBody, temperature: 0.7, max_tokens: 100 },
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(getChatModelFromModelId).toHaveBeenCalledWith('ollama/test-model', false, {
+      temperature: 0.7,
+      maxTokens: 100,
+    })
   })
 
   test('should forward streaming request with SSE headers', async () => {
@@ -156,9 +200,11 @@ describe('proxy route', () => {
     })
 
     expect(response.statusCode).toBe(500)
-    const body = response.json()
-    expect(body.error.message).toBe('LangChain error')
-    expect(body.error.type).toBe('langchain_error')
+    // Response may be double-serialized due to reply.send, parse carefully
+    const rawBody = response.body
+    const parsed = JSON.parse(rawBody)
+    expect(parsed.error.message).toBe('LangChain error')
+    expect(parsed.error.type).toBe('langchain_error')
   })
 
   test('should return available models list', async () => {
@@ -192,5 +238,39 @@ describe('proxy route', () => {
     expect(body.error.message).toBe('Missing required field: model')
     expect(body.error.type).toBe('invalid_request_error')
     expect(body.error.param).toBe('model')
+  })
+
+  test('should return cached response when optimizations enabled', async () => {
+    const { getCachedResponse } = await import('../services/responseCache.js')
+    const { getUserSettings } = await import('../services/userSettingsService.js')
+
+    // Use mockResolvedValue (not Once) because getUserSettings is called multiple times
+    vi.mocked(getUserSettings).mockResolvedValue({
+      id: 1,
+      language: null,
+      llmUrl: null,
+      logLevel: null,
+      optimizationsEnabled: true,
+      slidingWindowSize: 10,
+    })
+
+    vi.mocked(getCachedResponse).mockReturnValueOnce({
+      content: 'Cached response',
+      usage: { prompt_tokens: 5, completion_tokens: 10, total_tokens: 15 },
+      timestamp: Date.now(),
+      model: 'ollama/test-model',
+    })
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/v1/chat/completions',
+      payload: requestBody,
+    })
+
+    expect(response.statusCode).toBe(200)
+    const body = response.json()
+    expect(body.choices[0].message.content).toBe('Cached response')
+    expect(body.usage.total_tokens).toBe(15)
+    expect(mockInvoke).not.toHaveBeenCalled()
   })
 })

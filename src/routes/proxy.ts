@@ -1,12 +1,20 @@
 import type { AIMessageChunk } from '@langchain/core/messages'
 import type { FastifyPluginAsync } from 'fastify'
+import { summarizeDroppedMessages } from '../services/conversationSummarizer.js'
 import { getPreferredLanguage } from '../services/languageService.js'
-import { convertToLangChainMessages, getChatModelFromModelId } from '../services/llmProvider.js'
+import {
+  applyCacheControl,
+  convertToLangChainMessages,
+  getChatModelFromModelId,
+  resolveProviderType,
+} from '../services/llmProvider.js'
 import { logBuffer } from '../services/logBuffer.js'
 import { listAllModels } from '../services/modelDiscovery.js'
-import { applySlidingWindow } from '../services/slidingWindow.js'
+import { getCachedResponse, setCachedResponse } from '../services/responseCache.js'
+import { partitionSlidingWindow } from '../services/slidingWindow.js'
 import { injectStylePrompt } from '../services/styleInjector.js'
 import { getActiveStyleProfile } from '../services/styleProfileService.js'
+import { extractStreamingTokenUsage, extractTokenUsage } from '../services/tokenUsage.js'
 import { getUserSettings } from '../services/userSettingsService.js'
 import type {
   ChatCompletionRequest,
@@ -62,17 +70,81 @@ export const proxyRoute: FastifyPluginAsync = async app => {
     const preferredLanguage = await getPreferredLanguage()
     const modifiedMessages = injectStylePrompt(body.messages, styleProfile, preferredLanguage)
 
-    // Apply sliding window if optimizations are enabled
+    // Apply sliding window with optional summarization
     const settings = await getUserSettings()
-    const finalMessages = settings.optimizationsEnabled
-      ? applySlidingWindow(modifiedMessages, settings.slidingWindowSize)
-      : modifiedMessages
+    let finalMessages = modifiedMessages
+
+    if (settings.optimizationsEnabled) {
+      const { kept, dropped } = partitionSlidingWindow(modifiedMessages, settings.slidingWindowSize)
+
+      if (dropped.length > 0) {
+        try {
+          const summary = await summarizeDroppedMessages(body.model, dropped)
+          if (summary) {
+            // Insert summary as a system message after existing system messages
+            const systemMsgs = kept.filter(m => m.role === 'system')
+            const nonSystemMsgs = kept.filter(m => m.role !== 'system')
+            finalMessages = [
+              ...systemMsgs,
+              {
+                role: 'system' as const,
+                content: `Previous conversation summary: ${summary}`,
+              },
+              ...nonSystemMsgs,
+            ]
+          } else {
+            finalMessages = kept
+          }
+        } catch {
+          // If summarization fails, fall back to plain sliding window
+          finalMessages = kept
+        }
+      } else {
+        finalMessages = kept
+      }
+    }
+
+    // Check response cache for non-streaming requests
+    if (!body.stream && settings.optimizationsEnabled) {
+      const cached = getCachedResponse(body.model, finalMessages, body.temperature, body.max_tokens)
+      if (cached) {
+        const responseTime = Date.now() - startTime
+        logBuffer.add({
+          timestamp: new Date().toISOString(),
+          level: 'info',
+          message: `chat completion with model ${body.model} (cached)`,
+          responseTime,
+        })
+        return {
+          id: `chatcmpl-${Date.now()}`,
+          object: 'chat.completion',
+          created: Math.floor(Date.now() / 1000),
+          model: body.model,
+          choices: [
+            {
+              index: 0,
+              message: { role: 'assistant', content: cached.content },
+              finish_reason: 'stop',
+            },
+          ],
+          usage: cached.usage,
+        }
+      }
+    }
 
     // Convert OpenAI format to LangChain messages
-    const langchainMessages = convertToLangChainMessages(finalMessages)
+    let langchainMessages = convertToLangChainMessages(finalMessages)
+
+    // Apply provider-level prompt caching (Anthropic cache_control)
+    const providerType = await resolveProviderType(body.model)
+    langchainMessages = applyCacheControl(langchainMessages, providerType)
 
     // Get LangChain chat model with the requested model (multi-provider)
-    const chatModel = await getChatModelFromModelId(body.model, body.stream ?? false)
+    const modelOptions = {
+      ...(body.temperature !== undefined && { temperature: body.temperature }),
+      ...(body.max_tokens !== undefined && { maxTokens: body.max_tokens }),
+    }
+    const chatModel = await getChatModelFromModelId(body.model, body.stream ?? false, modelOptions)
 
     if (body.stream) {
       // Streaming response
@@ -87,9 +159,17 @@ export const proxyRoute: FastifyPluginAsync = async app => {
         headersSent = true
 
         const stream = await chatModel.stream(langchainMessages)
+        let streamUsage: ReturnType<typeof extractStreamingTokenUsage> | undefined
 
         for await (const chunk of stream) {
           const aiChunk = chunk as AIMessageChunk
+
+          // Track usage metadata from streaming chunks
+          const chunkUsage = extractStreamingTokenUsage(aiChunk)
+          if (chunkUsage) {
+            streamUsage = chunkUsage
+          }
+
           if (aiChunk.content) {
             // Format as OpenAI-compatible SSE
             const sseData = {
@@ -111,7 +191,24 @@ export const proxyRoute: FastifyPluginAsync = async app => {
           }
         }
 
-        // Send final chunk
+        // Send final chunk with finish_reason and usage if available
+        const finalChunk = {
+          id: `chatcmpl-${Date.now()}`,
+          object: 'chat.completion.chunk',
+          created: Math.floor(Date.now() / 1000),
+          model: body.model,
+          choices: [
+            {
+              index: 0,
+              delta: {},
+              finish_reason: 'stop',
+            },
+          ],
+          ...(streamUsage && { usage: streamUsage }),
+        }
+        reply.raw.write(`data: ${JSON.stringify(finalChunk)}\n\n`)
+
+        // Send final done marker
         reply.raw.write('data: [DONE]\n\n')
         reply.raw.end()
 
@@ -165,6 +262,22 @@ export const proxyRoute: FastifyPluginAsync = async app => {
     try {
       const response = await chatModel.invoke(langchainMessages)
 
+      // Extract token usage from provider response
+      const usage = extractTokenUsage(response)
+
+      // Cache the response if optimizations are enabled
+      if (settings.optimizationsEnabled) {
+        const content = typeof response.content === 'string' ? response.content : ''
+        setCachedResponse(
+          body.model,
+          finalMessages,
+          content,
+          usage,
+          body.temperature,
+          body.max_tokens
+        )
+      }
+
       // Log successful non-streaming completion
       const responseTime = Date.now() - startTime
       logBuffer.add({
@@ -189,11 +302,7 @@ export const proxyRoute: FastifyPluginAsync = async app => {
             finish_reason: 'stop',
           },
         ],
-        usage: {
-          prompt_tokens: 0,
-          completion_tokens: 0,
-          total_tokens: 0,
-        },
+        usage,
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
