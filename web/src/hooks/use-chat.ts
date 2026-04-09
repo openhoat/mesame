@@ -27,9 +27,7 @@ export const useChat = () => {
   const navigate = useNavigate()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isStreaming, setIsStreaming] = useState(false)
-  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>(
-    urlConversationId
-  )
+  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>()
   const [selectedModel, setSelectedModel] = useState<string | null>(() => {
     return localStorage.getItem('selectedModel')
   })
@@ -75,15 +73,21 @@ export const useChat = () => {
       }
 
       // Auto-create checkpoint after saving
+      // Place checkpoint after the user's question (before the assistant's response)
       if (convId) {
         try {
-          const messageIndex = currentMessages.length
-          const lastUserMsg = [...currentMessages].reverse().find(m => m.role === 'user')
-          const checkpointTitle = lastUserMsg
-            ? lastUserMsg.content.slice(0, 50) + (lastUserMsg.content.length > 50 ? '...' : '')
-            : `Checkpoint at ${messageIndex} messages`
-          await apiCreateCheckpoint(convId, messageIndex, checkpointTitle)
-          await loadCheckpoints(convId)
+          const lastUserMsgIndex = currentMessages.reduce(
+            (acc, msg, idx) => (msg.role === 'user' ? idx : acc),
+            -1
+          )
+          if (lastUserMsgIndex >= 0) {
+            const messageIndex = lastUserMsgIndex + 1
+            const lastUserMsg = currentMessages[lastUserMsgIndex]
+            const checkpointTitle =
+              lastUserMsg.content.slice(0, 50) + (lastUserMsg.content.length > 50 ? '...' : '')
+            await apiCreateCheckpoint(convId, messageIndex, checkpointTitle)
+            await loadCheckpoints(convId)
+          }
         } catch {
           // Silently fail
         }
@@ -260,6 +264,88 @@ export const useChat = () => {
     [currentConversationId, loadCheckpoints]
   )
 
+  const editMessage = useCallback(
+    async (messageId: string, newContent: string) => {
+      // Find the message index
+      const messageIndex = messages.findIndex(msg => msg.id === messageId)
+      if (messageIndex === -1) return
+
+      // Update the message content and remove all messages after it
+      const updatedMessages = messages
+        .slice(0, messageIndex + 1)
+        .map(msg => (msg.id === messageId ? { ...msg, content: newContent } : msg))
+
+      // Update local state
+      setMessages(updatedMessages)
+
+      // Update conversation reference
+      conversationRef.current = updatedMessages
+        .filter(msg => msg.role !== 'error')
+        .map(msg => ({
+          role: msg.role as 'user' | 'assistant',
+          content: msg.content,
+        }))
+
+      // Regenerate assistant response
+      const assistantId = nextId()
+      const assistantMsg: ChatMessage = {
+        id: assistantId,
+        role: 'assistant',
+        content: '',
+        isStreaming: true,
+      }
+
+      setMessages(prev => [...prev, assistantMsg])
+      setIsStreaming(true)
+      streamingContentRef.current = ''
+
+      try {
+        await streamChatCompletion(
+          conversationRef.current,
+          {
+            onChunk(chunk) {
+              streamingContentRef.current += chunk
+              const content = streamingContentRef.current
+              setMessages(prev => prev.map(m => (m.id === assistantId ? { ...m, content } : m)))
+            },
+            onError(error) {
+              setMessages(prev => [
+                ...prev.filter(m => m.id !== assistantId),
+                { id: nextId(), role: 'error', content: error },
+              ])
+              conversationRef.current.pop()
+            },
+            onDone() {
+              const finalContent = streamingContentRef.current
+              if (finalContent) {
+                conversationRef.current.push({ role: 'assistant', content: finalContent })
+              }
+              setMessages(prev =>
+                prev.map(m => (m.id === assistantId ? { ...m, isStreaming: false } : m))
+              )
+              saveConversation()
+            },
+          },
+          selectedModel ?? undefined
+        )
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error && err.message === 'Failed to fetch'
+            ? 'Cannot reach the server. Make sure MeSame is running.'
+            : `Error: ${err instanceof Error ? err.message : String(err)}`
+
+        setMessages(prev => [
+          ...prev.filter(m => m.id !== assistantId),
+          { id: nextId(), role: 'error', content: errorMessage },
+        ])
+        conversationRef.current.pop()
+      } finally {
+        setIsStreaming(false)
+      }
+    },
+    [messages, selectedModel, saveConversation]
+  )
+
   const startNewConversation = useCallback(() => {
     setMessages([])
     setCurrentConversationId(undefined)
@@ -300,6 +386,7 @@ export const useChat = () => {
     setModel,
     checkpoints,
     handleRestoreCheckpoint,
+    editMessage,
   }
 }
 

@@ -9,14 +9,14 @@ export const CheckpointMarker = ({ title, onRestore }: CheckpointMarkerProps) =>
   const { t } = useTranslation()
 
   return (
-    <div className="flex items-center gap-2 py-1 px-2">
+    <div className="flex items-center gap-2 py-1">
       <div className="flex-1 h-px bg-[hsl(var(--color-border))]" />
       <button
         type="button"
         onClick={onRestore}
-        className="flex items-center gap-1.5 px-2 py-0.5 text-xs rounded-full
-          bg-[hsl(var(--color-accent))]/10 border border-[hsl(var(--color-accent))]/30
-          text-[hsl(var(--color-accent))] hover:bg-[hsl(var(--color-accent))]/20
+        className="flex items-center gap-1.5 px-2 py-0.5 text-xs rounded-sm
+          text-[hsl(var(--color-muted-foreground))] hover:text-[hsl(var(--color-accent))]
+          hover:bg-[hsl(var(--color-accent))]/5
           transition-colors cursor-pointer"
         title={t('chat.checkpoints.restoreTooltip')}
       >
@@ -26,10 +26,10 @@ export const CheckpointMarker = ({ title, onRestore }: CheckpointMarkerProps) =>
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
           />
         </svg>
-        {title}
+        <span className="max-w-[150px] truncate opacity-70">{title}</span>
       </button>
       <div className="flex-1 h-px bg-[hsl(var(--color-border))]" />
     </div>
