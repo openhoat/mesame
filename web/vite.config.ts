@@ -44,6 +44,10 @@ export default defineConfig(({ mode }) => {
             })
           },
         },
+        '/v1/conversations': {
+          target: `http://127.0.0.1:${webPort}`,
+          changeOrigin: true,
+        },
         '/v1': {
           target: `http://127.0.0.1:${llmPort}`,
           changeOrigin: true,

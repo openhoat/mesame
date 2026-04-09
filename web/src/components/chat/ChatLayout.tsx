@@ -24,6 +24,7 @@ export const ChatLayout = () => {
     uploadFiles,
     checkpoints,
     handleRestoreCheckpoint,
+    editMessage,
   } = useChat()
   const { isConnected } = useHealthCheck()
   const [showHistory, setShowHistory] = useState(false)
@@ -128,6 +129,8 @@ export const ChatLayout = () => {
           messages={messages}
           checkpoints={checkpoints}
           onRestoreCheckpoint={handleRestoreCheckpoint}
+          onEditMessage={editMessage}
+          isStreaming={isStreaming}
         />
         <ChatInput onSend={sendMessage} disabled={isStreaming} />
 

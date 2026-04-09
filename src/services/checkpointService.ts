@@ -79,11 +79,11 @@ export const restoreCheckpoint = async (
       data: { messages: JSON.stringify(truncatedMessages) },
     })
 
-    // Delete all checkpoints after this one
+    // Delete all checkpoints at or after this one (including the restored one)
     await prisma.checkpoint.deleteMany({
       where: {
         conversationId: checkpoint.conversationId,
-        messageIndex: { gt: checkpoint.messageIndex },
+        messageIndex: { gte: checkpoint.messageIndex },
       },
     })
 
