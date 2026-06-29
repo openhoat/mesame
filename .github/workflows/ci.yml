@@ -29,7 +29,7 @@ jobs:
           cache: 'npm'
 
       - name: Cache Wireit
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .wireit
           key: ${{ runner.os }}-wireit-${{ hashFiles('package-lock.json') }}
@@ -63,7 +63,7 @@ jobs:
           cache: 'npm'
 
       - name: Cache Wireit
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .wireit
           key: ${{ runner.os }}-wireit-${{ hashFiles('package-lock.json') }}
@@ -99,7 +99,7 @@ jobs:
           cache: 'npm'
 
       - name: Cache Wireit
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .wireit
           key: ${{ runner.os }}-wireit-${{ hashFiles('package-lock.json') }}
@@ -129,7 +129,7 @@ jobs:
           DATABASE_URL: file:./test.db
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-chromium-v1
